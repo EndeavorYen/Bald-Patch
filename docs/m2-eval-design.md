@@ -45,6 +45,8 @@ node scripts/run-m1-eval.mjs \
 
 M2 mode emits `natural-baseline`, `prompt-control`, and `baldpatch-skill` rows. The natural baseline prompt uses `neutral_title` and `natural_prompt` task fields when present; it does not append M1 success criteria or task-specific overbuild risks.
 
+The current M2 queue keeps the original 10 M1 tasks and adds one M2-only positive-control task, `task-011`, backed by the private fixture id `shared-format-helper`. M1 task loading still defaults to the original 10-task set.
+
 Reviewer-facing M2 task ids use neutral `public_id` values such as `task-001`. The run queue may include `fixture_task_id` so local tooling can prepare and verify the correct fixture, but blind review packets must omit `fixture_task_id`, run ids, arm names, model names, and any private mapping key.
 
 ## Leakage Controls

@@ -60,6 +60,22 @@ describe("run-m1-eval", () => {
     assert.match(rows[0].verify, /--task parser-edge-case\b/);
   });
 
+  it("dry-runs the full M2 task set including positive controls", () => {
+    const rows = runEval({
+      mode: "m2",
+      outRoot: path.join(tmpRoot, "m2-full-dry"),
+      runIdPrefix: "m2",
+    });
+
+    assert.equal(rows.length, 33);
+    assert.deepEqual(
+      rows
+        .filter((row) => row.run_id.startsWith("m2-task-011-"))
+        .map((row) => row.arm),
+      ["natural-baseline", "prompt-control", "baldpatch-skill"],
+    );
+  });
+
   it("renders shell-quoted agent command placeholders", () => {
     const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
       fixture_dir: "/tmp/fixture with space",

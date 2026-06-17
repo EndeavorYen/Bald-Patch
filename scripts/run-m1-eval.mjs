@@ -80,7 +80,7 @@ export function runEval({
   recordBlocked = false,
   repoRoot = process.cwd(),
 } = {}) {
-  const runs = selectRuns(readTasks(path.join(repoRoot, "evals/tasks")), {
+  const runs = selectRuns(readTasks(path.join(repoRoot, "evals/tasks"), { mode }), {
     taskId,
     arm,
     limit,
