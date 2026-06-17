@@ -25,6 +25,7 @@
     "fixture:prepare": "node scripts/prepare-fixture.mjs",
     "fixture:verify": "node scripts/verify-fixture.mjs",
     "review": "node scripts/baldpatch-review.mjs",
+    "review:blind:packet": "node scripts/build-blind-review-packet.mjs",
     "hook:stop": "node scripts/stop-hook-metrics.mjs"
   },
   "engines": {

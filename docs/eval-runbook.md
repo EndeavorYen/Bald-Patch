@@ -105,7 +105,7 @@ node scripts/score-run.mjs \
   --title "Bald Patch M1 Eval Report - YYYY-MM-DD"
 ```
 
-## 6. Decode Blind Review
+## 6. Build And Decode Blind Review
 
 Collect reviewer answers using the matching blind review packet and answer template. Do not show reviewers the run records, arm names, or mapping key before they answer.
 
@@ -114,6 +114,19 @@ The mapping key should stay outside the repo, for example:
 ```bash
 /private/tmp/bald-patch-m1-codex-blind-key.json
 ```
+
+Build the packet from completed successful run checkouts:
+
+```bash
+node scripts/build-blind-review-packet.mjs \
+  --mode m2 \
+  --runs evals/runs/YYYY-MM-DD-m2.jsonl \
+  --checkouts /private/tmp/bald-patch-m2/checkouts \
+  --output-packet evals/reviews/YYYY-MM-DD-m2-blind-review.md \
+  --output-key /private/tmp/bald-patch-m2-blind-key.json
+```
+
+The packet contains public task ids, request text, anonymized patch labels, and diffs. The key contains the private run id, arm, and model mapping.
 
 After answers are collected, decode them and write a reviewed run file:
 

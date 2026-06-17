@@ -56,7 +56,7 @@ Reviewer-facing M2 task ids use neutral `public_id` values such as `task-001`. T
 - Treat `fixture_task_id` as operator-private metadata. It is allowed in local run queues, not in blind review packets.
 - Keep any mapping key outside the repo.
 - Keep final acceptance checks or holdout task variants private when running a release-quality benchmark.
-- Build blind review packets without run ids, arm names, model names, or mapping hints.
+- Build blind review packets with `scripts/build-blind-review-packet.mjs`; packets must omit run ids, arm names, model names, `fixture_task_id`, and mapping hints.
 
 ## Task Suite
 
