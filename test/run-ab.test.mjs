@@ -63,4 +63,32 @@ describe("run-ab", () => {
     assert.match(buildPrompt(task, "skill"), /Users can choose a date/);
     assert.match(buildPrompt(task, "skill"), /Adding a dependency/);
   });
+
+  it("builds M2 natural, prompt-control, and Bald Patch skill arms", () => {
+    const task = {
+      id: "task-001",
+      title: "Update CLI output",
+      neutral_title: "Update CLI output",
+      natural_prompt: "Add machine-readable output for the existing command.",
+      prompt: "Add a --json flag without changing default output.",
+      success_criteria: ["No production dependency is added"],
+      overbuild_risks: ["Adding a command framework"],
+    };
+    const plan = buildRunPlan([task], { mode: "m2" });
+
+    assert.deepEqual(plan.map((run) => run.arm), [
+      "natural-baseline",
+      "prompt-control",
+      "baldpatch-skill",
+    ]);
+    assert.match(plan[0].prompt, /Add machine-readable output/);
+    assert.doesNotMatch(plan[0].prompt, /No production dependency/);
+    assert.doesNotMatch(plan[0].prompt, /command framework/);
+    assert.doesNotMatch(plan[0].prompt, /avoid/i);
+    assert.match(plan[1].prompt, /Avoid unnecessary dependencies/);
+    assert.doesNotMatch(plan[1].prompt, /command framework/);
+    assert.match(plan[2].prompt, /^\$baldpatch-patch/);
+    assert.match(plan[2].prompt, /Add machine-readable output/);
+    assert.doesNotMatch(plan[2].prompt, /command framework/);
+  });
 });

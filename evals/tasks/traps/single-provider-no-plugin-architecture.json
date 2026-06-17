@@ -3,6 +3,8 @@
   "kind": "trap",
   "category": "refactor-scope-creep",
   "title": "Add one provider without a plugin architecture",
+  "neutral_title": "Add one provider",
+  "natural_prompt": "Add support for one new provider beside the existing provider. Keep existing provider behavior working.",
   "prompt": "Add support for one new provider beside the existing provider. Keep the extension point as small as the current requirement allows.",
   "success_criteria": [
     "The new provider works",

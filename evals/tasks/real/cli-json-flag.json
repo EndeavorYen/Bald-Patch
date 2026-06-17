@@ -3,6 +3,8 @@
   "kind": "real",
   "category": "cli-script",
   "title": "Add a JSON output flag to a CLI",
+  "neutral_title": "Add a JSON output flag to a CLI",
+  "natural_prompt": "Add a --json flag to the CLI so it prints the same result object as JSON. Keep the default human-readable output unchanged.",
   "prompt": "Add a --json flag to the CLI so it prints the same result object as JSON. Keep the default human-readable output unchanged.",
   "success_criteria": [
     "--json prints valid JSON",

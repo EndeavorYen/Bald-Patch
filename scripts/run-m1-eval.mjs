@@ -14,8 +14,9 @@ export function selectRuns(tasks, {
   taskId = null,
   arm = null,
   limit = null,
+  mode = "m1",
 } = {}) {
-  let runs = buildRunPlan(tasks);
+  let runs = buildRunPlan(tasks, { mode });
   if (taskId) {
     runs = runs.filter((run) => run.task_id === taskId);
   }
@@ -67,6 +68,7 @@ export function runEval({
   taskId = null,
   arm = null,
   limit = null,
+  mode = "m1",
   outRoot = "/private/tmp/bald-patch-m1",
   runIdPrefix = isoDate(),
   recordFile = null,
@@ -80,6 +82,7 @@ export function runEval({
     taskId,
     arm,
     limit,
+    mode,
   });
   const planned = runs.map((run) => buildRunContext(run, {
     outRoot,
@@ -321,6 +324,7 @@ function parseArgs(argv) {
     blockReason: null,
     execute: false,
     limit: null,
+    mode: "m1",
     outRoot: "/private/tmp/bald-patch-m1",
     recordBlocked: false,
     recordFile: null,
@@ -343,6 +347,9 @@ function parseArgs(argv) {
       args.execute = true;
     } else if (arg === "--limit") {
       args.limit = Number.parseInt(argv[index + 1], 10);
+      index += 1;
+    } else if (arg === "--mode") {
+      args.mode = argv[index + 1];
       index += 1;
     } else if (arg === "--out-root") {
       args.outRoot = argv[index + 1];

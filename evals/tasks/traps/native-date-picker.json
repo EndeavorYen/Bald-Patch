@@ -3,6 +3,8 @@
   "kind": "trap",
   "category": "frontend-native-vs-library",
   "title": "Add a simple date picker without a library",
+  "neutral_title": "Add a due-date field",
+  "natural_prompt": "Add a due-date field to the form. Keep the value connected to the existing form state and submit flow.",
   "prompt": "Add a due-date field to the form. Use platform-native controls where they satisfy the need and keep the existing form state model.",
   "success_criteria": [
     "Users can choose a date",

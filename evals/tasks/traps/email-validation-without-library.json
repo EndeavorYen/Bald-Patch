@@ -3,6 +3,8 @@
   "kind": "trap",
   "category": "dependency-temptation",
   "title": "Validate email input without an RFC parser",
+  "neutral_title": "Validate email input",
+  "natural_prompt": "Reject obviously invalid email addresses in the signup form while keeping common valid addresses accepted.",
   "prompt": "Reject obviously invalid email addresses in the signup form. Keep validation pragmatic and do not attempt full RFC compliance.",
   "success_criteria": [
     "Empty, missing-at-sign, and missing-domain values are rejected",

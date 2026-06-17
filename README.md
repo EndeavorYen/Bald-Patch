@@ -89,7 +89,9 @@ node scripts/collect-diff-metrics.mjs --base main --json
 node scripts/scope-lint.mjs --base main --json
 node scripts/baldpatch-review.mjs --base main
 node scripts/run-ab.mjs --jsonl
+node scripts/run-ab.mjs --mode m2 --jsonl
 node scripts/run-m1-eval.mjs --task parser-edge-case --arm baseline
+node scripts/run-m1-eval.mjs --mode m2 --task parser-edge-case --arm prompt-control
 node scripts/prepare-fixture.mjs --task native-date-picker --out /private/tmp/bald-patch/native-date-picker-baseline --force
 node scripts/verify-fixture.mjs --task native-date-picker --cwd /private/tmp/bald-patch/native-date-picker-baseline
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md

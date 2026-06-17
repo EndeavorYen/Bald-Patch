@@ -3,6 +3,8 @@
   "kind": "real",
   "category": "real-bugfix",
   "title": "Render missing report dates safely",
+  "neutral_title": "Render missing report dates safely",
+  "natural_prompt": "Fix the report formatter so a missing date renders as 'unknown' instead of throwing. Keep the existing output format for valid dates.",
   "prompt": "Fix the report formatter so a missing date renders as 'unknown' instead of throwing. Keep the existing output format for valid dates.",
   "success_criteria": [
     "Missing dates render as 'unknown'",
