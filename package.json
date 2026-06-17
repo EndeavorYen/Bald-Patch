@@ -19,7 +19,10 @@
     "test": "node --test",
     "diff:metrics": "node scripts/collect-diff-metrics.mjs --json",
     "scope:lint": "node scripts/scope-lint.mjs --json",
-    "score:run": "node scripts/score-run.mjs"
+    "score:run": "node scripts/score-run.mjs",
+    "eval:plan": "node scripts/run-ab.mjs --jsonl",
+    "review": "node scripts/baldpatch-review.mjs",
+    "hook:stop": "node scripts/stop-hook-metrics.mjs"
   },
   "engines": {
     "node": ">=20"

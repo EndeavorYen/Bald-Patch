@@ -19,9 +19,15 @@
 - Create: `scripts/collect-diff-metrics.mjs` for deterministic diff summaries.
 - Create: `scripts/scope-lint.mjs` for advisory overbuild warnings.
 - Create: `scripts/score-run.mjs` for JSONL scoring and Markdown report generation.
+- Create: `scripts/run-ab.mjs` for generating the 20-run A/B queue from M1 tasks.
+- Create: `scripts/baldpatch-review.mjs` for advisory overbuild review findings.
+- Create: `scripts/stop-hook-metrics.mjs` for optional non-blocking Stop hook output.
 - Create: `test/diff-metrics.test.mjs` for diff parser and summary coverage.
 - Create: `test/scope-lint.test.mjs` for advisory warning coverage.
 - Create: `test/score-run.test.mjs` for report scoring coverage.
+- Create: `test/run-ab.test.mjs` for A/B prompt planning coverage.
+- Create: `test/baldpatch-review.test.mjs` for advisory review coverage.
+- Create: `test/stop-hook-metrics.test.mjs` for hook output coverage.
 - Create: `evals/blind-review-template.md` for reviewer data collection.
 - Create: `evals/tasks/traps/*.json` and `evals/tasks/real/*.json` for the first 10 smoke tasks.
 - Create: `evals/runs/.gitkeep` and `evals/reports/.gitkeep`.
@@ -76,6 +82,13 @@
 - [x] Implement `scripts/score-run.mjs` with exported pure functions and a CLI.
 - [x] Run `npm test` and verify the score-run tests pass.
 - [x] Document the scoring command in `README.md`.
+
+### Task 8: Remaining Issue Support
+
+- [x] Add `$baldpatch-review` advisory skill and deterministic review script for #4.
+- [x] Add non-blocking Stop hook metrics wrapper and docs for #5.
+- [x] Add docs-first installation and packaging gates for #6.
+- [x] Add M1 A/B run queue generation and eval runbook for #1 without fabricating results.
 
 ## Self-Review
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bald Patch Review"
+  short_description: "Audit a patch for overbuild risk."
+  default_prompt: "Use $baldpatch-review to audit this patch for avoidable overengineering."

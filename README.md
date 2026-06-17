@@ -69,6 +69,8 @@ test/
 npm test
 node scripts/collect-diff-metrics.mjs --base main --json
 node scripts/scope-lint.mjs --base main --json
+node scripts/baldpatch-review.mjs --base main
+node scripts/run-ab.mjs --jsonl
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md
 ```
 
@@ -85,6 +87,8 @@ The scripts use only Node.js built-ins. No production dependencies are required 
 
 The report includes by-arm success, median files, median LOC, dependency additions, tool calls, elapsed time, scope warnings, reviewer preference, hard gate failures, and regression warnings.
 
+See [docs/eval-runbook.md](docs/eval-runbook.md) for the honest M1 A/B flow. `run-ab` creates the 20-run queue; it does not pretend those model runs have already happened.
+
 ## Codex Skill
 
 The first explicit skill lives at `.agents/skills/baldpatch-patch/SKILL.md`.
@@ -96,6 +100,16 @@ $baldpatch-patch Fix the parser edge case with the smallest safe diff.
 ```
 
 The skill is intentionally explicit rather than always-on. That keeps the default instruction surface small and lets the M1 eval compare baseline runs against guided runs.
+
+The advisory review skill lives at `.agents/skills/baldpatch-review/SKILL.md` and can be invoked after a patch:
+
+```text
+$baldpatch-review Audit this patch for avoidable overengineering.
+```
+
+## Installation And Hooks
+
+See [docs/installation.md](docs/installation.md) for the current docs-first installation path. See [docs/hooks.md](docs/hooks.md) for the optional non-blocking Stop hook.
 
 ## Roadmap
 
