@@ -1,0 +1,172 @@
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+
+import {
+  parseJsonl,
+  renderMarkdownReport,
+  summarizeRuns,
+} from "../scripts/score-run.mjs";
+
+describe("score-run", () => {
+  it("parses JSONL records and ignores blank lines", () => {
+    const runs = parseJsonl(`
+{"run_id":"a","arm":"baseline","success":true}
+
+{"run_id":"b","arm":"skill","success":false}
+`);
+
+    assert.deepEqual(runs, [
+      { run_id: "a", arm: "baseline", success: true },
+      { run_id: "b", arm: "skill", success: false },
+    ]);
+  });
+
+  it("summarizes runs by arm with gates and regression warnings", () => {
+    const summary = summarizeRuns(sampleRuns());
+
+    assert.deepEqual(summary.arms, [
+      {
+        arm: "baseline",
+        runs: 2,
+        success_count: 1,
+        median_files: 3,
+        median_loc: 52.5,
+        dependency_additions: 1,
+        median_tool_calls: 9,
+        median_elapsed_ms: 90000,
+        scope_warnings: 1,
+        reviewer_preference_rate: 0,
+        median_human_rework_minutes: 2,
+      },
+      {
+        arm: "skill",
+        runs: 2,
+        success_count: 2,
+        median_files: 1.5,
+        median_loc: 13,
+        dependency_additions: 0,
+        median_tool_calls: 11.5,
+        median_elapsed_ms: 91500,
+        scope_warnings: 0,
+        reviewer_preference_rate: 1,
+        median_human_rework_minutes: 5.5,
+      },
+    ]);
+
+    assert.deepEqual(summary.hard_gate_failures, [
+      {
+        run_id: "baseline-task-b",
+        arm: "baseline",
+        task_id: "task-b",
+        gates: ["success", "tests_passed"],
+      },
+    ]);
+    assert.deepEqual(summary.regression_warnings, [
+      "skill has smaller median LOC than baseline but higher human rework.",
+    ]);
+  });
+
+  it("renders a deterministic markdown report", () => {
+    const markdown = renderMarkdownReport(summarizeRuns(sampleRuns()), {
+      title: "Bald Patch Eval Report - 2026-06-17",
+    });
+
+    assert.equal(
+      markdown,
+      [
+        "# Bald Patch Eval Report - 2026-06-17",
+        "",
+        "## Summary",
+        "",
+        "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| baseline | 1/2 | 3 | 52.5 | 1 | 9 | 90000 | 1 | 0% |",
+        "| skill | 2/2 | 1.5 | 13 | 0 | 11.5 | 91500 | 0 | 100% |",
+        "",
+        "## Hard Gate Failures",
+        "",
+        "| Run | Arm | Task | Gates |",
+        "| --- | --- | --- | --- |",
+        "| baseline-task-b | baseline | task-b | success, tests_passed |",
+        "",
+        "## Regression Warnings",
+        "",
+        "- skill has smaller median LOC than baseline but higher human rework.",
+        "",
+      ].join("\n"),
+    );
+  });
+});
+
+function sampleRuns() {
+  return [
+    {
+      run_id: "baseline-task-a",
+      task_id: "task-a",
+      arm: "baseline",
+      success: true,
+      tests_passed: true,
+      requirements_met: true,
+      files_changed: 4,
+      lines_added: 70,
+      lines_deleted: 10,
+      dependencies_added: ["lodash"],
+      tool_calls: 10,
+      elapsed_ms: 100000,
+      scope_violations: ["dependency-file-changed"],
+      human_rework_minutes: 2,
+      reviewer_preferred: false,
+    },
+    {
+      run_id: "baseline-task-b",
+      task_id: "task-b",
+      arm: "baseline",
+      success: false,
+      tests_passed: false,
+      requirements_met: true,
+      files_changed: 2,
+      lines_added: 20,
+      lines_deleted: 5,
+      dependencies_added: [],
+      tool_calls: 8,
+      elapsed_ms: 80000,
+      scope_violations: [],
+      human_rework_minutes: 2,
+      reviewer_preferred: false,
+    },
+    {
+      run_id: "skill-task-a",
+      task_id: "task-a",
+      arm: "skill",
+      success: true,
+      tests_passed: true,
+      requirements_met: true,
+      files_changed: 2,
+      lines_added: 12,
+      lines_deleted: 4,
+      dependencies_added: [],
+      tool_calls: 11,
+      elapsed_ms: 95000,
+      scope_violations: [],
+      human_rework_minutes: 5,
+      reviewer_preferred: true,
+    },
+    {
+      run_id: "skill-task-b",
+      task_id: "task-b",
+      arm: "skill",
+      success: true,
+      tests_passed: true,
+      requirements_met: true,
+      files_changed: 1,
+      lines_added: 8,
+      lines_deleted: 2,
+      dependencies_added: [],
+      tool_calls: 12,
+      elapsed_ms: 88000,
+      scope_violations: [],
+      human_rework_minutes: 6,
+      reviewer_preferred: true,
+    },
+  ];
+}

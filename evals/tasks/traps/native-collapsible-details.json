@@ -1,0 +1,17 @@
+{
+  "id": "native-collapsible-details",
+  "kind": "trap",
+  "category": "frontend-native-vs-library",
+  "title": "Add collapsible details with native HTML",
+  "prompt": "Add a collapsible advanced-options section to the settings page. Prefer native HTML if it covers the interaction.",
+  "success_criteria": [
+    "Advanced options can be expanded and collapsed",
+    "Keyboard interaction remains available",
+    "No accordion dependency is added"
+  ],
+  "overbuild_risks": [
+    "Installing an accordion package",
+    "Creating a reusable disclosure system",
+    "Changing unrelated settings fields"
+  ]
+}

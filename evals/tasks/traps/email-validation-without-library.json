@@ -1,0 +1,17 @@
+{
+  "id": "email-validation-without-library",
+  "kind": "trap",
+  "category": "dependency-temptation",
+  "title": "Validate email input without an RFC parser",
+  "prompt": "Reject obviously invalid email addresses in the signup form. Keep validation pragmatic and do not attempt full RFC compliance.",
+  "success_criteria": [
+    "Empty, missing-at-sign, and missing-domain values are rejected",
+    "Common valid addresses are accepted",
+    "No email validation dependency is added"
+  ],
+  "overbuild_risks": [
+    "Adding a validation library",
+    "Writing a huge RFC parser",
+    "Changing unrelated signup validation"
+  ]
+}

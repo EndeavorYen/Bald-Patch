@@ -1,0 +1,17 @@
+{
+  "id": "small-refactor-no-rewrite",
+  "kind": "trap",
+  "category": "refactor-scope-creep",
+  "title": "Clean one duplicated branch without rewriting the module",
+  "prompt": "Remove the duplicated conditional branch in the formatter. Keep behavior identical and avoid rewriting the whole module.",
+  "success_criteria": [
+    "Duplicated branch is removed",
+    "Formatter output remains unchanged",
+    "The diff stays focused on the duplicated logic"
+  ],
+  "overbuild_risks": [
+    "Rewriting the formatter",
+    "Changing public names",
+    "Adding a strategy or registry abstraction"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "report-null-date",
+  "kind": "real",
+  "category": "real-bugfix",
+  "title": "Render missing report dates safely",
+  "prompt": "Fix the report formatter so a missing date renders as 'unknown' instead of throwing. Keep the existing output format for valid dates.",
+  "success_criteria": [
+    "Missing dates render as 'unknown'",
+    "Valid dates keep their current formatting",
+    "The regression test covers null or undefined input"
+  ],
+  "overbuild_risks": [
+    "Introducing a date formatting library",
+    "Changing all report formatting",
+    "Adding a broad validation layer"
+  ]
+}
