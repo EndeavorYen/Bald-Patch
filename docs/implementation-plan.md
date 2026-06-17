@@ -44,7 +44,7 @@
 
 - [x] Write `docs/design.md` from the approved evaluation brief.
 - [x] Write this implementation plan in `docs/implementation-plan.md`.
-- [ ] Create GitHub issues that map to the planned milestones.
+- [x] Create GitHub issues that map to the planned milestones.
 
 ### Task 3: Diff Metrics Script
 
@@ -73,7 +73,7 @@
 - [x] Run `node scripts/collect-diff-metrics.mjs --base main --json`.
 - [x] Run `node scripts/scope-lint.mjs --base main --json`.
 - [x] Inspect `rtk git status --short`.
-- [ ] Summarize what changed, what was verified, and what remains.
+- [x] Summarize what changed, what was verified, and what remains.
 
 ### Task 7: Issue #2 Score and Report Generation
 
@@ -94,4 +94,4 @@
 
 - Spec coverage: M1 covers positioning, docs, deterministic instrumentation, task skeletons, and reviewer flow.
 - Placeholder scan: No implementation placeholders are intended to remain in checked-in docs. Open checklist items describe work in progress for this turn.
-- Scope check: Plugin packaging, Codex hooks, and full `$baldpatch-patch` skill authoring are intentionally outside M1 until the smoke eval exists.
+- Scope check: Marketplace packaging and blocking automation remain outside M1 until the smoke eval shows value. The explicit skills and optional non-blocking Stop hook are docs-first follow-ons tracked through the current issues.
