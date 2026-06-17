@@ -42,4 +42,32 @@ describe("eval fixtures", () => {
       assert.equal(verification.phase, "acceptance");
     }
   });
+
+  it("prepares M2 positive-control tasks from clean standalone projects", () => {
+    const positiveTasks = readTasks(undefined, { mode: "m2" })
+      .filter((task) => task.kind === "positive-control");
+
+    assert.equal(positiveTasks.length, 1);
+
+    for (const task of positiveTasks) {
+      const prepared = prepareFixture({
+        taskId: task.id,
+        outDir: path.join(tmpRoot, `m2-${task.id}`),
+        force: true,
+      });
+
+      const publicTests = spawnSync("npm", ["test"], {
+        cwd: prepared.out,
+        encoding: "utf8",
+      });
+      assert.equal(publicTests.status, 0, publicTests.stderr || publicTests.stdout);
+
+      const verification = verifyFixture({
+        taskId: task.id,
+        cwd: prepared.out,
+      });
+      assert.equal(verification.ok, false, `${task.id} should fail hidden acceptance before patch`);
+      assert.equal(verification.phase, "acceptance");
+    }
+  });
 });

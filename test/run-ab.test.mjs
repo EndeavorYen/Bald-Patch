@@ -2,11 +2,17 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  loadTasks,
   buildPrompt,
   buildRunPlan,
 } from "../scripts/run-ab.mjs";
 
 describe("run-ab", () => {
+  it("loads M2-only positive-control tasks for M2 plans", () => {
+    assert.equal(loadTasks("evals/tasks").length, 10);
+    assert.equal(loadTasks("evals/tasks", { mode: "m2" }).length, 11);
+  });
+
   it("builds baseline and skill runs for every task", () => {
     const plan = buildRunPlan([
       {

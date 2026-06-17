@@ -1,6 +1,6 @@
-import { readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { readTasks } from "./fixture-utils.mjs";
 
 const MODE_ARMS = {
   m1: ["baseline", "skill"],
@@ -9,15 +9,8 @@ const MODE_ARMS = {
 
 const GENERIC_PROMPT_CONTROL = "Avoid unnecessary dependencies, speculative abstractions, and unrelated rewrites while preserving correctness, tests, and existing behavior.";
 
-export function loadTasks(taskRoot = "evals/tasks") {
-  return ["real", "traps"]
-    .flatMap((group) => {
-      const dir = path.join(taskRoot, group);
-      return readdirSync(dir)
-        .filter((file) => file.endsWith(".json"))
-        .map((file) => JSON.parse(readFileSync(path.join(dir, file), "utf8")));
-    })
-    .sort((left, right) => left.id.localeCompare(right.id));
+export function loadTasks(taskRoot = "evals/tasks", options = {}) {
+  return readTasks(taskRoot, options);
 }
 
 export function buildRunPlan(tasks, options = {}) {
@@ -154,5 +147,5 @@ function printPlan(plan, jsonl) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = parseArgs(process.argv.slice(2));
-  printPlan(buildRunPlan(loadTasks(args.taskRoot), { mode: args.mode }), args.jsonl);
+  printPlan(buildRunPlan(loadTasks(args.taskRoot, { mode: args.mode }), { mode: args.mode }), args.jsonl);
 }

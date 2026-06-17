@@ -1,15 +1,15 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 
+import { readTasks } from "../scripts/fixture-utils.mjs";
 import { buildRunPlan } from "../scripts/run-ab.mjs";
 
 const TASK_ROOT = path.join(process.cwd(), "evals", "tasks");
 
 describe("M1 eval tasks", () => {
   it("defines 10 smoke tasks across real and trap categories", () => {
-    const tasks = readTasks();
+    const tasks = readTasks(TASK_ROOT);
 
     assert.equal(tasks.length, 10);
     assert.equal(tasks.filter((task) => task.kind === "real").length, 4);
@@ -33,10 +33,10 @@ describe("M1 eval tasks", () => {
   });
 
   it("provides clean M2 natural-baseline prompt text", () => {
-    const naturalRuns = buildRunPlan(readTasks(), { mode: "m2" })
+    const naturalRuns = buildRunPlan(readTasks(TASK_ROOT, { mode: "m2" }), { mode: "m2" })
       .filter((run) => run.arm === "natural-baseline");
 
-    assert.equal(naturalRuns.length, 10);
+    assert.equal(naturalRuns.length, 11);
     for (const run of naturalRuns) {
       assert.match(run.task_id, /^task-\d{3}$/);
       assert.doesNotMatch(run.task_id, /lodash|plugin|rewrite|library|provider/i);
@@ -48,13 +48,22 @@ describe("M1 eval tasks", () => {
       );
     }
   });
-});
 
-function readTasks() {
-  return ["real", "traps"].flatMap((kind) => {
-    const dir = path.join(TASK_ROOT, kind);
-    return readdirSync(dir)
-      .filter((file) => file.endsWith(".json"))
-      .map((file) => JSON.parse(readFileSync(path.join(dir, file), "utf8")));
+  it("adds M2-only positive-control tasks without changing the M1 task set", () => {
+    const m1Tasks = readTasks(TASK_ROOT);
+    const m2Tasks = readTasks(TASK_ROOT, { mode: "m2" });
+
+    assert.equal(m1Tasks.length, 10);
+    assert.equal(m2Tasks.length, 11);
+    assert.equal(m2Tasks.filter((task) => task.kind === "positive-control").length, 1);
+
+    const m2Plan = buildRunPlan(m2Tasks, { mode: "m2" });
+    assert.equal(m2Plan.length, 33);
+    assert.deepEqual(
+      m2Plan
+        .filter((run) => run.fixture_task_id === "shared-format-helper")
+        .map((run) => run.arm),
+      ["natural-baseline", "prompt-control", "baldpatch-skill"],
+    );
   });
-}
+});
