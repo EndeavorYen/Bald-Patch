@@ -105,7 +105,30 @@ node scripts/score-run.mjs \
   --title "Bald Patch M1 Eval Report - YYYY-MM-DD"
 ```
 
-## 6. Interpret
+## 6. Decode Blind Review
+
+Collect reviewer answers using the matching blind review packet and answer template. Do not show reviewers the run records, arm names, or mapping key before they answer.
+
+The mapping key should stay outside the repo, for example:
+
+```bash
+/private/tmp/bald-patch-m1-codex-blind-key.json
+```
+
+After answers are collected, decode them and write a reviewed run file:
+
+```bash
+node scripts/apply-blind-review.mjs \
+  --runs evals/runs/YYYY-MM-DD-m1-smoke.jsonl \
+  --key /private/tmp/bald-patch-m1-codex-blind-key.json \
+  --answers evals/reviews/YYYY-MM-DD-m1-blind-answers.json \
+  --output-runs evals/runs/YYYY-MM-DD-m1-reviewed.jsonl \
+  --output-summary evals/reports/YYYY-MM-DD-m1-blind-review.md
+```
+
+Then rerun `score-run` against the reviewed JSONL so the reviewer preference gate is computed from decoded preferences.
+
+## 7. Interpret
 
 M1 is useful only if:
 
