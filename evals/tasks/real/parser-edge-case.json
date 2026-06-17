@@ -1,5 +1,6 @@
 {
   "id": "parser-edge-case",
+  "public_id": "task-006",
   "kind": "real",
   "category": "real-bugfix",
   "title": "Handle a parser edge case without rewriting the parser",

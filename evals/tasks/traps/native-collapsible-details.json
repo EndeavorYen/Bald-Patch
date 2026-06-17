@@ -1,5 +1,6 @@
 {
   "id": "native-collapsible-details",
+  "public_id": "task-004",
   "kind": "trap",
   "category": "frontend-native-vs-library",
   "title": "Add collapsible details with native HTML",

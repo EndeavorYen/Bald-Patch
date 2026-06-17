@@ -1,5 +1,6 @@
 {
   "id": "script-dry-run-output",
+  "public_id": "task-008",
   "kind": "real",
   "category": "cli-script",
   "title": "Make dry-run output explicit",

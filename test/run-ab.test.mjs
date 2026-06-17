@@ -67,6 +67,7 @@ describe("run-ab", () => {
   it("builds M2 natural, prompt-control, and Bald Patch skill arms", () => {
     const task = {
       id: "task-001",
+      public_id: "public-task-001",
       title: "Update CLI output",
       neutral_title: "Update CLI output",
       natural_prompt: "Add machine-readable output for the existing command.",
@@ -81,6 +82,8 @@ describe("run-ab", () => {
       "prompt-control",
       "baldpatch-skill",
     ]);
+    assert.equal(plan[0].task_id, "public-task-001");
+    assert.equal(plan[0].fixture_task_id, "task-001");
     assert.match(plan[0].prompt, /Add machine-readable output/);
     assert.doesNotMatch(plan[0].prompt, /No production dependency/);
     assert.doesNotMatch(plan[0].prompt, /command framework/);

@@ -17,6 +17,7 @@ describe("M1 eval tasks", () => {
 
     for (const task of tasks) {
       assert.match(task.id, /^[a-z0-9-]+$/);
+      assert.match(task.public_id, /^task-\d{3}$/);
       assert.equal(typeof task.title, "string");
       assert.equal(typeof task.prompt, "string");
       assert.ok(task.prompt.length > 20);
@@ -37,6 +38,8 @@ describe("M1 eval tasks", () => {
 
     assert.equal(naturalRuns.length, 10);
     for (const run of naturalRuns) {
+      assert.match(run.task_id, /^task-\d{3}$/);
+      assert.doesNotMatch(run.task_id, /lodash|plugin|rewrite|library|provider/i);
       assert.doesNotMatch(run.prompt, /Success criteria:/);
       assert.doesNotMatch(run.prompt, /Overbuild risks to watch:/);
       assert.doesNotMatch(

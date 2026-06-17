@@ -23,8 +23,10 @@ export function loadTasks(taskRoot = "evals/tasks") {
 export function buildRunPlan(tasks, options = {}) {
   const { arms, mode } = normalizeOptions(options);
   return tasks.flatMap((task) => {
+    const taskId = mode === "m2" ? task.public_id || task.id : task.id;
     return arms.map((arm) => ({
-      task_id: task.id,
+      task_id: taskId,
+      ...(taskId !== task.id ? { fixture_task_id: task.id } : {}),
       arm,
       fixture_project: task.fixture?.project || null,
       fixture_verify: task.fixture?.verify || null,

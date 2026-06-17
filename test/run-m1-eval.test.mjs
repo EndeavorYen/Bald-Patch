@@ -38,8 +38,9 @@ describe("run-m1-eval", () => {
     });
 
     assert.deepEqual(runs.map((run) => `${run.task_id}:${run.arm}`), [
-      "parser-edge-case:prompt-control",
+      "task-006:prompt-control",
     ]);
+    assert.equal(runs[0].fixture_task_id, "parser-edge-case");
     assert.match(runs[0].prompt, /Avoid unnecessary dependencies/);
     assert.doesNotMatch(runs[0].prompt, /Overbuild risks to watch/);
   });
@@ -54,8 +55,9 @@ describe("run-m1-eval", () => {
       taskId: "parser-edge-case",
     });
 
-    assert.equal(rows[0].run_id, "m2-parser-edge-case-baldpatch-skill");
-    assert.match(rows[0].prompt_file, /m2-parser-edge-case-baldpatch-skill/);
+    assert.equal(rows[0].run_id, "m2-task-006-baldpatch-skill");
+    assert.match(rows[0].prompt_file, /m2-task-006-baldpatch-skill/);
+    assert.match(rows[0].verify, /--task parser-edge-case\b/);
   });
 
   it("renders shell-quoted agent command placeholders", () => {

@@ -1,5 +1,6 @@
 {
   "id": "small-refactor-no-rewrite",
+  "public_id": "task-010",
   "kind": "trap",
   "category": "refactor-scope-creep",
   "title": "Clean one duplicated branch without rewriting the module",

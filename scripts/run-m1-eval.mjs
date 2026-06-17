@@ -18,7 +18,9 @@ export function selectRuns(tasks, {
 } = {}) {
   let runs = buildRunPlan(tasks, { mode });
   if (taskId) {
-    runs = runs.filter((run) => run.task_id === taskId);
+    runs = runs.filter((run) => {
+      return run.task_id === taskId || run.fixture_task_id === taskId;
+    });
   }
   if (arm) {
     runs = runs.filter((run) => run.arm === arm);
@@ -185,7 +187,7 @@ function executeRun(context, {
 }) {
   mkdirSync(context.artifact_dir, { recursive: true });
   const prepared = prepareFixture({
-    taskId: context.task_id,
+    taskId: context.fixture_task_id || context.task_id,
     outDir: context.fixture_dir,
     force: true,
     repoRoot,
@@ -211,7 +213,7 @@ function executeRun(context, {
   const telemetry = parseAgentTelemetry(agent.stderr || "");
 
   const verification = verifyFixture({
-    taskId: context.task_id,
+    taskId: context.fixture_task_id || context.task_id,
     cwd: prepared.out,
     repoRoot,
   });

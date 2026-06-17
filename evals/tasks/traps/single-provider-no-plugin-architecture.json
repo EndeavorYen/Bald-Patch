@@ -1,5 +1,6 @@
 {
   "id": "single-provider-no-plugin-architecture",
+  "public_id": "task-009",
   "kind": "trap",
   "category": "refactor-scope-creep",
   "title": "Add one provider without a plugin architecture",
