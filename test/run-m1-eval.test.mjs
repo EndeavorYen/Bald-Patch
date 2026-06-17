@@ -5,6 +5,7 @@ import path from "node:path";
 import { after, describe, it } from "node:test";
 
 import {
+  parseAgentTelemetry,
   renderAgentCommand,
   runEval,
   selectRuns,
@@ -36,6 +37,27 @@ describe("run-m1-eval", () => {
     });
 
     assert.equal(command, "agent --cwd '/tmp/fixture with space' --prompt '/tmp/prompt.md'");
+  });
+
+  it("parses Codex model and tool-call telemetry from agent logs", () => {
+    const telemetry = parseAgentTelemetry(`
+OpenAI Codex v0.139.0
+--------
+model: gpt-5.5
+provider: openai
+--------
+codex
+I will inspect the parser.
+exec
+/bin/zsh -lc "rtk sed -n '1,120p' src/parser.js"
+apply_patch
+*** Begin Patch
+`);
+
+    assert.deepEqual(telemetry, {
+      model: "gpt-5.5",
+      tool_calls: 2,
+    });
   });
 
   it("executes a local agent command and appends a real run record", () => {
