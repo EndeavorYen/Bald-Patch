@@ -135,6 +135,8 @@ Token fields can be null when a local Codex run cannot expose them. API-controll
 
 `reviewer_preferred` is a nullable boolean for blind review results. Reports compute reviewer preference only from runs where this value is present.
 
+Rows with `blocked: true` represent runs that could not be executed, for example because external agent execution was not approved. They are excluded from arm summaries and rendered in a separate blocked-run section.
+
 ## Report Format
 
 `scripts/score-run.mjs` renders:

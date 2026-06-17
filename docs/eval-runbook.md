@@ -83,6 +83,19 @@ Supported placeholders are `{fixture}`, `{promptFile}`, `{artifactDir}`, `{runId
 
 Only use a Codex or hosted-model command here after explicitly approving the external data transfer. If a run cannot be executed, do not create a fake success row; record it as blocked in a separate note or rerun when the approved command is available.
 
+To append blocked records for rows that cannot be executed yet:
+
+```bash
+node scripts/run-m1-eval.mjs \
+  --task parser-edge-case \
+  --arm baseline \
+  --record evals/runs/YYYY-MM-DD-m1-smoke.jsonl \
+  --record-blocked \
+  --blocker "external Codex execution was not approved"
+```
+
+Blocked rows are excluded from scored arm summaries and shown in a separate report section. They are evidence that the eval is incomplete, not a passing result.
+
 ## 5. Score The Runs
 
 ```bash

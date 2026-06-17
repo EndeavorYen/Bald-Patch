@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, describe, it } from "node:test";
@@ -74,6 +74,45 @@ describe("run-m1-eval", () => {
     assert.equal(records[0].requirements_met, true);
     assert.equal(records[0].files_changed, 2);
     assert.equal(records[0].dependencies_added.length, 0);
+  });
+
+  it("records blocked runs without preparing or executing a fixture", () => {
+    const recordFile = path.join(tmpRoot, "blocked-runs.jsonl");
+    const outRoot = path.join(tmpRoot, "blocked-m1");
+
+    const rows = runEval({
+      arm: "baseline",
+      blockReason: "external Codex execution was not approved",
+      outRoot,
+      recordBlocked: true,
+      recordFile,
+      runIdPrefix: "blocked",
+      taskId: "parser-edge-case",
+    });
+
+    assert.deepEqual(rows, [
+      {
+        run_id: "blocked-parser-edge-case-baseline",
+        ok: false,
+        blocked: true,
+        record_file: recordFile,
+      },
+    ]);
+    assert.equal(
+      existsSync(path.join(outRoot, "checkouts", "blocked-parser-edge-case-baseline")),
+      false,
+    );
+
+    const [record] = readFileSync(recordFile, "utf8")
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+
+    assert.equal(record.blocked, true);
+    assert.equal(record.block_reason, "external Codex execution was not approved");
+    assert.equal(record.success, false);
+    assert.equal(record.tests_passed, false);
+    assert.equal(record.requirements_met, false);
   });
 });
 
