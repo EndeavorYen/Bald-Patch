@@ -20,6 +20,7 @@
 - Create: `scripts/scope-lint.mjs` for advisory overbuild warnings.
 - Create: `scripts/score-run.mjs` for JSONL scoring and Markdown report generation.
 - Create: `scripts/run-ab.mjs` for generating the 20-run A/B queue from M1 tasks.
+- Create: `scripts/run-m1-eval.mjs` for dry-run planning and explicit local run orchestration.
 - Create: `scripts/prepare-fixture.mjs` for copying a task fixture into a clean git checkout.
 - Create: `scripts/verify-fixture.mjs` for running public fixture tests and hidden acceptance tests.
 - Create: `scripts/baldpatch-review.mjs` for advisory overbuild review findings.
@@ -28,6 +29,7 @@
 - Create: `test/scope-lint.test.mjs` for advisory warning coverage.
 - Create: `test/score-run.test.mjs` for report scoring coverage.
 - Create: `test/run-ab.test.mjs` for A/B prompt planning coverage.
+- Create: `test/run-m1-eval.test.mjs` for runner planning and local fake-agent execution coverage.
 - Create: `test/baldpatch-review.test.mjs` for advisory review coverage.
 - Create: `test/stop-hook-metrics.test.mjs` for hook output coverage.
 - Create: `evals/blind-review-template.md` for reviewer data collection.
@@ -93,6 +95,7 @@
 - [x] Add docs-first installation and packaging gates for #6.
 - [x] Add M1 A/B run queue generation and eval runbook for #1 without fabricating results.
 - [x] Add resettable standalone fixtures and verifier wiring so #1 can run honest baseline/skill checkouts.
+- [x] Add an explicit local runner that can preview runs safely and append JSONL only when an approved agent command is provided.
 
 ## Self-Review
 

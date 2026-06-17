@@ -72,6 +72,7 @@ node scripts/collect-diff-metrics.mjs --base main --json
 node scripts/scope-lint.mjs --base main --json
 node scripts/baldpatch-review.mjs --base main
 node scripts/run-ab.mjs --jsonl
+node scripts/run-m1-eval.mjs --task parser-edge-case --arm baseline
 node scripts/prepare-fixture.mjs --task native-date-picker --out /private/tmp/bald-patch/native-date-picker-baseline --force
 node scripts/verify-fixture.mjs --task native-date-picker --cwd /private/tmp/bald-patch/native-date-picker-baseline
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md
@@ -91,6 +92,8 @@ The scripts use only Node.js built-ins. No production dependencies are required 
 The report includes by-arm success, median files, median LOC, dependency additions, tool calls, elapsed time, scope warnings, reviewer preference, hard gate failures, and regression warnings.
 
 See [docs/eval-runbook.md](docs/eval-runbook.md) for the honest M1 A/B flow. `run-ab` creates the 20-run queue with fixture pointers; it does not pretend those model runs have already happened.
+
+`run-m1-eval` is the local orchestration wrapper. By default it only prints the planned run rows. It appends JSONL records only when called with `--execute`, `--record`, and an explicit `--agent-command`.
 
 ## Codex Skill
 

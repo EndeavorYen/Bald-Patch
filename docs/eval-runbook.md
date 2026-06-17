@@ -12,6 +12,14 @@ node scripts/run-ab.mjs --jsonl > /private/tmp/bald-patch-ab-plan.jsonl
 
 This emits one baseline and one skill prompt for every task. Baseline prompts do not mention `$baldpatch-patch`; skill prompts start with `$baldpatch-patch`. Each JSONL row includes `fixture_project` and `fixture_verify` so the run can be tied back to a resettable fixture.
 
+For a safer orchestration preview, use:
+
+```bash
+node scripts/run-m1-eval.mjs --task parser-edge-case --arm baseline
+```
+
+This prints the planned checkout path, prompt path, verify command, and rendered agent command if one is provided. It does not run an agent or write eval records unless `--execute` is passed.
+
 ## 2. Run Each Task In A Fixture Checkout
 
 For each JSONL row:
@@ -57,7 +65,25 @@ Required fields:
 {"run_id":"2026-06-17-native-date-picker-baseline","task_id":"native-date-picker","arm":"baseline","model":"codex","success":true,"tests_passed":true,"requirements_met":true,"files_changed":4,"lines_added":70,"lines_deleted":10,"dependencies_added":["date-picker-lib"],"tool_calls":10,"elapsed_ms":100000,"scope_violations":["dependency-file-changed"],"human_rework_minutes":2,"reviewer_preferred":false}
 ```
 
-## 4. Score The Runs
+## 4. Optional Local Runner
+
+`run-m1-eval` can execute one or more rows and append records:
+
+```bash
+node scripts/run-m1-eval.mjs \
+  --task parser-edge-case \
+  --arm baseline \
+  --out-root /private/tmp/bald-patch-m1 \
+  --record evals/runs/YYYY-MM-DD-m1-smoke.jsonl \
+  --agent-command 'your-agent --cwd {fixture} --prompt-file {promptFile}' \
+  --execute
+```
+
+Supported placeholders are `{fixture}`, `{promptFile}`, `{artifactDir}`, `{runId}`, `{task}`, and `{arm}`. Values are shell-quoted before substitution.
+
+Only use a Codex or hosted-model command here after explicitly approving the external data transfer. If a run cannot be executed, do not create a fake success row; record it as blocked in a separate note or rerun when the approved command is available.
+
+## 5. Score The Runs
 
 ```bash
 node scripts/score-run.mjs \
@@ -66,7 +92,7 @@ node scripts/score-run.mjs \
   --title "Bald Patch M1 Eval Report - YYYY-MM-DD"
 ```
 
-## 5. Interpret
+## 6. Interpret
 
 M1 is useful only if:
 
