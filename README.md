@@ -85,6 +85,18 @@ The scripts use only Node.js built-ins. No production dependencies are required 
 
 The report includes by-arm success, median files, median LOC, dependency additions, tool calls, elapsed time, scope warnings, reviewer preference, hard gate failures, and regression warnings.
 
+## Codex Skill
+
+The first explicit skill lives at `.agents/skills/baldpatch-patch/SKILL.md`.
+
+Use it when you want Bald Patch guidance for a specific task:
+
+```text
+$baldpatch-patch Fix the parser edge case with the smallest safe diff.
+```
+
+The skill is intentionally explicit rather than always-on. That keeps the default instruction surface small and lets the M1 eval compare baseline runs against guided runs.
+
 ## Roadmap
 
 1. M1: deterministic evaluation scaffolding and 10-task smoke eval.
