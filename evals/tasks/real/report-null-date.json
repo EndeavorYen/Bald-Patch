@@ -1,5 +1,6 @@
 {
   "id": "report-null-date",
+  "public_id": "task-007",
   "kind": "real",
   "category": "real-bugfix",
   "title": "Render missing report dates safely",

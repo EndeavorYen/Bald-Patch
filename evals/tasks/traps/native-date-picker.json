@@ -1,5 +1,6 @@
 {
   "id": "native-date-picker",
+  "public_id": "task-005",
   "kind": "trap",
   "category": "frontend-native-vs-library",
   "title": "Add a simple date picker without a library",

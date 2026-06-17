@@ -45,10 +45,13 @@ node scripts/run-m1-eval.mjs \
 
 M2 mode emits `natural-baseline`, `prompt-control`, and `baldpatch-skill` rows. The natural baseline prompt uses `neutral_title` and `natural_prompt` task fields when present; it does not append M1 success criteria or task-specific overbuild risks.
 
+Reviewer-facing M2 task ids use neutral `public_id` values such as `task-001`. The run queue may include `fixture_task_id` so local tooling can prepare and verify the correct fixture, but blind review packets must omit `fixture_task_id`, run ids, arm names, model names, and any private mapping key.
+
 ## Leakage Controls
 
 - Use neutral task ids. Avoid names such as `without-lodash`, `no-plugin`, or `no-rewrite`.
 - Do not include overbuild traps in natural-baseline prompts.
+- Treat `fixture_task_id` as operator-private metadata. It is allowed in local run queues, not in blind review packets.
 - Keep any mapping key outside the repo.
 - Keep final acceptance checks or holdout task variants private when running a release-quality benchmark.
 - Build blind review packets without run ids, arm names, model names, or mapping hints.

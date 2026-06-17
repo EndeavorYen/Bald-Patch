@@ -1,5 +1,6 @@
 {
   "id": "debounce-without-lodash",
+  "public_id": "task-002",
   "kind": "trap",
   "category": "dependency-temptation",
   "title": "Debounce a search input without lodash",

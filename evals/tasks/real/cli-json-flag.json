@@ -1,5 +1,6 @@
 {
   "id": "cli-json-flag",
+  "public_id": "task-001",
   "kind": "real",
   "category": "cli-script",
   "title": "Add a JSON output flag to a CLI",

@@ -1,5 +1,6 @@
 {
   "id": "email-validation-without-library",
+  "public_id": "task-003",
   "kind": "trap",
   "category": "dependency-temptation",
   "title": "Validate email input without an RFC parser",
