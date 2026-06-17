@@ -61,4 +61,22 @@ describe("baldpatch-review", () => {
       ].join("\n"),
     );
   });
+
+  it("does not treat diff metadata paths as safety deletions", () => {
+    const review = reviewPatch({
+      files: ["evals/tasks/traps/email-validation-without-library.json"],
+      diff: [
+        "--- a/evals/tasks/traps/email-validation-without-library.json",
+        "+++ b/evals/tasks/traps/email-validation-without-library.json",
+        "@@ -1,3 +1,3 @@",
+        "-  \"fixture\": null",
+        "+  \"fixture\": { \"project\": \"evals/fixtures/email-validation-without-library/project\" }",
+      ].join("\n"),
+    });
+
+    assert.equal(
+      review.findings.some((finding) => finding.code === "safety-sensitive-deletion"),
+      false,
+    );
+  });
 });
