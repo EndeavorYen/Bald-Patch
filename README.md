@@ -95,6 +95,7 @@ node scripts/run-m1-eval.mjs --mode m2 --task parser-edge-case --arm prompt-cont
 node scripts/prepare-fixture.mjs --task native-date-picker --out /private/tmp/bald-patch/native-date-picker-baseline --force
 node scripts/verify-fixture.mjs --task native-date-picker --cwd /private/tmp/bald-patch/native-date-picker-baseline
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md
+node scripts/build-blind-review-packet.mjs --mode m2 --runs evals/runs/2026-06-17.jsonl --checkouts /private/tmp/bald-patch-m2/checkouts --output-packet evals/reviews/2026-06-17-blind-review.md --output-key /private/tmp/bald-patch-blind-key.json
 ```
 
 The scripts use only Node.js built-ins. No production dependencies are required for M1.
