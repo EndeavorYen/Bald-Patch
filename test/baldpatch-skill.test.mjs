@@ -4,6 +4,8 @@ import { describe, it } from "node:test";
 
 const SKILL_PATH = ".agents/skills/baldpatch-patch/SKILL.md";
 const OPENAI_YAML_PATH = ".agents/skills/baldpatch-patch/agents/openai.yaml";
+const REVIEW_SKILL_PATH = ".agents/skills/baldpatch-review/SKILL.md";
+const REVIEW_OPENAI_YAML_PATH = ".agents/skills/baldpatch-review/agents/openai.yaml";
 
 describe("baldpatch-patch skill", () => {
   it("has complete trigger metadata and concise instructions", () => {
@@ -37,5 +39,18 @@ describe("baldpatch-patch skill", () => {
       metadata,
       /default_prompt: "Use \$baldpatch-patch to solve this with the smallest safe diff\."/,
     );
+  });
+
+  it("defines a concise advisory review skill", () => {
+    const skill = readFileSync(REVIEW_SKILL_PATH, "utf8");
+    const metadata = readFileSync(REVIEW_OPENAI_YAML_PATH, "utf8");
+
+    assert.match(skill, /^name: baldpatch-review$/m);
+    assert.match(skill, /^description: .+Use when .+/m);
+    assert.match(skill, /node scripts\/baldpatch-review\.mjs --base main/);
+    assert.match(skill, /advisory/i);
+    assert.match(metadata, /default_prompt: "Use \$baldpatch-review to audit this patch for avoidable overengineering\."/);
+    assert.doesNotMatch(skill, /TODO|\[TODO/);
+    assert.ok(skill.split(/\r?\n/).length <= 100);
   });
 });
