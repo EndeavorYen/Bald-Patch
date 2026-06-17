@@ -23,6 +23,7 @@ export function summarizeRuns(runs) {
     arms: armSummaries,
     blocked_runs: blockedRuns.map(blockedRunSummary),
     hard_gate_failures: hardGateFailures,
+    reviewer_agreement: reviewerAgreement(scoredRuns),
     regression_warnings: regressionWarnings(armSummaries),
   };
 }
@@ -41,13 +42,30 @@ export function renderMarkdownReport(summary, {
     lines.push("- No scored runs.");
   } else {
     lines.push(
-      "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference |",
-      "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+      "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference | Median rework min | Underbuild findings |",
+      "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     );
 
     for (const arm of summary.arms) {
       lines.push(
-        `| ${arm.arm} | ${arm.success_count}/${arm.runs} | ${formatNumber(arm.median_files)} | ${formatNumber(arm.median_loc)} | ${arm.dependency_additions} | ${formatNumber(arm.median_tool_calls)} | ${formatNumber(arm.median_elapsed_ms)} | ${arm.scope_warnings} | ${formatPercent(arm.reviewer_preference_rate)} |`,
+        `| ${arm.arm} | ${arm.success_count}/${arm.runs} | ${formatNumber(arm.median_files)} | ${formatNumber(arm.median_loc)} | ${arm.dependency_additions} | ${formatNumber(arm.median_tool_calls)} | ${formatNumber(arm.median_elapsed_ms)} | ${arm.scope_warnings} | ${formatPercent(arm.reviewer_preference_rate)} | ${formatNumber(arm.median_human_rework_minutes)} | ${arm.underbuild_findings} |`,
+      );
+    }
+  }
+
+  lines.push("", "## Reviewer Agreement", "");
+
+  if (summary.reviewer_agreement.tasks === 0) {
+    lines.push("- Not available");
+  } else {
+    lines.push(`- Average agreement: ${formatPercent(summary.reviewer_agreement.average_agreement_rate)}`);
+    lines.push(`- Unanimous tasks: ${summary.reviewer_agreement.unanimous_tasks}/${summary.reviewer_agreement.tasks}`);
+    lines.push("");
+    lines.push("| Task | Reviewer votes | Winning arm | Agreement |");
+    lines.push("| --- | ---: | --- | ---: |");
+    for (const task of summary.reviewer_agreement.by_task) {
+      lines.push(
+        `| ${task.task_id} | ${task.reviewer_votes} | ${task.winning_arm} | ${formatPercent(task.agreement_rate)} |`,
       );
     }
   }
@@ -192,6 +210,16 @@ function comparisonChecks(control, target, {
       gate: `reviewer_preference${suffix}`,
       targetLabel,
     }),
+    humanReworkCheck(control, target, {
+      gate: `human_rework_not_worse${suffix}`,
+      targetLabel,
+      controlLabel,
+    }),
+    underbuildRiskCheck(control, target, {
+      gate: `underbuild_risk${suffix}`,
+      targetLabel,
+      controlLabel,
+    }),
   ];
 }
 
@@ -294,6 +322,38 @@ function reviewerPreferenceCheck(target, {
   };
 }
 
+function humanReworkCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
+  if (!isNumber(control.median_human_rework_minutes) || !isNumber(target.median_human_rework_minutes)) {
+    return {
+      gate,
+      status: "pending",
+      detail: "reviewer rework minutes unavailable",
+    };
+  }
+
+  return {
+    gate,
+    status: target.median_human_rework_minutes <= control.median_human_rework_minutes ? "pass" : "fail",
+    detail: `${targetLabel} median rework ${formatNumber(target.median_human_rework_minutes)} min vs ${controlLabel} ${formatNumber(control.median_human_rework_minutes)} min`,
+  };
+}
+
+function underbuildRiskCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
+  return {
+    gate,
+    status: target.underbuild_findings <= control.underbuild_findings ? "pass" : "fail",
+    detail: `${targetLabel} underbuild findings ${target.underbuild_findings} vs ${controlLabel} ${control.underbuild_findings}`,
+  };
+}
+
 function blockedRunSummary(run) {
   return {
     run_id: run.run_id,
@@ -305,9 +365,7 @@ function blockedRunSummary(run) {
 
 function summarizeArm(arm, runs) {
   const armRuns = runs.filter((run) => run.arm === arm);
-  const reviewerValues = armRuns
-    .map((run) => run.reviewer_preferred)
-    .filter((value) => typeof value === "boolean");
+  const reviewerValues = armRuns.flatMap(reviewerPreferenceValues);
 
   return {
     arm,
@@ -331,9 +389,83 @@ function summarizeArm(arm, runs) {
     reviewer_preference_rate: reviewerValues.length === 0
       ? null
       : reviewerValues.filter(Boolean).length / reviewerValues.length,
-    median_human_rework_minutes: median(
-      armRuns.map((run) => run.human_rework_minutes),
-    ),
+    median_human_rework_minutes: median(armRuns.flatMap(humanReworkValues)),
+    underbuild_findings: armRuns.reduce((total, run) => total + underbuildFindings(run), 0),
+  };
+}
+
+function reviewerPreferenceValues(run) {
+  if (Array.isArray(run.reviewer_preferences)) {
+    return run.reviewer_preferences
+      .map((preference) => preference.preferred)
+      .filter((value) => typeof value === "boolean");
+  }
+  return typeof run.reviewer_preferred === "boolean" ? [run.reviewer_preferred] : [];
+}
+
+function humanReworkValues(run) {
+  if (Array.isArray(run.reviewer_assessments)) {
+    const values = run.reviewer_assessments
+      .map((assessment) => assessment.expected_rework_minutes)
+      .filter(isNumber);
+    if (values.length > 0) {
+      return values;
+    }
+  }
+  return isNumber(run.human_rework_minutes) ? [run.human_rework_minutes] : [];
+}
+
+function underbuildFindings(run) {
+  if (!Array.isArray(run.reviewer_assessments)) {
+    return 0;
+  }
+  return run.reviewer_assessments.filter((assessment) => {
+    return assessment.abstraction_judgment === "underbuilt";
+  }).length;
+}
+
+function reviewerAgreement(runs) {
+  const choicesByTask = new Map();
+
+  for (const run of runs) {
+    for (const preference of Array.isArray(run.reviewer_preferences) ? run.reviewer_preferences : []) {
+      if (preference.preferred !== true) {
+        continue;
+      }
+      if (!choicesByTask.has(run.task_id)) {
+        choicesByTask.set(run.task_id, new Map());
+      }
+      choicesByTask.get(run.task_id).set(preference.reviewer_id, run.arm);
+    }
+  }
+
+  const byTask = [...choicesByTask.entries()]
+    .map(([taskId, reviewerChoices]) => {
+      const counts = new Map();
+      for (const arm of reviewerChoices.values()) {
+        counts.set(arm, (counts.get(arm) || 0) + 1);
+      }
+      const [winningArm, winningCount] = [...counts.entries()]
+        .sort(([leftArm, leftCount], [rightArm, rightCount]) => {
+          return rightCount - leftCount || leftArm.localeCompare(rightArm);
+        })[0];
+      const reviewerVotes = reviewerChoices.size;
+      return {
+        task_id: taskId,
+        reviewer_votes: reviewerVotes,
+        winning_arm: winningArm,
+        agreement_rate: round(winningCount / reviewerVotes),
+      };
+    })
+    .sort((left, right) => left.task_id.localeCompare(right.task_id));
+
+  return {
+    tasks: byTask.length,
+    unanimous_tasks: byTask.filter((task) => task.agreement_rate === 1).length,
+    average_agreement_rate: byTask.length === 0
+      ? null
+      : round(byTask.reduce((total, task) => total + task.agreement_rate, 0) / byTask.length),
+    by_task: byTask,
   };
 }
 

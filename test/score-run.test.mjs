@@ -37,6 +37,7 @@ describe("score-run", () => {
         scope_warnings: 1,
         reviewer_preference_rate: 0,
         median_human_rework_minutes: 2,
+        underbuild_findings: 0,
       },
       {
         arm: "skill",
@@ -50,6 +51,7 @@ describe("score-run", () => {
         scope_warnings: 0,
         reviewer_preference_rate: 1,
         median_human_rework_minutes: 5.5,
+        underbuild_findings: 0,
       },
     ]);
 
@@ -105,10 +107,14 @@ describe("score-run", () => {
         "",
         "## Summary",
         "",
-        "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-        "| baseline | 1/2 | 3 | 52.5 | 1 | 9 | 90000 | 1 | 0% |",
-        "| skill | 2/2 | 1.5 | 13 | 0 | 11.5 | 91500 | 0 | 100% |",
+        "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference | Median rework min | Underbuild findings |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| baseline | 1/2 | 3 | 52.5 | 1 | 9 | 90000 | 1 | 0% | 2 | 0 |",
+        "| skill | 2/2 | 1.5 | 13 | 0 | 11.5 | 91500 | 0 | 100% | 5.5 | 0 |",
+        "",
+        "## Reviewer Agreement",
+        "",
+        "- Not available",
         "",
         "## Acceptance Check",
         "",
@@ -212,17 +218,55 @@ describe("score-run", () => {
         "dependency_reduction_vs_natural-baseline",
         "tool_call_budget_vs_natural-baseline",
         "reviewer_preference_vs_natural-baseline",
+        "human_rework_not_worse_vs_natural-baseline",
+        "underbuild_risk_vs_natural-baseline",
         "correctness_not_worse_vs_prompt-control",
         "median_loc_reduction_vs_prompt-control",
         "dependency_reduction_vs_prompt-control",
         "tool_call_budget_vs_prompt-control",
         "reviewer_preference_vs_prompt-control",
+        "human_rework_not_worse_vs_prompt-control",
+        "underbuild_risk_vs_prompt-control",
       ],
     );
     assert.match(
       renderMarkdownReport(summary),
       /baldpatch-skill success 2\/2 vs prompt-control 2\/2/,
     );
+  });
+
+  it("reports multi-reviewer preference, rework, agreement, and underbuild findings", () => {
+    const summary = summarizeRuns(sampleMultiReviewerRuns());
+    const skill = summary.arms.find((arm) => arm.arm === "baldpatch-skill");
+
+    assert.equal(skill.reviewer_preference_rate, 0.75);
+    assert.equal(skill.median_human_rework_minutes, 3.5);
+    assert.equal(skill.underbuild_findings, 1);
+    assert.deepEqual(summary.reviewer_agreement, {
+      tasks: 2,
+      unanimous_tasks: 1,
+      average_agreement_rate: 0.75,
+      by_task: [
+        {
+          task_id: "task-1",
+          reviewer_votes: 2,
+          winning_arm: "baldpatch-skill",
+          agreement_rate: 1,
+        },
+        {
+          task_id: "task-2",
+          reviewer_votes: 2,
+          winning_arm: "baldpatch-skill",
+          agreement_rate: 0.5,
+        },
+      ],
+    });
+
+    const markdown = renderMarkdownReport(summary);
+    assert.match(markdown, /Median rework min/);
+    assert.match(markdown, /Underbuild findings/);
+    assert.match(markdown, /## Reviewer Agreement/);
+    assert.match(markdown, /Average agreement: 75%/);
   });
 });
 
@@ -342,4 +386,84 @@ function m2Rows(arm, {
     human_rework_minutes: 1,
     reviewer_preferred: reviewerPreferred[index],
   }));
+}
+
+function sampleMultiReviewerRuns() {
+  return [
+    multiReviewerRun("natural-baseline", "task-1", {
+      preferences: [
+        ["reviewer-a", false],
+        ["reviewer-b", false],
+      ],
+      rework: [7, 8],
+    }),
+    multiReviewerRun("prompt-control", "task-1", {
+      preferences: [
+        ["reviewer-a", false],
+        ["reviewer-b", false],
+      ],
+      rework: [5, 6],
+    }),
+    multiReviewerRun("baldpatch-skill", "task-1", {
+      preferences: [
+        ["reviewer-a", true],
+        ["reviewer-b", true],
+      ],
+      rework: [2, 3],
+    }),
+    multiReviewerRun("natural-baseline", "task-2", {
+      preferences: [
+        ["reviewer-a", false],
+        ["reviewer-b", false],
+      ],
+      rework: [7, 7],
+    }),
+    multiReviewerRun("prompt-control", "task-2", {
+      preferences: [
+        ["reviewer-a", false],
+        ["reviewer-b", true],
+      ],
+      rework: [4, 5],
+    }),
+    multiReviewerRun("baldpatch-skill", "task-2", {
+      preferences: [
+        ["reviewer-a", true],
+        ["reviewer-b", false],
+      ],
+      rework: [4, 6],
+      abstractionJudgments: ["underbuilt", "justified"],
+    }),
+  ];
+}
+
+function multiReviewerRun(arm, taskId, {
+  preferences,
+  rework,
+  abstractionJudgments = [],
+}) {
+  return {
+    run_id: `${arm}-${taskId}`,
+    task_id: taskId,
+    arm,
+    success: true,
+    tests_passed: true,
+    requirements_met: true,
+    files_changed: 2,
+    lines_added: 10,
+    lines_deleted: 0,
+    dependencies_added: [],
+    tool_calls: 5,
+    elapsed_ms: 1000,
+    scope_violations: [],
+    overengineering_findings: [],
+    reviewer_preferences: preferences.map(([reviewerId, preferred]) => ({
+      reviewer_id: reviewerId,
+      preferred,
+    })),
+    reviewer_assessments: rework.map((minutes, index) => ({
+      reviewer_id: `reviewer-${index}`,
+      expected_rework_minutes: minutes,
+      abstraction_judgment: abstractionJudgments[index] || "justified",
+    })),
+  };
 }

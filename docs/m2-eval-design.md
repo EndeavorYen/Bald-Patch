@@ -88,6 +88,8 @@ Use at least three blind reviewers when possible. Ask for:
 
 Report reviewer agreement instead of relying on a single preference count.
 
+Use `scripts/apply-blind-review.mjs` with one `--answers` file per reviewer. Rich answer files should include per-patch accept/request-changes decisions, expected rework minutes, rubric scores, dependency judgment, and abstraction judgment.
+
 ## Analysis
 
 Report paired deltas by task:
