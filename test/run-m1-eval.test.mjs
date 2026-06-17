@@ -1,0 +1,118 @@
+import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { after, describe, it } from "node:test";
+
+import {
+  renderAgentCommand,
+  runEval,
+  selectRuns,
+} from "../scripts/run-m1-eval.mjs";
+import { readTasks } from "../scripts/fixture-utils.mjs";
+
+const tmpRoot = mkdtempSync(path.join(tmpdir(), "bald-patch-runner-test-"));
+
+after(() => {
+  rmSync(tmpRoot, { recursive: true, force: true });
+});
+
+describe("run-m1-eval", () => {
+  it("selects filtered task runs", () => {
+    const runs = selectRuns(readTasks(), {
+      taskId: "parser-edge-case",
+      arm: "baseline",
+    });
+
+    assert.deepEqual(runs.map((run) => `${run.task_id}:${run.arm}`), [
+      "parser-edge-case:baseline",
+    ]);
+  });
+
+  it("renders shell-quoted agent command placeholders", () => {
+    const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
+      fixture_dir: "/tmp/fixture with space",
+      prompt_file: "/tmp/prompt.md",
+    });
+
+    assert.equal(command, "agent --cwd '/tmp/fixture with space' --prompt '/tmp/prompt.md'");
+  });
+
+  it("executes a local agent command and appends a real run record", () => {
+    const fakeAgent = path.join(tmpRoot, "fake-agent.mjs");
+    const recordFile = path.join(tmpRoot, "runs.jsonl");
+    mkdirSync(path.dirname(fakeAgent), { recursive: true });
+    writeFileSync(fakeAgent, fakeAgentSource());
+
+    const rows = runEval({
+      agentCommand: `node ${fakeAgent} --fixture {fixture} --prompt {promptFile}`,
+      arm: "baseline",
+      execute: true,
+      outRoot: path.join(tmpRoot, "m1"),
+      recordFile,
+      runIdPrefix: "test",
+      taskId: "parser-edge-case",
+    });
+
+    assert.deepEqual(rows, [
+      {
+        run_id: "test-parser-edge-case-baseline",
+        ok: true,
+        record_file: recordFile,
+        artifact_dir: path.join(tmpRoot, "m1", "artifacts", "test-parser-edge-case-baseline"),
+      },
+    ]);
+
+    const records = readFileSync(recordFile, "utf8")
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+
+    assert.equal(records.length, 1);
+    assert.equal(records[0].success, true);
+    assert.equal(records[0].tests_passed, true);
+    assert.equal(records[0].requirements_met, true);
+    assert.equal(records[0].files_changed, 2);
+    assert.equal(records[0].dependencies_added.length, 0);
+  });
+});
+
+function fakeAgentSource() {
+  return `
+import { writeFileSync } from "node:fs";
+import path from "node:path";
+
+const fixture = process.argv[process.argv.indexOf("--fixture") + 1];
+
+writeFileSync(path.join(fixture, "src/parser.js"), \`
+export function parseRecords(text) {
+  return text
+    .split("\\\\n")
+    .filter((line) => line.trim() !== "")
+    .map((line) => {
+      const [name, value] = line.split(",");
+      return {
+        name,
+        value: Number(value),
+      };
+    });
+}
+\`);
+
+writeFileSync(path.join(fixture, "test/parser-edge-case.test.mjs"), \`
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+
+import { parseRecords } from "../src/parser.js";
+
+describe("parseRecords trailing blank lines", () => {
+  it("ignores a trailing blank line", () => {
+    assert.deepEqual(parseRecords("alpha,1\\\\nbeta,2\\\\n"), [
+      { name: "alpha", value: 1 },
+      { name: "beta", value: 2 },
+    ]);
+  });
+});
+\`);
+`;
+}
