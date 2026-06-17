@@ -89,12 +89,78 @@ describe("score-run", () => {
         "| --- | --- | --- | --- |",
         "| baseline-task-b | baseline | task-b | success, tests_passed |",
         "",
+        "## Blocked Runs",
+        "",
+        "- None",
+        "",
         "## Regression Warnings",
         "",
         "- skill has smaller median LOC than baseline but higher human rework.",
         "",
       ].join("\n"),
     );
+  });
+
+  it("reports blocked runs separately from scored runs", () => {
+    const summary = summarizeRuns([
+      {
+        run_id: "blocked-parser-baseline",
+        task_id: "parser-edge-case",
+        arm: "baseline",
+        blocked: true,
+        block_reason: "external Codex execution was not approved",
+      },
+      {
+        run_id: "skill-parser",
+        task_id: "parser-edge-case",
+        arm: "skill",
+        success: true,
+        tests_passed: true,
+        requirements_met: true,
+        files_changed: 2,
+        lines_added: 8,
+        lines_deleted: 1,
+        dependencies_added: [],
+        tool_calls: null,
+        elapsed_ms: 1000,
+        scope_violations: [],
+        human_rework_minutes: null,
+        reviewer_preferred: null,
+      },
+    ]);
+
+    assert.deepEqual(summary.blocked_runs, [
+      {
+        run_id: "blocked-parser-baseline",
+        arm: "baseline",
+        task_id: "parser-edge-case",
+        reason: "external Codex execution was not approved",
+      },
+    ]);
+    assert.deepEqual(summary.hard_gate_failures, []);
+    assert.deepEqual(summary.arms.map((arm) => arm.arm), ["skill"]);
+
+    const markdown = renderMarkdownReport(summary, {
+      title: "Blocked Smoke",
+    });
+
+    assert.match(markdown, /## Blocked Runs/);
+    assert.match(markdown, /blocked-parser-baseline/);
+    assert.match(markdown, /external Codex execution was not approved/);
+  });
+
+  it("renders a clear summary when every run is blocked", () => {
+    const markdown = renderMarkdownReport(summarizeRuns([
+      {
+        run_id: "blocked-parser-baseline",
+        task_id: "parser-edge-case",
+        arm: "baseline",
+        blocked: true,
+        block_reason: "external Codex execution was not approved",
+      },
+    ]));
+
+    assert.match(markdown, /## Summary\n\n- No scored runs\./);
   });
 });
 

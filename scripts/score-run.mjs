@@ -10,14 +10,17 @@ export function parseJsonl(text) {
 }
 
 export function summarizeRuns(runs) {
-  const arms = [...new Set(runs.map((run) => run.arm))].sort();
-  const armSummaries = arms.map((arm) => summarizeArm(arm, runs));
-  const hardGateFailures = runs
+  const blockedRuns = runs.filter((run) => run.blocked === true);
+  const scoredRuns = runs.filter((run) => run.blocked !== true);
+  const arms = [...new Set(scoredRuns.map((run) => run.arm))].sort();
+  const armSummaries = arms.map((arm) => summarizeArm(arm, scoredRuns));
+  const hardGateFailures = scoredRuns
     .map(hardGateFailure)
     .filter(Boolean);
 
   return {
     arms: armSummaries,
+    blocked_runs: blockedRuns.map(blockedRunSummary),
     hard_gate_failures: hardGateFailures,
     regression_warnings: regressionWarnings(armSummaries),
   };
@@ -31,14 +34,21 @@ export function renderMarkdownReport(summary, {
     "",
     "## Summary",
     "",
-    "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference |",
-    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
   ];
 
-  for (const arm of summary.arms) {
+  if (summary.arms.length === 0) {
+    lines.push("- No scored runs.");
+  } else {
     lines.push(
-      `| ${arm.arm} | ${arm.success_count}/${arm.runs} | ${formatNumber(arm.median_files)} | ${formatNumber(arm.median_loc)} | ${arm.dependency_additions} | ${formatNumber(arm.median_tool_calls)} | ${formatNumber(arm.median_elapsed_ms)} | ${arm.scope_warnings} | ${formatPercent(arm.reviewer_preference_rate)} |`,
+      "| Arm | Success | Median files | Median LOC | Deps added | Tool calls | Elapsed ms | Scope warnings | Reviewer preference |",
+      "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     );
+
+    for (const arm of summary.arms) {
+      lines.push(
+        `| ${arm.arm} | ${arm.success_count}/${arm.runs} | ${formatNumber(arm.median_files)} | ${formatNumber(arm.median_loc)} | ${arm.dependency_additions} | ${formatNumber(arm.median_tool_calls)} | ${formatNumber(arm.median_elapsed_ms)} | ${arm.scope_warnings} | ${formatPercent(arm.reviewer_preference_rate)} |`,
+      );
+    }
   }
 
   lines.push("", "## Hard Gate Failures", "");
@@ -55,6 +65,20 @@ export function renderMarkdownReport(summary, {
     }
   }
 
+  lines.push("", "## Blocked Runs", "");
+
+  if (summary.blocked_runs.length === 0) {
+    lines.push("- None");
+  } else {
+    lines.push("| Run | Arm | Task | Reason |");
+    lines.push("| --- | --- | --- | --- |");
+    for (const blocked of summary.blocked_runs) {
+      lines.push(
+        `| ${blocked.run_id} | ${blocked.arm} | ${blocked.task_id} | ${blocked.reason} |`,
+      );
+    }
+  }
+
   lines.push("", "## Regression Warnings", "");
 
   if (summary.regression_warnings.length === 0) {
@@ -67,6 +91,15 @@ export function renderMarkdownReport(summary, {
 
   lines.push("");
   return lines.join("\n");
+}
+
+function blockedRunSummary(run) {
+  return {
+    run_id: run.run_id,
+    arm: run.arm,
+    task_id: run.task_id,
+    reason: run.block_reason || "blocked",
+  };
 }
 
 function summarizeArm(arm, runs) {

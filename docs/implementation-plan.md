@@ -96,6 +96,7 @@
 - [x] Add M1 A/B run queue generation and eval runbook for #1 without fabricating results.
 - [x] Add resettable standalone fixtures and verifier wiring so #1 can run honest baseline/skill checkouts.
 - [x] Add an explicit local runner that can preview runs safely and append JSONL only when an approved agent command is provided.
+- [x] Add blocked-run recording and reporting so unavailable agent runs are documented without pretending to pass.
 
 ## Self-Review
 

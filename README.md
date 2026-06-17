@@ -95,6 +95,8 @@ See [docs/eval-runbook.md](docs/eval-runbook.md) for the honest M1 A/B flow. `ru
 
 `run-m1-eval` is the local orchestration wrapper. By default it only prints the planned run rows. It appends JSONL records only when called with `--execute`, `--record`, and an explicit `--agent-command`.
 
+If a run is genuinely blocked, `run-m1-eval --record-blocked --blocker "reason"` can append a blocked row. Blocked rows are reported separately by `score-run` and do not count as successful eval evidence.
+
 ## Codex Skill
 
 The first explicit skill lives at `.agents/skills/baldpatch-patch/SKILL.md`.

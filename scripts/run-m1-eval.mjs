@@ -71,7 +71,9 @@ export function runEval({
   runIdPrefix = isoDate(),
   recordFile = null,
   agentCommand = null,
+  blockReason = null,
   execute = false,
+  recordBlocked = false,
   repoRoot = process.cwd(),
 } = {}) {
   const runs = selectRuns(readTasks(path.join(repoRoot, "evals/tasks")), {
@@ -83,6 +85,28 @@ export function runEval({
     outRoot,
     runIdPrefix,
   }));
+
+  if (recordBlocked) {
+    if (!recordFile) {
+      throw new Error("--record is required with --record-blocked");
+    }
+    if (!blockReason) {
+      throw new Error("--blocker is required with --record-blocked");
+    }
+    mkdirSync(path.dirname(path.resolve(recordFile)), { recursive: true });
+    return planned.map((context) => {
+      const record = blockedRecord(context, blockReason);
+      writeFileSync(recordFile, `${JSON.stringify(record)}\n`, {
+        flag: "a",
+      });
+      return {
+        run_id: context.run_id,
+        ok: false,
+        blocked: true,
+        record_file: recordFile,
+      };
+    });
+  }
 
   if (!execute) {
     return planned.map((context) => dryRunRow(context, agentCommand));
@@ -108,6 +132,31 @@ export function runEval({
     });
     return result.summary;
   });
+}
+
+function blockedRecord(context, reason) {
+  return {
+    run_id: context.run_id,
+    task_id: context.task_id,
+    arm: context.arm,
+    blocked: true,
+    block_reason: reason,
+    model: null,
+    success: false,
+    tests_passed: false,
+    requirements_met: false,
+    files_changed: null,
+    new_files: null,
+    lines_added: null,
+    lines_deleted: null,
+    dependencies_added: [],
+    tool_calls: null,
+    elapsed_ms: null,
+    scope_violations: [],
+    overengineering_findings: [],
+    human_rework_minutes: null,
+    reviewer_preferred: null,
+  };
 }
 
 function dryRunRow(context, agentCommand) {
@@ -254,9 +303,11 @@ function parseArgs(argv) {
   const args = {
     agentCommand: null,
     arm: null,
+    blockReason: null,
     execute: false,
     limit: null,
     outRoot: "/private/tmp/bald-patch-m1",
+    recordBlocked: false,
     recordFile: null,
     runIdPrefix: isoDate(),
     taskId: null,
@@ -270,6 +321,9 @@ function parseArgs(argv) {
     } else if (arg === "--arm") {
       args.arm = argv[index + 1];
       index += 1;
+    } else if (arg === "--blocker") {
+      args.blockReason = argv[index + 1];
+      index += 1;
     } else if (arg === "--execute") {
       args.execute = true;
     } else if (arg === "--limit") {
@@ -281,6 +335,8 @@ function parseArgs(argv) {
     } else if (arg === "--record") {
       args.recordFile = argv[index + 1];
       index += 1;
+    } else if (arg === "--record-blocked") {
+      args.recordBlocked = true;
     } else if (arg === "--run-id-prefix") {
       args.runIdPrefix = argv[index + 1];
       index += 1;
