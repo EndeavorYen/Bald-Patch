@@ -26,6 +26,25 @@ Optional fourth arm:
 | --- | --- | --- |
 | baldpatch-skill-review | `$baldpatch-patch` followed by `$baldpatch-review` | Measures whether the review pass catches overbuild before submission. |
 
+## Current Tooling
+
+Generate the three-arm M2 queue:
+
+```bash
+node scripts/run-ab.mjs --mode m2 --jsonl > /private/tmp/bald-patch-m2-plan.jsonl
+```
+
+Preview or execute a single M2 row with the existing local runner:
+
+```bash
+node scripts/run-m1-eval.mjs \
+  --mode m2 \
+  --task parser-edge-case \
+  --arm prompt-control
+```
+
+M2 mode emits `natural-baseline`, `prompt-control`, and `baldpatch-skill` rows. The natural baseline prompt uses `neutral_title` and `natural_prompt` task fields when present; it does not append M1 success criteria or task-specific overbuild risks.
+
 ## Leakage Controls
 
 - Use neutral task ids. Avoid names such as `without-lodash`, `no-plugin`, or `no-rewrite`.

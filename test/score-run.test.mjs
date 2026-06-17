@@ -200,6 +200,30 @@ describe("score-run", () => {
     assert.match(markdown, /## Summary\n\n- No scored runs\./);
     assert.match(markdown, /## Acceptance Check\n\n- Not available/);
   });
+
+  it("compares Bald Patch against both M2 control arms", () => {
+    const summary = summarizeRuns(sampleM2Runs());
+
+    assert.deepEqual(
+      summary.acceptance_checks.map((check) => check.gate),
+      [
+        "correctness_not_worse_vs_natural-baseline",
+        "median_loc_reduction_vs_natural-baseline",
+        "dependency_reduction_vs_natural-baseline",
+        "tool_call_budget_vs_natural-baseline",
+        "reviewer_preference_vs_natural-baseline",
+        "correctness_not_worse_vs_prompt-control",
+        "median_loc_reduction_vs_prompt-control",
+        "dependency_reduction_vs_prompt-control",
+        "tool_call_budget_vs_prompt-control",
+        "reviewer_preference_vs_prompt-control",
+      ],
+    );
+    assert.match(
+      renderMarkdownReport(summary),
+      /baldpatch-skill success 2\/2 vs prompt-control 2\/2/,
+    );
+  });
 });
 
 function sampleRuns() {
@@ -273,4 +297,49 @@ function sampleRuns() {
       reviewer_preferred: true,
     },
   ];
+}
+
+function sampleM2Runs() {
+  return [
+    ...m2Rows("natural-baseline", {
+      lines: [40, 60],
+      reviewerPreferred: [false, false],
+      toolCalls: [10, 12],
+    }),
+    ...m2Rows("prompt-control", {
+      lines: [20, 22],
+      reviewerPreferred: [false, false],
+      toolCalls: [8, 10],
+    }),
+    ...m2Rows("baldpatch-skill", {
+      lines: [12, 16],
+      reviewerPreferred: [true, true],
+      toolCalls: [9, 9],
+    }),
+  ];
+}
+
+function m2Rows(arm, {
+  lines,
+  reviewerPreferred,
+  toolCalls,
+}) {
+  return lines.map((lineCount, index) => ({
+    run_id: `${arm}-task-${index}`,
+    task_id: `task-${index}`,
+    arm,
+    success: true,
+    tests_passed: true,
+    requirements_met: true,
+    files_changed: 2,
+    lines_added: lineCount,
+    lines_deleted: 0,
+    dependencies_added: [],
+    tool_calls: toolCalls[index],
+    elapsed_ms: 1000,
+    scope_violations: [],
+    overengineering_findings: [],
+    human_rework_minutes: 1,
+    reviewer_preferred: reviewerPreferred[index],
+  }));
 }

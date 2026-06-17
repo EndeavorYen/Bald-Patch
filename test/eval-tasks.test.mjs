@@ -3,6 +3,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 
+import { buildRunPlan } from "../scripts/run-ab.mjs";
+
 const TASK_ROOT = path.join(process.cwd(), "evals", "tasks");
 
 describe("M1 eval tasks", () => {
@@ -26,6 +28,21 @@ describe("M1 eval tasks", () => {
       assert.equal(typeof task.fixture?.acceptance, "string");
       assert.equal(typeof task.fixture?.verify, "string");
       assert.match(task.fixture.verify, new RegExp(`--task ${task.id}\\b`));
+    }
+  });
+
+  it("provides clean M2 natural-baseline prompt text", () => {
+    const naturalRuns = buildRunPlan(readTasks(), { mode: "m2" })
+      .filter((run) => run.arm === "natural-baseline");
+
+    assert.equal(naturalRuns.length, 10);
+    for (const run of naturalRuns) {
+      assert.doesNotMatch(run.prompt, /Success criteria:/);
+      assert.doesNotMatch(run.prompt, /Overbuild risks to watch:/);
+      assert.doesNotMatch(
+        run.prompt,
+        /without|dependency|framework|plugin|rewrite|smallest|prefer native/i,
+      );
     }
   });
 });

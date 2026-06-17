@@ -3,6 +3,8 @@
   "kind": "real",
   "category": "real-bugfix",
   "title": "Handle a parser edge case without rewriting the parser",
+  "neutral_title": "Handle a parser edge case",
+  "natural_prompt": "Fix the parser so a trailing blank line no longer creates an empty record. Preserve the existing parser API and add a regression test.",
   "prompt": "Fix the parser so a trailing blank line no longer creates an empty record. Preserve the existing parser API and add the smallest regression test.",
   "success_criteria": [
     "Trailing blank lines are ignored",

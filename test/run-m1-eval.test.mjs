@@ -30,6 +30,34 @@ describe("run-m1-eval", () => {
     ]);
   });
 
+  it("selects M2 task runs by mode and arm", () => {
+    const runs = selectRuns(readTasks(), {
+      taskId: "parser-edge-case",
+      arm: "prompt-control",
+      mode: "m2",
+    });
+
+    assert.deepEqual(runs.map((run) => `${run.task_id}:${run.arm}`), [
+      "parser-edge-case:prompt-control",
+    ]);
+    assert.match(runs[0].prompt, /Avoid unnecessary dependencies/);
+    assert.doesNotMatch(runs[0].prompt, /Overbuild risks to watch/);
+  });
+
+  it("dry-runs M2 run contexts", () => {
+    const rows = runEval({
+      arm: "baldpatch-skill",
+      limit: 1,
+      mode: "m2",
+      outRoot: path.join(tmpRoot, "m2-dry"),
+      runIdPrefix: "m2",
+      taskId: "parser-edge-case",
+    });
+
+    assert.equal(rows[0].run_id, "m2-parser-edge-case-baldpatch-skill");
+    assert.match(rows[0].prompt_file, /m2-parser-edge-case-baldpatch-skill/);
+  });
+
   it("renders shell-quoted agent command placeholders", () => {
     const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
       fixture_dir: "/tmp/fixture with space",

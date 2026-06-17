@@ -3,6 +3,8 @@
   "kind": "real",
   "category": "cli-script",
   "title": "Make dry-run output explicit",
+  "neutral_title": "Make dry-run output explicit",
+  "natural_prompt": "Update the maintenance script so dry-run mode prints the file paths it would modify. Do not change write mode behavior.",
   "prompt": "Update the maintenance script so dry-run mode prints the file paths it would modify. Do not change write mode behavior.",
   "success_criteria": [
     "Dry-run mode lists candidate paths",

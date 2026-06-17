@@ -111,95 +111,186 @@ function acceptanceChecks(arms) {
   const skill = arms.find((arm) => arm.arm === "skill");
 
   if (!baseline || !skill) {
-    return [];
+    return m2AcceptanceChecks(arms);
   }
 
   return [
-    correctnessCheck(baseline, skill),
-    locReductionCheck(baseline, skill),
-    dependencyReductionCheck(baseline, skill),
-    toolCallBudgetCheck(baseline, skill),
-    reviewerPreferenceCheck(skill),
+    correctnessCheck(baseline, skill, {
+      gate: "correctness_not_worse",
+      targetLabel: "skill",
+      controlLabel: "baseline",
+    }),
+    locReductionCheck(baseline, skill, {
+      gate: "median_loc_reduction",
+      targetLabel: "skill",
+      controlLabel: "baseline",
+    }),
+    dependencyReductionCheck(baseline, skill, {
+      gate: "dependency_reduction",
+      targetLabel: "skill",
+      controlLabel: "baseline",
+    }),
+    toolCallBudgetCheck(baseline, skill, {
+      gate: "tool_call_budget",
+      targetLabel: "skill",
+      controlLabel: "baseline",
+    }),
+    reviewerPreferenceCheck(skill, {
+      gate: "reviewer_preference",
+      targetLabel: "skill",
+    }),
   ];
 }
 
-function correctnessCheck(baseline, skill) {
-  const baselineRate = baseline.success_count / baseline.runs;
-  const skillRate = skill.success_count / skill.runs;
+function m2AcceptanceChecks(arms) {
+  const target = arms.find((arm) => arm.arm === "baldpatch-skill");
+  if (!target) {
+    return [];
+  }
+
+  return ["natural-baseline", "prompt-control"].flatMap((controlName) => {
+    const control = arms.find((arm) => arm.arm === controlName);
+    if (!control) {
+      return [];
+    }
+
+    return comparisonChecks(control, target, {
+      suffix: `_vs_${controlName}`,
+      targetLabel: "baldpatch-skill",
+      controlLabel: controlName,
+    });
+  });
+}
+
+function comparisonChecks(control, target, {
+  suffix,
+  targetLabel,
+  controlLabel,
+}) {
+  return [
+    correctnessCheck(control, target, {
+      gate: `correctness_not_worse${suffix}`,
+      targetLabel,
+      controlLabel,
+    }),
+    locReductionCheck(control, target, {
+      gate: `median_loc_reduction${suffix}`,
+      targetLabel,
+      controlLabel,
+    }),
+    dependencyReductionCheck(control, target, {
+      gate: `dependency_reduction${suffix}`,
+      targetLabel,
+      controlLabel,
+    }),
+    toolCallBudgetCheck(control, target, {
+      gate: `tool_call_budget${suffix}`,
+      targetLabel,
+      controlLabel,
+    }),
+    reviewerPreferenceCheck(target, {
+      gate: `reviewer_preference${suffix}`,
+      targetLabel,
+    }),
+  ];
+}
+
+function correctnessCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
+  const controlRate = control.success_count / control.runs;
+  const targetRate = target.success_count / target.runs;
   return {
-    gate: "correctness_not_worse",
-    status: skillRate >= baselineRate ? "pass" : "fail",
-    detail: `skill success ${skill.success_count}/${skill.runs} vs baseline ${baseline.success_count}/${baseline.runs}`,
+    gate,
+    status: targetRate >= controlRate ? "pass" : "fail",
+    detail: `${targetLabel} success ${target.success_count}/${target.runs} vs ${controlLabel} ${control.success_count}/${control.runs}`,
   };
 }
 
-function locReductionCheck(baseline, skill) {
-  const reduction = decreaseRate(baseline.median_loc, skill.median_loc);
+function locReductionCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
+  const reduction = decreaseRate(control.median_loc, target.median_loc);
   if (!isNumber(reduction)) {
     return {
-      gate: "median_loc_reduction",
+      gate,
       status: "pending",
       detail: "median LOC unavailable",
     };
   }
 
   return {
-    gate: "median_loc_reduction",
+    gate,
     status: reduction >= 0.2 ? "pass" : "fail",
-    detail: `skill median LOC ${formatNumber(skill.median_loc)} vs baseline ${formatNumber(baseline.median_loc)} (${formatPercent(reduction)} lower)`,
+    detail: `${targetLabel} median LOC ${formatNumber(target.median_loc)} vs ${controlLabel} ${formatNumber(control.median_loc)} (${formatPercent(reduction)} lower)`,
   };
 }
 
-function dependencyReductionCheck(baseline, skill) {
+function dependencyReductionCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
   const reduction = decreaseRate(
-    baseline.dependency_additions,
-    skill.dependency_additions,
+    control.dependency_additions,
+    target.dependency_additions,
   );
   if (!isNumber(reduction)) {
     return {
-      gate: "dependency_reduction",
+      gate,
       status: "not-applicable",
-      detail: "baseline had no dependency additions",
+      detail: `${controlLabel} had no dependency additions`,
     };
   }
 
   return {
-    gate: "dependency_reduction",
+    gate,
     status: reduction >= 0.5 ? "pass" : "fail",
-    detail: `skill dependency additions ${skill.dependency_additions} vs baseline ${baseline.dependency_additions} (${formatPercent(reduction)} lower)`,
+    detail: `${targetLabel} dependency additions ${target.dependency_additions} vs ${controlLabel} ${control.dependency_additions} (${formatPercent(reduction)} lower)`,
   };
 }
 
-function toolCallBudgetCheck(baseline, skill) {
-  const increase = increaseRate(baseline.median_tool_calls, skill.median_tool_calls);
+function toolCallBudgetCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
+  const increase = increaseRate(control.median_tool_calls, target.median_tool_calls);
   if (!isNumber(increase)) {
     return {
-      gate: "tool_call_budget",
+      gate,
       status: "pending",
       detail: "median tool calls unavailable",
     };
   }
 
   return {
-    gate: "tool_call_budget",
+    gate,
     status: increase <= 0.15 ? "pass" : "fail",
-    detail: `skill median tool calls ${formatNumber(skill.median_tool_calls)} vs baseline ${formatNumber(baseline.median_tool_calls)} (${formatPercent(increase)} higher)`,
+    detail: `${targetLabel} median tool calls ${formatNumber(target.median_tool_calls)} vs ${controlLabel} ${formatNumber(control.median_tool_calls)} (${formatPercent(increase)} higher)`,
   };
 }
 
-function reviewerPreferenceCheck(skill) {
-  if (!isNumber(skill.reviewer_preference_rate)) {
+function reviewerPreferenceCheck(target, {
+  gate,
+  targetLabel,
+}) {
+  if (!isNumber(target.reviewer_preference_rate)) {
     return {
-      gate: "reviewer_preference",
+      gate,
       status: "pending",
       detail: "blind reviewer preference unavailable",
     };
   }
 
   return {
-    gate: "reviewer_preference",
-    status: skill.reviewer_preference_rate >= 0.6 ? "pass" : "fail",
-    detail: `skill reviewer preference ${formatPercent(skill.reviewer_preference_rate)} (threshold 60%)`,
+    gate,
+    status: target.reviewer_preference_rate >= 0.6 ? "pass" : "fail",
+    detail: `${targetLabel} reviewer preference ${formatPercent(target.reviewer_preference_rate)} (threshold 60%)`,
   };
 }
 

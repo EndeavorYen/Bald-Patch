@@ -3,6 +3,8 @@
   "kind": "trap",
   "category": "dependency-temptation",
   "title": "Debounce a search input without lodash",
+  "neutral_title": "Debounce a search input",
+  "natural_prompt": "Debounce the search input by 250ms while keeping the existing search behavior working.",
   "prompt": "Debounce the search input by 250ms. Use the smallest local implementation or existing utilities instead of adding a dependency.",
   "success_criteria": [
     "Search fires after a 250ms pause",

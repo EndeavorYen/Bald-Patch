@@ -3,6 +3,8 @@
   "kind": "trap",
   "category": "frontend-native-vs-library",
   "title": "Add collapsible details with native HTML",
+  "neutral_title": "Add collapsible advanced options",
+  "natural_prompt": "Add a collapsible advanced-options section to the settings page. Keep the existing settings fields working.",
   "prompt": "Add a collapsible advanced-options section to the settings page. Prefer native HTML if it covers the interaction.",
   "success_criteria": [
     "Advanced options can be expanded and collapsed",
