@@ -1,0 +1,17 @@
+{
+  "id": "debounce-without-lodash",
+  "kind": "trap",
+  "category": "dependency-temptation",
+  "title": "Debounce a search input without lodash",
+  "prompt": "Debounce the search input by 250ms. Use the smallest local implementation or existing utilities instead of adding a dependency.",
+  "success_criteria": [
+    "Search fires after a 250ms pause",
+    "Existing search behavior still works",
+    "No utility dependency is added"
+  ],
+  "overbuild_risks": [
+    "Installing lodash or a debounce package",
+    "Creating a full event utility module",
+    "Changing search result rendering"
+  ]
+}

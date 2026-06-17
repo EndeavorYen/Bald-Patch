@@ -1,0 +1,17 @@
+{
+  "id": "cli-json-flag",
+  "kind": "real",
+  "category": "cli-script",
+  "title": "Add a JSON output flag to a CLI",
+  "prompt": "Add a --json flag to the CLI so it prints the same result object as JSON. Keep the default human-readable output unchanged.",
+  "success_criteria": [
+    "--json prints valid JSON",
+    "Default output remains unchanged",
+    "No production dependency is added"
+  ],
+  "overbuild_risks": [
+    "Replacing the CLI parser",
+    "Adding a command framework",
+    "Changing unrelated command behavior"
+  ]
+}

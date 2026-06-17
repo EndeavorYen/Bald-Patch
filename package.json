@@ -1,0 +1,27 @@
+{
+  "name": "bald-patch",
+  "version": "0.1.0",
+  "description": "Codex-native anti-overbuild guardrails and evals for smaller, safer, easier-to-review patches.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EndeavorYen/Bald-Patch"
+  },
+  "keywords": [
+    "codex",
+    "agent",
+    "evaluation",
+    "guardrails",
+    "code-review"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "diff:metrics": "node scripts/collect-diff-metrics.mjs --json",
+    "scope:lint": "node scripts/scope-lint.mjs --json",
+    "score:run": "node scripts/score-run.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

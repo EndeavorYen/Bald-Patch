@@ -1,0 +1,17 @@
+{
+  "id": "script-dry-run-output",
+  "kind": "real",
+  "category": "cli-script",
+  "title": "Make dry-run output explicit",
+  "prompt": "Update the maintenance script so dry-run mode prints the file paths it would modify. Do not change write mode behavior.",
+  "success_criteria": [
+    "Dry-run mode lists candidate paths",
+    "Write mode behavior is unchanged",
+    "The test covers dry-run output without touching the filesystem"
+  ],
+  "overbuild_risks": [
+    "Adding a logging framework",
+    "Refactoring unrelated script flow",
+    "Creating a new reporting subsystem"
+  ]
+}
