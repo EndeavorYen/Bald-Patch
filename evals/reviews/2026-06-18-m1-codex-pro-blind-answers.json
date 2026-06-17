@@ -1,0 +1,62 @@
+[
+  {
+    "task_id": "cli-json-flag",
+    "preferred_patch": "A",
+    "confidence": 4,
+    "reason": "同樣實作 --json，但 A 額外驗證 default main output 未變，較能覆蓋關鍵回歸。"
+  },
+  {
+    "task_id": "debounce-without-lodash",
+    "preferred_patch": "A",
+    "confidence": 4,
+    "reason": "同樣實作 debounce；A 測試跨時間再次輸入，較明確證明前一次 timer 被取消。"
+  },
+  {
+    "task_id": "email-validation-without-library",
+    "preferred_patch": "A",
+    "confidence": 4,
+    "reason": "A 的 regex 與測試對 domain shape 較嚴謹，仍維持 pragmatic validation 且未加依賴。"
+  },
+  {
+    "task_id": "native-collapsible-details",
+    "preferred_patch": "B",
+    "confidence": 3,
+    "reason": "實作相同；B 的測試額外確認 details 預設未 open，review signal 稍好。"
+  },
+  {
+    "task_id": "native-date-picker",
+    "preferred_patch": "B",
+    "confidence": 4,
+    "reason": "實作等價；B 的測試不綁死 HTML attribute order，較不脆弱。"
+  },
+  {
+    "task_id": "parser-edge-case",
+    "preferred_patch": "A",
+    "confidence": 1,
+    "reason": "A/B 行為與測試幾乎相同；A 只少一個空白行，無實質差異。"
+  },
+  {
+    "task_id": "report-null-date",
+    "preferred_patch": "A",
+    "confidence": 4,
+    "reason": "A 只處理 null/undefined，避免把其他 falsy 或錯誤型別默默格式化成 unknown。"
+  },
+  {
+    "task_id": "script-dry-run-output",
+    "preferred_patch": "B",
+    "confidence": 3,
+    "reason": "B 稍多一個 pathList，但 dry-run 測試用 throwing writer 更直接防止寫入，輸出也較可讀。"
+  },
+  {
+    "task_id": "single-provider-no-plugin-architecture",
+    "preferred_patch": "A",
+    "confidence": 1,
+    "reason": "A/B diff 相同，無可判斷差異。"
+  },
+  {
+    "task_id": "small-refactor-no-rewrite",
+    "preferred_patch": "A",
+    "confidence": 1,
+    "reason": "A/B diff 相同，無可判斷差異。"
+  }
+]

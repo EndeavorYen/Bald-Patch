@@ -23,30 +23,39 @@ describe("analyze-m1-eval", () => {
       elapsed_slower: 2,
       dependency_signal_tasks: 0,
       scope_warning_tasks: 0,
+      reviewer_preference_tasks: 2,
+      reviewer_skill_preferred: 1,
+      reviewer_baseline_preferred: 1,
+      reviewer_pending_tasks: 1,
+      reviewer_invalid_tasks: 0,
     });
     assert.deepEqual(analysis.pairs.map((pair) => ({
       task_id: pair.task_id,
       loc_delta: pair.loc_delta,
       tool_call_delta: pair.tool_call_delta,
       elapsed_delta_ms: pair.elapsed_delta_ms,
+      reviewer_preference: pair.reviewer_preference,
     })), [
       {
         task_id: "cli-json-flag",
         loc_delta: -11,
         tool_call_delta: -7,
         elapsed_delta_ms: -50000,
+        reviewer_preference: "skill",
       },
       {
         task_id: "native-date-picker",
         loc_delta: 1,
         tool_call_delta: 6,
         elapsed_delta_ms: 40000,
+        reviewer_preference: "baseline",
       },
       {
         task_id: "single-provider-no-plugin-architecture",
         loc_delta: 0,
         tool_call_delta: 0,
         elapsed_delta_ms: 10000,
+        reviewer_preference: "pending",
       },
     ]);
   });
@@ -59,9 +68,12 @@ describe("analyze-m1-eval", () => {
     assert.match(markdown, /# M1 Analysis/);
     assert.match(markdown, /Skill produced smaller LOC on 1\/3 tasks/);
     assert.match(markdown, /Skill used more tool calls on 1\/3 tasks/);
+    assert.match(markdown, /Blind reviewer preferred skill on 1\/2 decoded tasks and baseline on 1\/2/);
     assert.match(markdown, /The eval has weak dependency\/scope signal/);
+    assert.match(markdown, /Reviewer preference is missing for 1\/3 paired tasks/);
     assert.match(markdown, /Do not expand Bald Patch beyond the current docs-first skill from M1 alone/);
-    assert.match(markdown, /\| native-date-picker \| pass \| \+1 \| \+6 \| \+40000 \|/);
+    assert.match(markdown, /Reviewer preference does not support expansion from M1/);
+    assert.match(markdown, /\| native-date-picker \| pass \| \+1 \| \+6 \| \+40000 \| 0 \| 0 \| baseline \|/);
   });
 });
 
@@ -78,6 +90,7 @@ function sampleRuns() {
       dependencies_added: [],
       scope_violations: [],
       overengineering_findings: [],
+      reviewer_preferred: false,
     },
     {
       task_id: "cli-json-flag",
@@ -90,6 +103,7 @@ function sampleRuns() {
       dependencies_added: [],
       scope_violations: [],
       overengineering_findings: [],
+      reviewer_preferred: true,
     },
     {
       task_id: "native-date-picker",
@@ -102,6 +116,7 @@ function sampleRuns() {
       dependencies_added: [],
       scope_violations: [],
       overengineering_findings: [],
+      reviewer_preferred: true,
     },
     {
       task_id: "native-date-picker",
@@ -114,6 +129,7 @@ function sampleRuns() {
       dependencies_added: [],
       scope_violations: [],
       overengineering_findings: [],
+      reviewer_preferred: false,
     },
     {
       task_id: "single-provider-no-plugin-architecture",

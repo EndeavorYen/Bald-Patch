@@ -44,6 +44,23 @@ M1 success criteria:
 
 If M1 fails, the next step is to improve the rule or skill design. It is not to add hooks, plugins, or broader automation.
 
+## Current Evidence Status
+
+The 2026-06-18 Codex M1 run is a calibration result, not proof that Bald Patch works.
+
+- Baseline and skill arms both passed correctness checks: 10/10 each.
+- Median LOC changed was only 3% lower for the skill arm, below the 20% target.
+- Dependency and scope signals were weak: neither arm added dependencies or produced scope warnings.
+- Decoded blind review preferred baseline on 6/10 tasks and skill on 4/10 tasks, so the reviewer preference gate failed.
+
+See:
+
+- [M1 reviewed eval report](evals/reports/2026-06-18-m1-codex-reviewed.md)
+- [M1 reviewed evidence analysis](evals/reports/2026-06-18-m1-codex-reviewed-analysis.md)
+- [M2 eval design](docs/m2-eval-design.md)
+
+The next milestone should redesign the experiment rather than expand the current skill from M1 alone.
+
 ## Repository Layout
 
 ```text
@@ -121,12 +138,12 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 
 ## Roadmap
 
-1. M1: deterministic evaluation scaffolding and 10-task smoke eval.
-2. M1: JSONL scoring and Markdown report generation.
-3. M2: `$baldpatch-patch` skill draft and A/B comparison against baseline.
-4. M3: `$baldpatch-review` review pass with human-reviewed findings.
-5. M4: optional non-blocking Codex Stop hook for concise diff metrics.
-6. M5: plugin packaging only after the evaluation shows human value.
+1. M1: deterministic evaluation scaffolding and 10-task smoke eval. Done.
+2. M1: decode blind review and publish reviewed evidence. Done.
+3. M2: redesign the benchmark with clean baseline, prompt-control, and Bald Patch arms.
+4. M2: add leakage-resistant holdout tasks and multi-reviewer blind review.
+5. M3: strengthen `$baldpatch-review` only if M2 shows reviewer value.
+6. M4: optional non-blocking Codex Stop hook and plugin packaging only after evaluation shows human value.
 
 ## References
 

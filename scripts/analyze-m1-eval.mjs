@@ -24,6 +24,17 @@ export function summarizePairs(runs) {
       elapsed_slower: pairs.filter((pair) => pair.elapsed_delta_ms > 0).length,
       dependency_signal_tasks: pairs.filter((pair) => pair.dependency_delta !== 0).length,
       scope_warning_tasks: pairs.filter((pair) => pair.scope_warning_delta !== 0).length,
+      reviewer_preference_tasks: pairs.filter((pair) => {
+        return pair.reviewer_preference === "baseline"
+          || pair.reviewer_preference === "skill";
+      }).length,
+      reviewer_skill_preferred: pairs.filter((pair) => pair.reviewer_preference === "skill").length,
+      reviewer_baseline_preferred: pairs.filter((pair) => pair.reviewer_preference === "baseline").length,
+      reviewer_pending_tasks: pairs.filter((pair) => pair.reviewer_preference === "pending").length,
+      reviewer_invalid_tasks: pairs.filter((pair) => {
+        return pair.reviewer_preference === "conflict"
+          || pair.reviewer_preference === "none";
+      }).length,
     },
     pairs,
   };
@@ -43,16 +54,25 @@ export function renderMarkdownAnalysis(analysis, {
     `- Skill used more tool calls on ${overview.tool_calls_higher}/${overview.tasks} tasks; ${overview.tool_calls_equal}/${overview.tasks} tasks were equal.`,
     `- Skill was faster on ${overview.elapsed_faster}/${overview.tasks} tasks and slower on ${overview.elapsed_slower}/${overview.tasks} tasks.`,
     `- Success regressions: ${overview.success_regressions}.`,
+  ];
+  if (overview.reviewer_preference_tasks > 0) {
+    lines.push(
+      `- Blind reviewer preferred skill on ${overview.reviewer_skill_preferred}/${overview.reviewer_preference_tasks} decoded tasks and baseline on ${overview.reviewer_baseline_preferred}/${overview.reviewer_preference_tasks}.`,
+    );
+  } else {
+    lines.push("- Blind reviewer preference has not been decoded yet.");
+  }
+  lines.push(
     "",
     "## Per-Task Deltas",
     "",
-    "| Task | Success | LOC delta | Tool-call delta | Elapsed delta ms | Dependency delta | Scope-warning delta |",
-    "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
-  ];
+    "| Task | Success | LOC delta | Tool-call delta | Elapsed delta ms | Dependency delta | Scope-warning delta | Reviewer pref |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
+  );
 
   for (const pair of pairs) {
     lines.push(
-      `| ${pair.task_id} | ${pair.success_status} | ${signed(pair.loc_delta)} | ${signed(pair.tool_call_delta)} | ${signed(pair.elapsed_delta_ms)} | ${signed(pair.dependency_delta)} | ${signed(pair.scope_warning_delta)} |`,
+      `| ${pair.task_id} | ${pair.success_status} | ${signed(pair.loc_delta)} | ${signed(pair.tool_call_delta)} | ${signed(pair.elapsed_delta_ms)} | ${signed(pair.dependency_delta)} | ${signed(pair.scope_warning_delta)} | ${pair.reviewer_preference} |`,
     );
   }
 
@@ -60,16 +80,33 @@ export function renderMarkdownAnalysis(analysis, {
   if (overview.dependency_signal_tasks === 0) {
     lines.push("- The eval has weak dependency/scope signal: no paired task changed dependency additions or scope warnings.");
   }
-  lines.push("- Blind reviewer preference is still required before deciding whether smaller or equal diffs are actually easier to review.");
+  if (overview.reviewer_preference_tasks === 0) {
+    lines.push("- Blind reviewer preference is still required before deciding whether smaller or equal diffs are actually easier to review.");
+  } else if (overview.reviewer_pending_tasks > 0) {
+    lines.push(`- Reviewer preference is missing for ${overview.reviewer_pending_tasks}/${overview.tasks} paired tasks.`);
+  }
+  if (overview.reviewer_invalid_tasks > 0) {
+    lines.push(`- Reviewer preference has ${overview.reviewer_invalid_tasks}/${overview.tasks} invalid paired results.`);
+  }
 
   lines.push("", "## Next-Phase Implications", "");
   lines.push("- Treat M1 as a calibration run, not proof that Bald Patch works.");
   lines.push("- Keep the current runner/scorer, but make M2 tasks harder at tempting avoidable dependencies, speculative abstractions, and broad rewrites.");
-  lines.push("- Collect blind review answers for this M1 packet before changing the skill text, so the next change is based on reviewer value rather than LOC alone.");
+  if (overview.reviewer_preference_tasks === 0) {
+    lines.push("- Collect blind review answers for this M1 packet before changing the skill text, so the next change is based on reviewer value rather than LOC alone.");
+  } else {
+    lines.push("- Use the decoded reviewer signal as M1 evidence, but do not treat a single reviewer as enough for a production guardrail claim.");
+  }
 
   lines.push("", "## Recommended Decision", "");
   lines.push("- Do not expand Bald Patch beyond the current docs-first skill from M1 alone.");
-  lines.push("- Use the M1 blind review to decide whether the small objective LOC delta still has reviewer value.");
+  if (reviewerPreferencePasses(overview)) {
+    lines.push("- Reviewer preference clears the M1 threshold, but M2 is still needed to validate the effect against cleaner controls.");
+  } else if (overview.reviewer_preference_tasks > 0) {
+    lines.push("- Reviewer preference does not support expansion from M1; redesign M2 before changing the skill text.");
+  } else {
+    lines.push("- Use the M1 blind review to decide whether the small objective LOC delta still has reviewer value.");
+  }
   lines.push("- Start M2 only after the blind review is decoded, with harder trap tasks and at least one control arm that can expose overbuild more clearly.");
 
   lines.push("");
@@ -92,6 +129,7 @@ function pairedTask(taskId, runs) {
     dependency_delta: arrayLength(skill.dependencies_added)
       - arrayLength(baseline.dependencies_added),
     scope_warning_delta: warnings(skill) - warnings(baseline),
+    reviewer_preference: reviewerPreference(baseline, skill),
   };
 }
 
@@ -108,6 +146,30 @@ function loc(run) {
 
 function warnings(run) {
   return arrayLength(run.scope_violations) + arrayLength(run.overengineering_findings);
+}
+
+function reviewerPreference(baseline, skill) {
+  if (baseline.reviewer_preferred === true && skill.reviewer_preferred === true) {
+    return "conflict";
+  }
+  if (skill.reviewer_preferred === true) {
+    return "skill";
+  }
+  if (baseline.reviewer_preferred === true) {
+    return "baseline";
+  }
+  if (
+    typeof baseline.reviewer_preferred === "boolean"
+    || typeof skill.reviewer_preferred === "boolean"
+  ) {
+    return "none";
+  }
+  return "pending";
+}
+
+function reviewerPreferencePasses(overview) {
+  return overview.reviewer_preference_tasks > 0
+    && overview.reviewer_skill_preferred / overview.reviewer_preference_tasks >= 0.6;
 }
 
 function numeric(value) {
