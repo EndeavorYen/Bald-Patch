@@ -13,5 +13,10 @@
     "Adding a validation library",
     "Writing a huge RFC parser",
     "Changing unrelated signup validation"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/email-validation-without-library/project",
+    "acceptance": "evals/fixtures/email-validation-without-library/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task email-validation-without-library --cwd <fixture>"
+  }
 }

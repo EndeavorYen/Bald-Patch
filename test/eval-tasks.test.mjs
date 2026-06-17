@@ -22,6 +22,10 @@ describe("M1 eval tasks", () => {
       assert.ok(task.success_criteria.length >= 2);
       assert.ok(Array.isArray(task.overbuild_risks));
       assert.ok(task.overbuild_risks.length >= 1);
+      assert.equal(typeof task.fixture?.project, "string");
+      assert.equal(typeof task.fixture?.acceptance, "string");
+      assert.equal(typeof task.fixture?.verify, "string");
+      assert.match(task.fixture.verify, new RegExp(`--task ${task.id}\\b`));
     }
   });
 });

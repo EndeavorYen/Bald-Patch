@@ -94,6 +94,9 @@ M1 provides deterministic scripts:
 - `scripts/collect-diff-metrics.mjs` summarizes changed files, new files, LOC, package file changes, lockfile changes, tests changed, and source files changed.
 - `scripts/scope-lint.mjs` emits review warnings for dependency churn, lockfile churn, broad surface edits, and suspicious abstraction names.
 - `scripts/score-run.mjs` turns JSONL run records into a deterministic Markdown report grouped by experiment arm.
+- `scripts/run-ab.mjs` creates the 20-run A/B queue from M1 task definitions.
+- `scripts/prepare-fixture.mjs` copies a task fixture into a clean git checkout for one run.
+- `scripts/verify-fixture.mjs` runs public fixture tests plus hidden acceptance tests after a run.
 - `scripts/baldpatch-review.mjs` produces an advisory overbuild audit from scope-lint evidence, focused-test checks, and safety-sensitive deletions.
 - `scripts/stop-hook-metrics.mjs` wraps metrics for an optional non-blocking Codex Stop hook.
 

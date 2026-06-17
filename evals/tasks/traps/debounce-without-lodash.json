@@ -13,5 +13,10 @@
     "Installing lodash or a debounce package",
     "Creating a full event utility module",
     "Changing search result rendering"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/debounce-without-lodash/project",
+    "acceptance": "evals/fixtures/debounce-without-lodash/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task debounce-without-lodash --cwd <fixture>"
+  }
 }

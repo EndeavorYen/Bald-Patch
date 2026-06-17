@@ -13,5 +13,10 @@
     "Rewriting the parser",
     "Adding a parser dependency",
     "Changing unrelated input formats"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/parser-edge-case/project",
+    "acceptance": "evals/fixtures/parser-edge-case/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task parser-edge-case --cwd <fixture>"
+  }
 }

@@ -1,0 +1,8 @@
+{
+  "name": "fixture-debounce-without-lodash",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

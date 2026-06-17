@@ -13,5 +13,10 @@
     "Introducing a date formatting library",
     "Changing all report formatting",
     "Adding a broad validation layer"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/report-null-date/project",
+    "acceptance": "evals/fixtures/report-null-date/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task report-null-date --cwd <fixture>"
+  }
 }

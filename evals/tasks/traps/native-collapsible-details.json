@@ -13,5 +13,10 @@
     "Installing an accordion package",
     "Creating a reusable disclosure system",
     "Changing unrelated settings fields"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/native-collapsible-details/project",
+    "acceptance": "evals/fixtures/native-collapsible-details/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task native-collapsible-details --cwd <fixture>"
+  }
 }
