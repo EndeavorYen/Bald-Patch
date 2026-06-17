@@ -16,11 +16,13 @@
     "code-review"
   ],
   "scripts": {
-    "test": "node --test",
+    "test": "node --test test/*.test.mjs",
     "diff:metrics": "node scripts/collect-diff-metrics.mjs --json",
     "scope:lint": "node scripts/scope-lint.mjs --json",
     "score:run": "node scripts/score-run.mjs",
     "eval:plan": "node scripts/run-ab.mjs --jsonl",
+    "fixture:prepare": "node scripts/prepare-fixture.mjs",
+    "fixture:verify": "node scripts/verify-fixture.mjs",
     "review": "node scripts/baldpatch-review.mjs",
     "hook:stop": "node scripts/stop-hook-metrics.mjs"
   },

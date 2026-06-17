@@ -13,5 +13,10 @@
     "Replacing the CLI parser",
     "Adding a command framework",
     "Changing unrelated command behavior"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/cli-json-flag/project",
+    "acceptance": "evals/fixtures/cli-json-flag/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task cli-json-flag --cwd <fixture>"
+  }
 }

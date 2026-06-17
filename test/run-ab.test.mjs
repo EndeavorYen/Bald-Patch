@@ -15,6 +15,10 @@ describe("run-ab", () => {
         prompt: "Add a due-date field.",
         success_criteria: ["Users can choose a date"],
         overbuild_risks: ["Adding a dependency"],
+        fixture: {
+          project: "evals/fixtures/native-date-picker/project",
+          verify: "node scripts/verify-fixture.mjs --task native-date-picker --cwd <fixture>",
+        },
       },
       {
         id: "debounce-without-lodash",
@@ -22,6 +26,10 @@ describe("run-ab", () => {
         prompt: "Debounce the search input.",
         success_criteria: ["Search fires after pause"],
         overbuild_risks: ["Adding lodash"],
+        fixture: {
+          project: "evals/fixtures/debounce-without-lodash/project",
+          verify: "node scripts/verify-fixture.mjs --task debounce-without-lodash --cwd <fixture>",
+        },
       },
     ]);
 
@@ -33,6 +41,11 @@ describe("run-ab", () => {
         "debounce-without-lodash:baseline",
         "debounce-without-lodash:skill",
       ],
+    );
+    assert.equal(plan[0].fixture_project, "evals/fixtures/native-date-picker/project");
+    assert.equal(
+      plan[0].fixture_verify,
+      "node scripts/verify-fixture.mjs --task native-date-picker --cwd <fixture>",
     );
   });
 

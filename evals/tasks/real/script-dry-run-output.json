@@ -13,5 +13,10 @@
     "Adding a logging framework",
     "Refactoring unrelated script flow",
     "Creating a new reporting subsystem"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/script-dry-run-output/project",
+    "acceptance": "evals/fixtures/script-dry-run-output/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task script-dry-run-output --cwd <fixture>"
+  }
 }

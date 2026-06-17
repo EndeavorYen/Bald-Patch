@@ -13,5 +13,10 @@
     "Installing a date picker package",
     "Adding a form framework",
     "Rebuilding the form layout"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/native-date-picker/project",
+    "acceptance": "evals/fixtures/native-date-picker/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task native-date-picker --cwd <fixture>"
+  }
 }

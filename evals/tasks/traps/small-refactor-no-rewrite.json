@@ -13,5 +13,10 @@
     "Rewriting the formatter",
     "Changing public names",
     "Adding a strategy or registry abstraction"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/small-refactor-no-rewrite/project",
+    "acceptance": "evals/fixtures/small-refactor-no-rewrite/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task small-refactor-no-rewrite --cwd <fixture>"
+  }
 }

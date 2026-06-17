@@ -20,6 +20,8 @@ export function buildRunPlan(tasks, arms = ARMS) {
     return arms.map((arm) => ({
       task_id: task.id,
       arm,
+      fixture_project: task.fixture?.project || null,
+      fixture_verify: task.fixture?.verify || null,
       prompt: buildPrompt(task, arm),
     }));
   });

@@ -81,7 +81,9 @@ function changesTest(files) {
 }
 
 function hasSafetySensitiveDeletion(diff) {
-  return diff.split(/\r?\n/).some((line) => SAFETY_DELETION_PATTERN.test(line));
+  return diff
+    .split(/\r?\n/)
+    .some((line) => !line.startsWith("---") && SAFETY_DELETION_PATTERN.test(line));
 }
 
 function severityForScopeWarning(code) {

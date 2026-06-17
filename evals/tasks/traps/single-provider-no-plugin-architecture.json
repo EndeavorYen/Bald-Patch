@@ -13,5 +13,10 @@
     "Adding ProviderRegistry or PluginManager",
     "Creating a strategy framework",
     "Moving unrelated provider code"
-  ]
+  ],
+  "fixture": {
+    "project": "evals/fixtures/single-provider-no-plugin-architecture/project",
+    "acceptance": "evals/fixtures/single-provider-no-plugin-architecture/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task single-provider-no-plugin-architecture --cwd <fixture>"
+  }
 }

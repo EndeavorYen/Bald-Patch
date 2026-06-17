@@ -1,0 +1,8 @@
+{
+  "name": "fixture-small-refactor-no-rewrite",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
