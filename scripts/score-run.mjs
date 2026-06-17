@@ -19,6 +19,7 @@ export function summarizeRuns(runs) {
     .filter(Boolean);
 
   return {
+    acceptance_checks: acceptanceChecks(armSummaries),
     arms: armSummaries,
     blocked_runs: blockedRuns.map(blockedRunSummary),
     hard_gate_failures: hardGateFailures,
@@ -48,6 +49,18 @@ export function renderMarkdownReport(summary, {
       lines.push(
         `| ${arm.arm} | ${arm.success_count}/${arm.runs} | ${formatNumber(arm.median_files)} | ${formatNumber(arm.median_loc)} | ${arm.dependency_additions} | ${formatNumber(arm.median_tool_calls)} | ${formatNumber(arm.median_elapsed_ms)} | ${arm.scope_warnings} | ${formatPercent(arm.reviewer_preference_rate)} |`,
       );
+    }
+  }
+
+  lines.push("", "## Acceptance Check", "");
+
+  if (summary.acceptance_checks.length === 0) {
+    lines.push("- Not available");
+  } else {
+    lines.push("| Gate | Status | Detail |");
+    lines.push("| --- | --- | --- |");
+    for (const check of summary.acceptance_checks) {
+      lines.push(`| ${check.gate} | ${check.status} | ${check.detail} |`);
     }
   }
 
@@ -91,6 +104,103 @@ export function renderMarkdownReport(summary, {
 
   lines.push("");
   return lines.join("\n");
+}
+
+function acceptanceChecks(arms) {
+  const baseline = arms.find((arm) => arm.arm === "baseline");
+  const skill = arms.find((arm) => arm.arm === "skill");
+
+  if (!baseline || !skill) {
+    return [];
+  }
+
+  return [
+    correctnessCheck(baseline, skill),
+    locReductionCheck(baseline, skill),
+    dependencyReductionCheck(baseline, skill),
+    toolCallBudgetCheck(baseline, skill),
+    reviewerPreferenceCheck(skill),
+  ];
+}
+
+function correctnessCheck(baseline, skill) {
+  const baselineRate = baseline.success_count / baseline.runs;
+  const skillRate = skill.success_count / skill.runs;
+  return {
+    gate: "correctness_not_worse",
+    status: skillRate >= baselineRate ? "pass" : "fail",
+    detail: `skill success ${skill.success_count}/${skill.runs} vs baseline ${baseline.success_count}/${baseline.runs}`,
+  };
+}
+
+function locReductionCheck(baseline, skill) {
+  const reduction = decreaseRate(baseline.median_loc, skill.median_loc);
+  if (!isNumber(reduction)) {
+    return {
+      gate: "median_loc_reduction",
+      status: "pending",
+      detail: "median LOC unavailable",
+    };
+  }
+
+  return {
+    gate: "median_loc_reduction",
+    status: reduction >= 0.2 ? "pass" : "fail",
+    detail: `skill median LOC ${formatNumber(skill.median_loc)} vs baseline ${formatNumber(baseline.median_loc)} (${formatPercent(reduction)} lower)`,
+  };
+}
+
+function dependencyReductionCheck(baseline, skill) {
+  const reduction = decreaseRate(
+    baseline.dependency_additions,
+    skill.dependency_additions,
+  );
+  if (!isNumber(reduction)) {
+    return {
+      gate: "dependency_reduction",
+      status: "not-applicable",
+      detail: "baseline had no dependency additions",
+    };
+  }
+
+  return {
+    gate: "dependency_reduction",
+    status: reduction >= 0.5 ? "pass" : "fail",
+    detail: `skill dependency additions ${skill.dependency_additions} vs baseline ${baseline.dependency_additions} (${formatPercent(reduction)} lower)`,
+  };
+}
+
+function toolCallBudgetCheck(baseline, skill) {
+  const increase = increaseRate(baseline.median_tool_calls, skill.median_tool_calls);
+  if (!isNumber(increase)) {
+    return {
+      gate: "tool_call_budget",
+      status: "pending",
+      detail: "median tool calls unavailable",
+    };
+  }
+
+  return {
+    gate: "tool_call_budget",
+    status: increase <= 0.15 ? "pass" : "fail",
+    detail: `skill median tool calls ${formatNumber(skill.median_tool_calls)} vs baseline ${formatNumber(baseline.median_tool_calls)} (${formatPercent(increase)} higher)`,
+  };
+}
+
+function reviewerPreferenceCheck(skill) {
+  if (!isNumber(skill.reviewer_preference_rate)) {
+    return {
+      gate: "reviewer_preference",
+      status: "pending",
+      detail: "blind reviewer preference unavailable",
+    };
+  }
+
+  return {
+    gate: "reviewer_preference",
+    status: skill.reviewer_preference_rate >= 0.6 ? "pass" : "fail",
+    detail: `skill reviewer preference ${formatPercent(skill.reviewer_preference_rate)} (threshold 60%)`,
+  };
 }
 
 function blockedRunSummary(run) {
@@ -232,6 +342,20 @@ function isNumber(value) {
 
 function arrayLength(value) {
   return Array.isArray(value) ? value.length : 0;
+}
+
+function decreaseRate(before, after) {
+  if (!isNumber(before) || !isNumber(after) || before <= 0) {
+    return null;
+  }
+  return round((before - after) / before);
+}
+
+function increaseRate(before, after) {
+  if (!isNumber(before) || !isNumber(after) || before <= 0) {
+    return null;
+  }
+  return round((after - before) / before);
 }
 
 function round(value) {

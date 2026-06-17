@@ -64,6 +64,33 @@ describe("score-run", () => {
     assert.deepEqual(summary.regression_warnings, [
       "skill has smaller median LOC than baseline but higher human rework.",
     ]);
+    assert.deepEqual(summary.acceptance_checks, [
+      {
+        gate: "correctness_not_worse",
+        status: "pass",
+        detail: "skill success 2/2 vs baseline 1/2",
+      },
+      {
+        gate: "median_loc_reduction",
+        status: "pass",
+        detail: "skill median LOC 13 vs baseline 52.5 (75% lower)",
+      },
+      {
+        gate: "dependency_reduction",
+        status: "pass",
+        detail: "skill dependency additions 0 vs baseline 1 (100% lower)",
+      },
+      {
+        gate: "tool_call_budget",
+        status: "fail",
+        detail: "skill median tool calls 11.5 vs baseline 9 (28% higher)",
+      },
+      {
+        gate: "reviewer_preference",
+        status: "pass",
+        detail: "skill reviewer preference 100% (threshold 60%)",
+      },
+    ]);
   });
 
   it("renders a deterministic markdown report", () => {
@@ -82,6 +109,16 @@ describe("score-run", () => {
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         "| baseline | 1/2 | 3 | 52.5 | 1 | 9 | 90000 | 1 | 0% |",
         "| skill | 2/2 | 1.5 | 13 | 0 | 11.5 | 91500 | 0 | 100% |",
+        "",
+        "## Acceptance Check",
+        "",
+        "| Gate | Status | Detail |",
+        "| --- | --- | --- |",
+        "| correctness_not_worse | pass | skill success 2/2 vs baseline 1/2 |",
+        "| median_loc_reduction | pass | skill median LOC 13 vs baseline 52.5 (75% lower) |",
+        "| dependency_reduction | pass | skill dependency additions 0 vs baseline 1 (100% lower) |",
+        "| tool_call_budget | fail | skill median tool calls 11.5 vs baseline 9 (28% higher) |",
+        "| reviewer_preference | pass | skill reviewer preference 100% (threshold 60%) |",
         "",
         "## Hard Gate Failures",
         "",
@@ -161,6 +198,7 @@ describe("score-run", () => {
     ]));
 
     assert.match(markdown, /## Summary\n\n- No scored runs\./);
+    assert.match(markdown, /## Acceptance Check\n\n- Not available/);
   });
 });
 

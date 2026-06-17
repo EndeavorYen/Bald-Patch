@@ -205,6 +205,7 @@ function executeRun(context, {
   const elapsedMs = Date.now() - startedAt;
   writeFileSync(outputFile, agent.stdout || "");
   writeFileSync(errorFile, agent.stderr || "");
+  const telemetry = parseAgentTelemetry(agent.stderr || "");
 
   const verification = verifyFixture({
     taskId: context.task_id,
@@ -226,7 +227,7 @@ function executeRun(context, {
     run_id: context.run_id,
     task_id: context.task_id,
     arm: context.arm,
-    model: "external-agent-command",
+    model: telemetry.model,
     success,
     tests_passed: verification.phase !== "public-tests",
     requirements_met: verification.ok,
@@ -235,7 +236,7 @@ function executeRun(context, {
     lines_added: metrics.lines_added,
     lines_deleted: metrics.lines_deleted,
     dependencies_added: dependenciesAdded,
-    tool_calls: null,
+    tool_calls: telemetry.tool_calls,
     elapsed_ms: elapsedMs,
     scope_violations: scope.warnings.map((warning) => warning.code),
     overengineering_findings: [],
@@ -254,6 +255,20 @@ function executeRun(context, {
       record_file: recordFile,
       artifact_dir: context.artifact_dir,
     },
+  };
+}
+
+export function parseAgentTelemetry(logText) {
+  const model = logText.match(/^model:\s*(.+)$/m)?.[1]?.trim()
+    || "external-agent-command";
+  const toolCalls = logText
+    .split(/\r?\n/)
+    .filter((line) => /^(exec|apply_patch|view_image)$/.test(line.trim()))
+    .length;
+
+  return {
+    model,
+    tool_calls: toolCalls === 0 ? null : toolCalls,
   };
 }
 
