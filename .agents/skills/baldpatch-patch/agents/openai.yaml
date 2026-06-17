@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bald Patch"
+  short_description: "Guide Codex toward the smallest safe patch."
+  default_prompt: "Use $baldpatch-patch to solve this with the smallest safe diff."
