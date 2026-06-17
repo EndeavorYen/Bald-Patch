@@ -132,14 +132,18 @@ After answers are collected, decode them and write a reviewed run file:
 
 ```bash
 node scripts/apply-blind-review.mjs \
-  --runs evals/runs/YYYY-MM-DD-m1-smoke.jsonl \
-  --key /private/tmp/bald-patch-m1-codex-blind-key.json \
-  --answers evals/reviews/YYYY-MM-DD-m1-blind-answers.json \
-  --output-runs evals/runs/YYYY-MM-DD-m1-reviewed.jsonl \
-  --output-summary evals/reports/YYYY-MM-DD-m1-blind-review.md
+  --runs evals/runs/YYYY-MM-DD-m2.jsonl \
+  --key /private/tmp/bald-patch-m2-blind-key.json \
+  --answers evals/reviews/YYYY-MM-DD-m2-reviewer-1.json \
+  --answers evals/reviews/YYYY-MM-DD-m2-reviewer-2.json \
+  --answers evals/reviews/YYYY-MM-DD-m2-reviewer-3.json \
+  --output-runs evals/runs/YYYY-MM-DD-m2-reviewed.jsonl \
+  --output-summary evals/reports/YYYY-MM-DD-m2-blind-review.md
 ```
 
-Then rerun `score-run` against the reviewed JSONL so the reviewer preference gate is computed from decoded preferences.
+Each answer file may either be a raw array of answers or an object with `reviewer_id` and `answers`. Rich answers should include a `patches` object keyed by patch label so `score-run` can report reviewer preference, median expected rework, agreement, and underbuild findings.
+
+Then rerun `score-run` against the reviewed JSONL so reviewer preference, reviewer agreement, expected rework, and underbuild gates are computed from decoded preferences.
 
 ## 7. Interpret
 
