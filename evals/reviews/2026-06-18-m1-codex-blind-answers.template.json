@@ -1,0 +1,62 @@
+[
+  {
+    "task_id": "cli-json-flag",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "debounce-without-lodash",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "email-validation-without-library",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "native-collapsible-details",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "native-date-picker",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "parser-edge-case",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "report-null-date",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "script-dry-run-output",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "single-provider-no-plugin-architecture",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  },
+  {
+    "task_id": "small-refactor-no-rewrite",
+    "preferred_patch": "",
+    "confidence": 0,
+    "reason": ""
+  }
+]
