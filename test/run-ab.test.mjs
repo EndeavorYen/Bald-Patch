@@ -100,4 +100,26 @@ describe("run-ab", () => {
     assert.match(plan[2].prompt, /Add machine-readable output/);
     assert.doesNotMatch(plan[2].prompt, /command framework/);
   });
+
+  it("builds the M4 reviewer-proof prompt-only control arm", () => {
+    const task = {
+      id: "task-011",
+      public_id: "public-task-011",
+      title: "Share amount formatting",
+      neutral_title: "Share amount formatting",
+      natural_prompt: "Introduce a shared formatAmount helper and use it from both summaries.",
+      prompt: "Introduce a shared helper without changing labels.",
+    };
+    const plan = buildRunPlan([task], { mode: "m4" });
+
+    assert.deepEqual(plan.map((run) => run.arm), [
+      "m4-reviewer-proof-control",
+    ]);
+    assert.equal(plan[0].task_id, "public-task-011");
+    assert.equal(plan[0].fixture_task_id, "task-011");
+    assert.match(plan[0].prompt, /Introduce a shared formatAmount helper/);
+    assert.match(plan[0].prompt, /Do not add or export a helper solely for a tiny branch/);
+    assert.match(plan[0].prompt, /preserve existing wrapper call paths/);
+    assert.doesNotMatch(plan[0].prompt, /\$baldpatch-patch/);
+  });
 });

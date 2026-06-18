@@ -66,4 +66,18 @@ describe("M1 eval tasks", () => {
       ["natural-baseline", "prompt-control", "baldpatch-skill"],
     );
   });
+
+  it("uses the M2 task corpus for M4 reviewer-proof canaries", () => {
+    const m4Tasks = readTasks(TASK_ROOT, { mode: "m4" });
+    const m4Plan = buildRunPlan(m4Tasks, { mode: "m4" });
+
+    assert.equal(m4Tasks.length, 11);
+    assert.equal(m4Plan.length, 11);
+    assert.deepEqual(
+      m4Plan
+        .filter((run) => run.fixture_task_id === "shared-format-helper")
+        .map((run) => run.arm),
+      ["m4-reviewer-proof-control"],
+    );
+  });
 });

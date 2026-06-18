@@ -5,9 +5,21 @@ import { readTasks } from "./fixture-utils.mjs";
 const MODE_ARMS = {
   m1: ["baseline", "skill"],
   m2: ["natural-baseline", "prompt-control", "baldpatch-skill"],
+  m4: ["m4-reviewer-proof-control"],
 };
 
 const GENERIC_PROMPT_CONTROL = "Avoid unnecessary dependencies, speculative abstractions, and unrelated rewrites while preserving correctness, tests, and existing behavior.";
+const REVIEWER_PROOF_CONTROL = `Before editing, identify the smallest reviewer-visible proof for this task.
+
+Rules:
+1. Do not add or export a helper solely for a tiny branch; test existing public behavior when that is enough.
+2. Prefer scoped deterministic timer facilities over global mock setup when the test framework provides them.
+3. For validators, name and test the accepted/rejected boundary before choosing the implementation.
+4. For stateful form additions, test both populated field state and default state preservation when the existing API exposes defaults.
+5. For user-facing output, include minimal semantic labels that explain new data.
+6. For shared helpers, preserve existing wrapper call paths unless the request explicitly asks to remove them.
+
+After implementing, run the smallest meaningful verification and leave the working tree ready for diff metrics.`;
 
 export function loadTasks(taskRoot = "evals/tasks", options = {}) {
   return readTasks(taskRoot, options);
@@ -16,7 +28,7 @@ export function loadTasks(taskRoot = "evals/tasks", options = {}) {
 export function buildRunPlan(tasks, options = {}) {
   const { arms, mode } = normalizeOptions(options);
   return tasks.flatMap((task) => {
-    const taskId = mode === "m2" ? task.public_id || task.id : task.id;
+    const taskId = ["m2", "m4"].includes(mode) ? task.public_id || task.id : task.id;
     return arms.map((arm) => ({
       task_id: taskId,
       ...(taskId !== task.id ? { fixture_task_id: task.id } : {}),
@@ -31,6 +43,10 @@ export function buildRunPlan(tasks, options = {}) {
 export function buildPrompt(task, arm, {
   mode = modeForArm(arm),
 } = {}) {
+  if (mode === "m4") {
+    return buildM4Prompt(task);
+  }
+
   if (mode === "m2") {
     return buildM2Prompt(task, arm);
   }
@@ -79,6 +95,16 @@ function buildM2Prompt(task, arm) {
   return lines.join("\n");
 }
 
+function buildM4Prompt(task) {
+  return [
+    `# ${task.neutral_title || task.title}`,
+    "",
+    task.natural_prompt || task.prompt,
+    "",
+    REVIEWER_PROOF_CONTROL,
+  ].join("\n");
+}
+
 function normalizeOptions(options) {
   if (Array.isArray(options)) {
     return {
@@ -101,6 +127,10 @@ function armsForMode(mode) {
 }
 
 function modeForArm(arm) {
+  if (MODE_ARMS.m4.includes(arm)) {
+    return "m4";
+  }
+
   return MODE_ARMS.m2.includes(arm) ? "m2" : "m1";
 }
 

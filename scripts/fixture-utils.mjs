@@ -4,6 +4,7 @@ import path from "node:path";
 const TASK_GROUPS_BY_MODE = {
   m1: ["real", "traps"],
   m2: ["real", "traps", "positive"],
+  m4: ["real", "traps", "positive"],
 };
 
 const ALL_TASK_GROUPS = Array.from(new Set(Object.values(TASK_GROUPS_BY_MODE).flat()));

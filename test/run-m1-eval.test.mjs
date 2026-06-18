@@ -76,6 +76,21 @@ describe("run-m1-eval", () => {
     );
   });
 
+  it("dry-runs M4 reviewer-proof control contexts", () => {
+    const rows = runEval({
+      arm: "m4-reviewer-proof-control",
+      limit: 1,
+      mode: "m4",
+      outRoot: path.join(tmpRoot, "m4-dry"),
+      runIdPrefix: "m4",
+      taskId: "shared-format-helper",
+    });
+
+    assert.equal(rows[0].run_id, "m4-task-011-m4-reviewer-proof-control");
+    assert.match(rows[0].prompt_file, /m4-task-011-m4-reviewer-proof-control/);
+    assert.match(rows[0].verify, /--task shared-format-helper\b/);
+  });
+
   it("renders shell-quoted agent command placeholders", () => {
     const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
       fixture_dir: "/tmp/fixture with space",
