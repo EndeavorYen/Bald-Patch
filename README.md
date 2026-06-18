@@ -46,12 +46,14 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 and 2026-06-19 Codex M2 through M8 evidence shows that the skill is still
+The 2026-06-18 and 2026-06-19 Codex M2 through M9 evidence shows that the skill is still
 docs-first and advisory. M4 found a concrete reviewer-proof signal, M5 did not
 show that the provisional skill generalized on holdout tasks, and M6 narrowed
 the live skill wording. M7 gives reviewer-positive evidence for that narrowing,
 but it still does not prove that Bald Patch reliably produces smaller patches.
-M8 keeps the next step diagnostic rather than expansive.
+M8 kept the next step diagnostic rather than expansive. M9 completed that
+diagnostic repeatability loop and did not support adopting the timer-proof
+addendum or changing the live skill.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -85,9 +87,17 @@ M8 keeps the next step diagnostic rather than expansive.
   security policy for diff disclosure.
 - M8 does not support changing the live skill. The timer-proof draft lost the
   primary `m5-task-008` canary to the revised skill in partial review.
-- M9 is now designed as a 20-row same-arm repeatability check on `m5-task-008`
-  and `m5-task-011`: two arms, five seeds per task, and a required 3/3 blind
-  review before any later skill-change proposal.
+- M9 ran the 20-row same-arm repeatability check on `m5-task-008` and
+  `m5-task-011`: two arms, five seeds per task, and 3/3 external blind
+  reviewers.
+- M9 coding succeeded 20/20, with no dependency additions or scope warnings.
+- M9 did not support the timer-proof draft: it won only 1/5 primary timer
+  seed-pairs and 3/15 reviewer votes on `m5-task-008`, failing the primary
+  gate.
+- M9 preservation passed narrowly on `m5-task-011`, with 3/5 seed-pair wins and
+  7/15 reviewer votes for the draft, but aggregate preference was only 10/30.
+- M9 decision: do not change the live skill, do not adopt the timer-proof
+  addendum, and do not expand into hooks, plugins, or stronger automation.
 
 See:
 
@@ -108,6 +118,10 @@ See:
 - [M8 diagnostic analysis](evals/reports/2026-06-19-m8-diagnostic-analysis.md)
 - [M9 repeatability design](docs/m9-repeatability-design.md)
 - [M9 execution plan](docs/m9-execution-plan.md)
+- [M9 repeatability coding eval report](evals/reports/2026-06-19-m9-repeatability.md)
+- [M9 repeatability reviewed eval report](evals/reports/2026-06-19-m9-repeatability-reviewed.md)
+- [M9 repeatability blind review summary](evals/reviews/2026-06-19-m9-repeatability-external-review-summary.md)
+- [M9 repeatability analysis](evals/reports/2026-06-19-m9-repeatability-analysis.md)
 - [M8 diagnostic design](docs/m8-diagnostic-design.md)
 - [M8 execution plan](docs/m8-execution-plan.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
@@ -116,8 +130,9 @@ See:
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is executing M9 only after explicit approval and only if the
-review workflow can complete all three blind reviews. Hooks, plugins, and
+The next milestone is deciding whether an M10 should improve fixture/reviewer
+discrimination, run a broader holdout without the noisy timer addendum, or
+pause skill tuning until the review signal is stronger. Hooks, plugins, and
 broader automation remain out of scope until reviewed evidence shows durable
 human value.
 
@@ -220,7 +235,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 11. M8: design the targeted diagnostic before any skill rewrite or larger holdout. Done.
 12. M8: run the approval-gated diagnostic eval and blind review. Done, with partial blind review and no skill-change signal.
 13. M9: design a same-arm repeatability check for the M8 reversal canaries. Done.
-14. M9: run approval-gated coding eval and complete 3/3 blind review before any skill-change proposal.
+14. M9: run approval-gated coding eval and complete 3/3 blind review before any skill-change proposal. Done, with no skill-change signal.
+15. M10: decide whether to improve reviewer/fixture discrimination, run a broader holdout, or pause skill tuning.
 
 ## References
 
