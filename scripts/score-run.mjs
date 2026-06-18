@@ -144,9 +144,14 @@ function acceptanceChecks(arms, runs) {
   const skill = arms.find((arm) => arm.arm === "skill");
   const m7Old = arms.find((arm) => arm.arm === "old-baldpatch-skill");
   const m7Revised = arms.find((arm) => arm.arm === "revised-baldpatch-skill");
+  const m9Draft = arms.find((arm) => arm.arm === "m9-timer-proof-draft");
   const m4 = arms.find((arm) => arm.arm === "m4-reviewer-proof-control");
   const m3SkillRerun = arms.find((arm) => arm.arm === "m3-baldpatch-skill-rerun")
     || arms.find((arm) => arm.arm === "baldpatch-skill");
+
+  if (m7Revised && m9Draft) {
+    return m9AcceptanceChecks(m7Revised, m9Draft, runs);
+  }
 
   if (m7Old && m7Revised) {
     return m7AcceptanceChecks(m7Old, m7Revised, runs);
@@ -239,6 +244,72 @@ function m4AcceptanceChecks(control, target, runs) {
       targetLabel: target.arm,
       controlLabel: control.arm,
     }),
+  ];
+}
+
+function m9AcceptanceChecks(control, target, runs) {
+  const pairwise = seededPairwisePreferenceSummary(runs, {
+    controlArm: control.arm,
+    targetArm: target.arm,
+  });
+  const primary = taskSeedPreferenceSummary(pairwise.by_pair, "m5-task-008");
+  const preservation = taskSeedPreferenceSummary(pairwise.by_pair, "m5-task-011");
+  const completePairs = pairwise.by_pair.filter((pair) => pair.total_votes >= 3).length;
+  const controlOverbuild = overbuildFindingsForArm(runs, control.arm);
+  const targetOverbuild = overbuildFindingsForArm(runs, target.arm);
+  const severeObjections = unanimousSevereObjectionCount(runs, target.arm);
+  const riskAndReworkPass = target.underbuild_findings <= control.underbuild_findings
+    && targetOverbuild <= controlOverbuild
+    && isNumber(target.median_human_rework_minutes)
+    && isNumber(control.median_human_rework_minutes)
+    && target.median_human_rework_minutes <= control.median_human_rework_minutes;
+
+  return [
+    {
+      gate: "m9_correctness_20_of_20",
+      status: control.runs === 10
+        && target.runs === 10
+        && control.success_count === 10
+        && target.success_count === 10
+        ? "pass"
+        : "fail",
+      detail: `${control.arm} success ${control.success_count}/${control.runs}; ${target.arm} success ${target.success_count}/${target.runs}`,
+    },
+    {
+      gate: "m9_reviewer_completeness_3_of_3",
+      status: pairwise.pairs === 10 && completePairs === 10 && pairwise.total_votes >= 30
+        ? "pass"
+        : "fail",
+      detail: `${completePairs}/10 seed pairs have at least 3 reviewer votes; ${pairwise.total_votes}/30 votes recorded`,
+    },
+    {
+      gate: "m9_primary_timer_task_repeatability",
+      status: primary.target_seed_wins >= 4 && primary.target_votes >= 10 ? "pass" : "fail",
+      detail: `${target.arm} won ${primary.target_seed_wins}/${primary.seed_pairs} seed pairs and received ${primary.target_votes}/${primary.total_votes} reviewer votes on m5-task-008`,
+    },
+    {
+      gate: "m9_preservation_task_not_worse",
+      status: preservation.target_seed_wins >= preservation.control_seed_wins
+        || preservation.target_votes >= 7
+        ? "pass"
+        : "fail",
+      detail: `${target.arm} won ${preservation.target_seed_wins}/${preservation.seed_pairs} seed pairs and received ${preservation.target_votes}/${preservation.total_votes} reviewer votes on m5-task-011`,
+    },
+    {
+      gate: "m9_aggregate_votes",
+      status: pairwise.target_votes >= 18 ? "pass" : "fail",
+      detail: `${target.arm} received ${pairwise.target_votes}/${pairwise.total_votes} reviewer votes across M9`,
+    },
+    {
+      gate: "m9_risk_and_rework_not_worse",
+      status: riskAndReworkPass ? "pass" : "fail",
+      detail: `${target.arm} underbuild ${target.underbuild_findings} vs ${control.arm} ${control.underbuild_findings}; overbuild ${targetOverbuild} vs ${controlOverbuild}; median rework ${formatNumber(target.median_human_rework_minutes)} vs ${formatNumber(control.median_human_rework_minutes)} min`,
+    },
+    {
+      gate: "m9_no_unanimous_severe_objection",
+      status: severeObjections === 0 ? "pass" : "fail",
+      detail: `${target.arm} had ${severeObjections} unanimous high-risk seed-pair objections`,
+    },
   ];
 }
 
@@ -601,6 +672,92 @@ function underbuildFindings(run) {
     return assessment.abstraction_judgment === "underbuilt"
       || ["medium", "high"].includes(assessment.underbuild_risk);
   }).length;
+}
+
+function overbuildFindingsForArm(runs, arm) {
+  return runs
+    .filter((run) => run.arm === arm)
+    .reduce((total, run) => total + overbuildFindings(run), 0);
+}
+
+function overbuildFindings(run) {
+  if (!Array.isArray(run.reviewer_assessments)) {
+    return 0;
+  }
+  return run.reviewer_assessments.filter((assessment) => {
+    return assessment.abstraction_judgment === "overbuilt"
+      || ["medium", "high"].includes(assessment.overbuild_risk);
+  }).length;
+}
+
+function unanimousSevereObjectionCount(runs, arm) {
+  return runs.filter((run) => {
+    if (run.arm !== arm || !Array.isArray(run.reviewer_assessments)) {
+      return false;
+    }
+    const assessments = run.reviewer_assessments;
+    return assessments.length >= 3 && assessments.every(severeObjection);
+  }).length;
+}
+
+function severeObjection(assessment) {
+  return assessment.overbuild_risk === "high"
+    || assessment.underbuild_risk === "high";
+}
+
+function seededPairwisePreferenceSummary(runs, {
+  controlArm,
+  targetArm,
+}) {
+  const byPair = new Map();
+
+  for (const run of runs) {
+    if (run.arm !== controlArm && run.arm !== targetArm) {
+      continue;
+    }
+    const pairId = run.seed === undefined ? run.task_id : `${run.task_id}::seed-${run.seed}`;
+    const pair = byPair.get(pairId) || {
+      task_id: run.task_id,
+      seed: run.seed,
+      control_votes: 0,
+      target_votes: 0,
+      total_votes: 0,
+    };
+    for (const preference of Array.isArray(run.reviewer_preferences) ? run.reviewer_preferences : []) {
+      if (preference.preferred !== true) {
+        continue;
+      }
+      pair.total_votes += 1;
+      if (run.arm === targetArm) {
+        pair.target_votes += 1;
+      } else {
+        pair.control_votes += 1;
+      }
+    }
+    byPair.set(pairId, pair);
+  }
+
+  const pairs = [...byPair.values()].sort((left, right) => {
+    return left.task_id.localeCompare(right.task_id)
+      || numeric(left.seed) - numeric(right.seed);
+  });
+  return {
+    pairs: pairs.length,
+    target_votes: pairs.reduce((total, pair) => total + pair.target_votes, 0),
+    total_votes: pairs.reduce((total, pair) => total + pair.total_votes, 0),
+    by_pair: pairs,
+  };
+}
+
+function taskSeedPreferenceSummary(pairs, taskId) {
+  const taskPairs = pairs.filter((pair) => pair.task_id === taskId);
+  return {
+    seed_pairs: taskPairs.length,
+    target_seed_wins: taskPairs.filter((pair) => pair.target_votes > pair.control_votes).length,
+    control_seed_wins: taskPairs.filter((pair) => pair.control_votes > pair.target_votes).length,
+    target_votes: taskPairs.reduce((total, pair) => total + pair.target_votes, 0),
+    total_votes: taskPairs.reduce((total, pair) => total + pair.total_votes, 0),
+  };
 }
 
 function pairwisePreferenceSummary(runs, {

@@ -403,6 +403,31 @@ describe("score-run", () => {
       "revised-baldpatch-skill won 6/8 prior M5 loss tasks vs old-baldpatch-skill",
     );
   });
+
+  it("reports M9 repeatability gates by task, seed, and reviewer completeness", () => {
+    const summary = summarizeRuns(sampleM9RepeatabilityRuns());
+
+    assert.deepEqual(
+      summary.acceptance_checks.map((check) => [check.gate, check.status]),
+      [
+        ["m9_correctness_20_of_20", "pass"],
+        ["m9_reviewer_completeness_3_of_3", "pass"],
+        ["m9_primary_timer_task_repeatability", "pass"],
+        ["m9_preservation_task_not_worse", "pass"],
+        ["m9_aggregate_votes", "pass"],
+        ["m9_risk_and_rework_not_worse", "pass"],
+        ["m9_no_unanimous_severe_objection", "pass"],
+      ],
+    );
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "m9_primary_timer_task_repeatability").detail,
+      "m9-timer-proof-draft won 4/5 seed pairs and received 10/15 reviewer votes on m5-task-008",
+    );
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "m9_aggregate_votes").detail,
+      "m9-timer-proof-draft received 18/30 reviewer votes across M9",
+    );
+  });
 });
 
 function sampleRuns() {
@@ -621,15 +646,46 @@ function sampleM7PairwiseRuns() {
   ]);
 }
 
+function sampleM9RepeatabilityRuns() {
+  const targetVotes = {
+    "m5-task-008": [3, 3, 2, 2, 0],
+    "m5-task-011": [2, 2, 2, 1, 1],
+  };
+
+  return Object.entries(targetVotes).flatMap(([taskId, votesBySeed]) => {
+    return votesBySeed.flatMap((targetVotesForSeed, index) => {
+      const seed = index + 1;
+      return [
+        pairwiseRun("revised-baldpatch-skill", taskId, {
+          preferredVotes: 3 - targetVotesForSeed,
+          lines: 18,
+          toolCalls: 9,
+          rework: 3,
+          seed,
+        }),
+        pairwiseRun("m9-timer-proof-draft", taskId, {
+          preferredVotes: targetVotesForSeed,
+          lines: 20,
+          toolCalls: 10,
+          rework: 2,
+          seed,
+        }),
+      ];
+    });
+  });
+}
+
 function pairwiseRun(arm, taskId, {
   preferredVotes,
   lines,
   toolCalls,
   rework,
+  seed = null,
 }) {
   return {
-    run_id: `${arm}-${taskId}`,
+    run_id: seed === null ? `${arm}-${taskId}` : `${arm}-${taskId}-seed-${seed}`,
     task_id: taskId,
+    ...(seed === null ? {} : { seed }),
     arm,
     success: true,
     tests_passed: true,

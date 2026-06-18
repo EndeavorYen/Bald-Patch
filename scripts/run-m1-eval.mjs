@@ -35,7 +35,8 @@ export function buildRunContext(run, {
   outRoot,
   runIdPrefix,
 } = {}) {
-  const runId = `${runIdPrefix}-${run.task_id}-${run.arm}`;
+  const seedSegment = run.seed === undefined ? "" : `-seed-${run.seed}`;
+  const runId = `${runIdPrefix}-${run.task_id}${seedSegment}-${run.arm}`;
   return {
     ...run,
     run_id: runId,
@@ -144,6 +145,7 @@ function blockedRecord(context, reason) {
     run_id: context.run_id,
     task_id: context.task_id,
     arm: context.arm,
+    ...(context.seed === undefined ? {} : { seed: context.seed }),
     blocked: true,
     block_reason: reason,
     model: null,
@@ -170,6 +172,7 @@ function dryRunRow(context, agentCommand) {
     run_id: context.run_id,
     task_id: context.task_id,
     arm: context.arm,
+    ...(context.seed === undefined ? {} : { seed: context.seed }),
     fixture_dir: context.fixture_dir,
     prompt_file: promptFile,
     verify: context.fixture_verify.replace("<fixture>", context.fixture_dir),
@@ -232,6 +235,7 @@ function executeRun(context, {
     run_id: context.run_id,
     task_id: context.task_id,
     arm: context.arm,
+    ...(context.seed === undefined ? {} : { seed: context.seed }),
     model: telemetry.model,
     success,
     tests_passed: verification.phase !== "public-tests",

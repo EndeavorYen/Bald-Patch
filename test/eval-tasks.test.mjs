@@ -147,4 +147,32 @@ describe("M1 eval tasks", () => {
       "m8-timer-proof-draft",
     ]);
   });
+
+  it("defines an M9 repeatability suite from the timer reversal canaries", () => {
+    const m9Tasks = readTasks(TASK_ROOT, { mode: "m9" });
+    const m9Plan = buildRunPlan(m9Tasks, { mode: "m9" });
+
+    assert.equal(m9Tasks.length, 2);
+    assert.deepEqual(m9Tasks.map((task) => task.public_id), [
+      "m5-task-008",
+      "m5-task-011",
+    ]);
+    assert.equal(m9Plan.length, 20);
+    assert.deepEqual([...new Set(m9Plan.map((run) => run.arm))], [
+      "revised-baldpatch-skill",
+      "m9-timer-proof-draft",
+    ]);
+    assert.deepEqual([...new Set(m9Plan.map((run) => run.seed))], [1, 2, 3, 4, 5]);
+
+    for (const task of m9Tasks) {
+      const taskRuns = m9Plan.filter((run) => run.task_id === task.public_id);
+      assert.equal(taskRuns.length, 10);
+      for (const seed of [1, 2, 3, 4, 5]) {
+        assert.deepEqual(
+          taskRuns.filter((run) => run.seed === seed).map((run) => run.arm),
+          ["revised-baldpatch-skill", "m9-timer-proof-draft"],
+        );
+      }
+    }
+  });
 });

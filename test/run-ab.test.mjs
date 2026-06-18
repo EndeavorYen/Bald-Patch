@@ -201,4 +201,41 @@ describe("run-ab", () => {
     assert.match(plan[1].prompt, /prove both the scheduling argument and the callback side effect/);
     assert.match(plan[1].prompt, /Keep LOC pressure active/);
   });
+
+  it("builds M9 repeatability prompts with five seed pairs per task", () => {
+    const task = {
+      id: "m5-holdout-injected-timer",
+      public_id: "m5-task-008",
+      title: "Respect an injected timer delay",
+      neutral_title: "Respect an injected timer delay",
+      natural_prompt: "Add a custom delayMs option while preserving the injected timer path.",
+      prompt: "Add a custom delayMs option while preserving the injected timer path.",
+    };
+    const plan = buildRunPlan([task], { mode: "m9" });
+
+    assert.equal(plan.length, 10);
+    assert.deepEqual(
+      plan.map((run) => `${run.seed}:${run.arm}`),
+      [
+        "1:revised-baldpatch-skill",
+        "1:m9-timer-proof-draft",
+        "2:revised-baldpatch-skill",
+        "2:m9-timer-proof-draft",
+        "3:revised-baldpatch-skill",
+        "3:m9-timer-proof-draft",
+        "4:revised-baldpatch-skill",
+        "4:m9-timer-proof-draft",
+        "5:revised-baldpatch-skill",
+        "5:m9-timer-proof-draft",
+      ],
+    );
+    assert.equal(plan[0].task_id, "m5-task-008");
+    assert.equal(plan[0].fixture_task_id, "m5-holdout-injected-timer");
+    assert.match(plan[0].prompt, /M9 repeatability seed: 1/);
+    assert.match(plan[0].prompt, /Use this exact revised post-M5 Bald Patch skill guidance/);
+    assert.doesNotMatch(plan[0].prompt, /M9 repeatability timer-proof addendum/);
+    assert.match(plan[1].prompt, /Use this exact M9 timer-proof draft Bald Patch guidance/);
+    assert.match(plan[1].prompt, /M9 repeatability timer-proof addendum/);
+    assert.match(plan[1].prompt, /prove both the scheduling argument and the callback side effect/);
+  });
 });

@@ -11,13 +11,13 @@ export function applyBlindReview({
   runs,
 }) {
   const normalizedAnswerSets = normalizeAnswerSets({ answers, answerSets });
-  const keyByTask = groupKeyByTask(key);
+  const keyByReviewTarget = groupKeyByReviewTarget(key);
   const reviewsByRunId = new Map();
   const decisions = [];
 
   for (const answerSet of normalizedAnswerSets) {
     for (const answer of answerSet.answers) {
-      const taskKey = keyByTask.get(answer.task_id) || [];
+      const taskKey = keyByReviewTarget.get(reviewTargetId(answer)) || [];
       const decision = decodeAnswer(answer, taskKey, answerSet.reviewer_id);
       decisions.push(decision);
 
@@ -84,7 +84,7 @@ export function summarizeBlindReview(decisions) {
   for (const decision of decisions) {
     counts.set(decision.arm, (counts.get(decision.arm) || 0) + 1);
     lines.push(
-      `| ${markdownCell(decision.task_id)} | ${markdownCell(decision.arm)} | ${markdownCell(decision.patch)} | ${markdownCell(decision.confidence)} | ${markdownCell(decision.reason)} |`,
+      `| ${markdownCell(decisionLabel(decision))} | ${markdownCell(decision.arm)} | ${markdownCell(decision.patch)} | ${markdownCell(decision.confidence)} | ${markdownCell(decision.reason)} |`,
     );
   }
 
@@ -115,15 +115,20 @@ function normalizeAnswerSets({
   ];
 }
 
-function groupKeyByTask(key) {
+function groupKeyByReviewTarget(key) {
   const grouped = new Map();
   for (const entry of key) {
-    if (!grouped.has(entry.task_id)) {
-      grouped.set(entry.task_id, []);
+    const targetId = reviewTargetId(entry);
+    if (!grouped.has(targetId)) {
+      grouped.set(targetId, []);
     }
-    grouped.get(entry.task_id).push(entry);
+    grouped.get(targetId).push(entry);
   }
   return grouped;
+}
+
+function reviewTargetId(value) {
+  return value.seed === undefined ? value.task_id : `${value.task_id}::seed-${value.seed}`;
 }
 
 function decodeAnswer(answer, taskKey, reviewerId) {
@@ -135,6 +140,7 @@ function decodeAnswer(answer, taskKey, reviewerId) {
   return {
     reviewer_id: reviewerId,
     task_id: answer.task_id,
+    ...(match.seed === undefined ? {} : { seed: match.seed }),
     patch: answer.preferred_patch,
     arm: match.arm,
     run_id: match.run_id,
@@ -226,6 +232,12 @@ function recordsJsonl(runs) {
 
 function markdownCell(value) {
   return String(value).replace(/\r?\n/g, " ").replaceAll("|", "\\|");
+}
+
+function decisionLabel(decision) {
+  return decision.seed === undefined
+    ? decision.task_id
+    : `${decision.task_id} seed ${decision.seed}`;
 }
 
 function median(values) {
