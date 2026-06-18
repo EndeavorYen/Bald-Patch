@@ -4,7 +4,7 @@
 
 **Goal:** Test whether a narrow reviewer-proof rubric fixes the six M3 failure modes before changing `$baldpatch-patch`.
 
-**Architecture:** Add the smallest eval-harness support for a new `m4-reviewer-proof-control` prompt-only arm, run it on the six M3 smoke tasks, compare it against the existing M3 evidence in a blind packet, and only update the skill if reviewers prefer the canary output at task level.
+**Architecture:** Add the smallest eval-harness support for a new `m4-reviewer-proof-control` prompt-only arm, run it on the six M3 smoke tasks, rerun the current `baldpatch-skill` arm the same day as the primary reference, compare M4 vs rerun M3 skill in a pairwise blind packet, and only draft a skill update if reviewers prefer the canary output at task level.
 
 **Tech Stack:** Node.js built-ins, existing fixture tasks, existing `scripts/run-m1-eval.mjs`, existing blind review/scoring scripts, external Codex agent command after explicit approval, GitHub issues/PRs.
 
@@ -25,29 +25,42 @@ task-008: dry-run output
 task-011: shared format helper
 ```
 
-Comparison arms:
+Primary comparison arms:
 
 ```text
-m3-baldpatch-skill: existing M3 skill outputs, used as the reference to beat
-m3-natural-baseline: existing M3 natural outputs, included to preserve reviewer context
-m3-prompt-control: existing M3 generic prompt-control outputs, included to preserve reviewer context
+m3-baldpatch-skill-rerun: same-day rerun of the current M3 Bald Patch skill arm
 m4-reviewer-proof-control: new prompt-only arm with the six specific reviewer-proof rules
 ```
 
-Primary success gate:
+Secondary comparison arms:
 
 ```text
-m4-reviewer-proof-control wins at least 3/6 tasks, or gains at least 4 reviewer votes over the M3 baldpatch-skill result of 2/18 votes.
+m3-natural-baseline: existing M3 natural outputs, optional historical context
+m3-prompt-control: existing M3 generic prompt-control outputs, optional historical context
 ```
 
-Secondary gates:
+M4 is a known-failure canary. Passing it means the six rules are worth drafting into the skill; it does not prove Bald Patch generalizes. A later M5 holdout is required before claiming the skill reliably improves reviewer preference.
+
+Primary success gates:
 
 ```text
-- success remains 6/6 on fixture verification
-- underbuild findings do not exceed M3 baldpatch-skill
-- median LOC is not higher than M3 baldpatch-skill
-- median tool calls are no more than 15% above M3 baldpatch-skill
+- M4 succeeds 6/6 on fixture verification
+- pairwise M4 vs same-day M3 skill rerun: M4 wins at least 4/6 tasks
+- pairwise reviewer votes: M4 receives at least 10/18 votes
+- no task has a unanimous 3/3 M4 loss
+- M4 underbuild findings do not exceed the same-day M3 skill rerun
+- M4 median expected rework does not exceed the same-day M3 skill rerun
+- M4 median LOC is not higher than the same-day M3 skill rerun
+- M4 median tool calls are no more than 15% above the same-day M3 skill rerun
 - private blind keys remain outside the repository
+```
+
+Strong pass signal:
+
+```text
+- M4 wins at least 5/6 tasks, or receives at least 12/18 pairwise reviewer votes
+- M4 wins at least 3 of the M3 unanimous skill-loss tasks
+- M4 adds no underbuild findings
 ```
 
 ## Expected Task-Level Movement
@@ -129,13 +142,28 @@ Add or extend the existing script tests so they assert:
 
 Expected: test coverage locks the canary shape before any external execution.
 
-### Task 2: Generate The M4 Dry Run
+### Task 2: Generate The Pairwise Dry Run
 
 **Files:**
-- Create local-only: `/private/tmp/bald-patch-m4-reviewer-proof-plan.jsonl`
+- Create local-only: `/private/tmp/bald-patch-m4-reviewer-proof-pairwise-plan.jsonl`
 - Create local-only directories under: `/private/tmp/bald-patch-m4-reviewer-proof/`
 
-- [ ] **Step 1: Generate one dry-run row per selected task**
+- [ ] **Step 1: Generate same-day M3 skill reference dry-run rows**
+
+Run one dry-run command per selected task:
+
+```bash
+rtk node scripts/run-m1-eval.mjs --mode m2 --arm baldpatch-skill --task task-001 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-m3-skill-rerun
+rtk node scripts/run-m1-eval.mjs --mode m2 --arm baldpatch-skill --task task-002 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-m3-skill-rerun
+rtk node scripts/run-m1-eval.mjs --mode m2 --arm baldpatch-skill --task task-003 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-m3-skill-rerun
+rtk node scripts/run-m1-eval.mjs --mode m2 --arm baldpatch-skill --task task-005 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-m3-skill-rerun
+rtk node scripts/run-m1-eval.mjs --mode m2 --arm baldpatch-skill --task task-008 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-m3-skill-rerun
+rtk node scripts/run-m1-eval.mjs --mode m2 --arm baldpatch-skill --task task-011 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-m3-skill-rerun
+```
+
+Expected: 6 JSONL rows, all with arm `baldpatch-skill`, same-day run ids, and fixture verify commands.
+
+- [ ] **Step 2: Generate M4 reviewer-proof dry-run rows**
 
 ```bash
 rtk node scripts/run-m1-eval.mjs --mode m4 --task task-001 --out-root /private/tmp/bald-patch-m4-reviewer-proof --run-id-prefix 2026-06-18-m4-reviewer-proof
@@ -148,7 +176,7 @@ rtk node scripts/run-m1-eval.mjs --mode m4 --task task-011 --out-root /private/t
 
 Expected: 6 JSONL rows, all with arm `m4-reviewer-proof-control`.
 
-- [ ] **Step 2: Inspect prompts before external execution**
+- [ ] **Step 3: Inspect prompts before external execution**
 
 Check that every prompt contains the shared rubric and no skill invocation:
 
@@ -158,19 +186,19 @@ rtk node scripts/run-ab.mjs --mode m4 --jsonl
 
 Expected: prompts are task-neutral, reviewer-proof, and do not leak the target result.
 
-### Task 3: Execute External M4 Runs
+### Task 3: Execute Same-Day Pairwise Runs
 
 **Files:**
-- Create: `evals/runs/2026-06-18-m4-reviewer-proof.jsonl`
+- Create: `evals/runs/2026-06-18-m4-reviewer-proof-pairwise.jsonl`
 - Create local-only artifacts under: `/private/tmp/bald-patch-m4-reviewer-proof/`
 
 - [ ] **Step 1: Get explicit approval for external execution**
 
-Ask for approval because fixture code and prompts will be sent to external Codex/OpenAI services.
+Ask for approval because fixture code and prompts for both the M3 skill rerun and the M4 canary will be sent to external Codex/OpenAI services.
 
-Expected: do not execute external agent commands until the user approves this specific M4 canary run.
+Expected: do not execute external agent commands until the user approves this specific M4 pairwise canary run.
 
-- [ ] **Step 2: Run the six selected M4 rows**
+- [ ] **Step 2: Run the six same-day M3 skill reference rows**
 
 Use this agent command template:
 
@@ -182,85 +210,79 @@ For each selected task, run:
 
 ```bash
 rtk node scripts/run-m1-eval.mjs \
-  --mode m4 \
+  --mode m2 \
+  --arm baldpatch-skill \
   --task task-001 \
   --out-root /private/tmp/bald-patch-m4-reviewer-proof \
-  --run-id-prefix 2026-06-18-m4-reviewer-proof \
-  --record evals/runs/2026-06-18-m4-reviewer-proof.jsonl \
+  --run-id-prefix 2026-06-18-m4-m3-skill-rerun \
+  --record evals/runs/2026-06-18-m4-reviewer-proof-pairwise.jsonl \
   --agent-command 'rtk codex --ask-for-approval never exec --cd {fixture} --sandbox workspace-write --ignore-user-config --ignore-rules --ephemeral --skip-git-repo-check --output-last-message {artifactDir}/agent-output.txt - < {promptFile}' \
   --execute
 ```
 
 Repeat with `task-002`, `task-003`, `task-005`, `task-008`, and `task-011`.
 
-Expected: `evals/runs/2026-06-18-m4-reviewer-proof.jsonl` contains 6 honest rows with fixture verification results and diff metrics.
+Expected: the pairwise run file contains 6 honest same-day M3 skill reference rows.
 
-### Task 4: Build A Combined Blind Packet
+- [ ] **Step 3: Run the six selected M4 rows**
+
+Use the same agent command template, but switch to `--mode m4`:
+
+```bash
+rtk node scripts/run-m1-eval.mjs \
+  --mode m4 \
+  --task task-001 \
+  --out-root /private/tmp/bald-patch-m4-reviewer-proof \
+  --run-id-prefix 2026-06-18-m4-reviewer-proof \
+  --record evals/runs/2026-06-18-m4-reviewer-proof-pairwise.jsonl \
+  --agent-command 'rtk codex --ask-for-approval never exec --cd {fixture} --sandbox workspace-write --ignore-user-config --ignore-rules --ephemeral --skip-git-repo-check --output-last-message {artifactDir}/agent-output.txt - < {promptFile}' \
+  --execute
+```
+
+Repeat with `task-002`, `task-003`, `task-005`, `task-008`, and `task-011`.
+
+Expected: `evals/runs/2026-06-18-m4-reviewer-proof-pairwise.jsonl` contains 12 honest rows with fixture verification results and diff metrics.
+
+### Task 4: Build The Primary Pairwise Blind Packet
 
 **Files:**
-- Create local-only: `/private/tmp/bald-patch-m4-reviewer-proof/combined-runs.jsonl`
-- Create local-only: `/private/tmp/bald-patch-m4-reviewer-proof/combined-checkouts/`
-- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-blind-review.md`
-- Create local-only: `/private/tmp/bald-patch-m4-reviewer-proof/2026-06-18-m4-reviewer-proof-blind-key.json`
+- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-blind-review.md`
+- Create local-only: `/private/tmp/bald-patch-m4-reviewer-proof/2026-06-18-m4-reviewer-proof-pairwise-blind-key.json`
 
-- [ ] **Step 1: Combine M3 reference rows with M4 canary rows**
-
-Build a combined run file containing:
-
-```text
-- the 18 rows from `evals/runs/2026-06-18-m3-smoke-reviewed.jsonl`, with reviewer fields stripped before packet building
-- the 6 rows from `evals/runs/2026-06-18-m4-reviewer-proof.jsonl`
-```
-
-Use arm labels that preserve the experiment meaning:
-
-```text
-m3-baldpatch-skill
-m3-natural-baseline
-m3-prompt-control
-m4-reviewer-proof-control
-```
-
-Expected: the packet builder sees four patches per task while reviewers still see only anonymized patch labels.
-
-- [ ] **Step 2: Place all checkout directories under one root**
-
-Copy the selected M3 smoke checkouts and the new M4 checkouts into:
-
-```text
-/private/tmp/bald-patch-m4-reviewer-proof/combined-checkouts/
-```
-
-Expected: each `run_id` in the combined run file has a matching checkout directory under the combined checkout root.
-
-- [ ] **Step 3: Build the blind packet**
+- [ ] **Step 1: Build the primary pairwise packet**
 
 ```bash
 rtk node scripts/build-blind-review-packet.mjs \
   --mode m2 \
-  --runs /private/tmp/bald-patch-m4-reviewer-proof/combined-runs.jsonl \
-  --checkouts /private/tmp/bald-patch-m4-reviewer-proof/combined-checkouts \
-  --seed 2026-06-18-m4-reviewer-proof \
-  --output-packet evals/reviews/2026-06-18-m4-reviewer-proof-blind-review.md \
-  --output-key /private/tmp/bald-patch-m4-reviewer-proof/2026-06-18-m4-reviewer-proof-blind-key.json
+  --runs evals/runs/2026-06-18-m4-reviewer-proof-pairwise.jsonl \
+  --checkouts /private/tmp/bald-patch-m4-reviewer-proof/checkouts \
+  --seed 2026-06-18-m4-reviewer-proof-pairwise \
+  --output-packet evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-blind-review.md \
+  --output-key /private/tmp/bald-patch-m4-reviewer-proof/2026-06-18-m4-reviewer-proof-pairwise-blind-key.json
 ```
 
-Expected: packet omits run ids, arm names, model names, fixture ids, and the private mapping key.
+Expected: every reviewed task has exactly two anonymized patches, one same-day `baldpatch-skill` rerun and one `m4-reviewer-proof-control` output.
+
+- [ ] **Step 2: Treat historical M3 arms as secondary context only**
+
+If additional budget is available, build a separate secondary packet that compares M4 against the existing M3 task winner for each task.
+
+Expected: secondary comparison never replaces the primary pairwise gate because historical rows carry model/tool drift risk.
 
 ### Task 5: Run Blind Review
 
 **Files:**
-- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-external-r1-answers.json`
-- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-external-r2-answers.json`
-- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-external-r3-answers.json`
+- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r1-answers.json`
+- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r2-answers.json`
+- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r3-answers.json`
 
 - [ ] **Step 1: Get explicit approval for external blind review**
 
 Ask for approval because code diffs and reviewer prompts will be sent to external Codex/OpenAI services.
 
-Expected: do not send the blind packet externally until the user approves this specific M4 review.
+Expected: do not send the blind packet externally until the user approves this specific M4 pairwise review.
 
-- [ ] **Step 2: Run three reviewers using the existing answer schema**
+- [ ] **Step 2: Run three reviewers using the pairwise risk schema**
 
 Each reviewer must return:
 
@@ -275,29 +297,30 @@ expected_rework_minutes
 scores
 dependency_judgment
 abstraction_judgment
-underbuild_findings
+overbuild_risk: none|low|medium|high
+underbuild_risk: none|low|medium|high
 ```
 
-Expected: three valid answer files, each covering all six task ids and all four anonymized patches.
+Expected: three valid answer files, each covering all six task ids and both anonymized patches.
 
 ### Task 6: Decode, Score, And Decide
 
 **Files:**
-- Create: `evals/runs/2026-06-18-m4-reviewer-proof-reviewed.jsonl`
-- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-external-review-summary.md`
-- Create: `evals/reports/2026-06-18-m4-reviewer-proof-reviewed.md`
+- Create: `evals/runs/2026-06-18-m4-reviewer-proof-pairwise-reviewed.jsonl`
+- Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-review-summary.md`
+- Create: `evals/reports/2026-06-18-m4-reviewer-proof-pairwise-reviewed.md`
 
 - [ ] **Step 1: Decode blind review answers**
 
 ```bash
 rtk node scripts/apply-blind-review.mjs \
-  --runs /private/tmp/bald-patch-m4-reviewer-proof/combined-runs.jsonl \
-  --key /private/tmp/bald-patch-m4-reviewer-proof/2026-06-18-m4-reviewer-proof-blind-key.json \
-  --answers evals/reviews/2026-06-18-m4-reviewer-proof-external-r1-answers.json \
-  --answers evals/reviews/2026-06-18-m4-reviewer-proof-external-r2-answers.json \
-  --answers evals/reviews/2026-06-18-m4-reviewer-proof-external-r3-answers.json \
-  --output-runs evals/runs/2026-06-18-m4-reviewer-proof-reviewed.jsonl \
-  --output-summary evals/reviews/2026-06-18-m4-reviewer-proof-external-review-summary.md
+  --runs evals/runs/2026-06-18-m4-reviewer-proof-pairwise.jsonl \
+  --key /private/tmp/bald-patch-m4-reviewer-proof/2026-06-18-m4-reviewer-proof-pairwise-blind-key.json \
+  --answers evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r1-answers.json \
+  --answers evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r2-answers.json \
+  --answers evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r3-answers.json \
+  --output-runs evals/runs/2026-06-18-m4-reviewer-proof-pairwise-reviewed.jsonl \
+  --output-summary evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-review-summary.md
 ```
 
 Expected: reviewed rows contain three reviewer preferences and reviewer assessments per run.
@@ -306,20 +329,21 @@ Expected: reviewed rows contain three reviewer preferences and reviewer assessme
 
 ```bash
 rtk node scripts/score-run.mjs \
-  --input evals/runs/2026-06-18-m4-reviewer-proof-reviewed.jsonl \
-  --output evals/reports/2026-06-18-m4-reviewer-proof-reviewed.md \
-  --title "Bald Patch M4 Reviewer-Proof Canary Reviewed Eval Report - 2026-06-18"
+  --input evals/runs/2026-06-18-m4-reviewer-proof-pairwise-reviewed.jsonl \
+  --output evals/reports/2026-06-18-m4-reviewer-proof-pairwise-reviewed.md \
+  --title "Bald Patch M4 Reviewer-Proof Pairwise Canary Reviewed Eval Report - 2026-06-18"
 ```
 
-Expected: report states whether `m4-reviewer-proof-control` beat the existing M3 skill output on task-level reviewer preference.
+Expected: report emits M4-specific pairwise gates for task wins, reviewer votes, unanimous losses, LOC, tool calls, rework, and underbuild risk.
 
 - [ ] **Step 3: Make the skill-edit decision**
 
 Decision rule:
 
 ```text
-If M4 passes the primary and secondary gates, open a separate issue and plan to update `$baldpatch-patch`.
+If M4 passes the primary gates, open a separate provisional skill-draft issue for only the rules that actually won.
 If M4 fails, do not edit the skill; write a failure analysis and decide whether the issue is prompt specificity, task overfitting, reviewer subjectivity, or eval harness design.
+If M4 passes, still require an M5 holdout before claiming generalized Bald Patch improvement.
 ```
 
 Expected: no skill changes are made from weak or ambiguous evidence.
@@ -351,4 +375,4 @@ Open PRs in this order:
 4. Skill update only if M4 passes the decision rule.
 ```
 
-Expected: each PR is small enough to review independently, and issue #35 closes once this written plan is merged.
+Expected: each PR is small enough to review independently, and issue #37 tracks the approval-gated pairwise execution.

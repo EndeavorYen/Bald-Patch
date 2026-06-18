@@ -19,7 +19,7 @@ export function summarizeRuns(runs) {
     .filter(Boolean);
 
   return {
-    acceptance_checks: acceptanceChecks(armSummaries),
+    acceptance_checks: acceptanceChecks(armSummaries, scoredRuns),
     arms: armSummaries,
     blocked_runs: blockedRuns.map(blockedRunSummary),
     hard_gate_failures: hardGateFailures,
@@ -124,9 +124,16 @@ export function renderMarkdownReport(summary, {
   return lines.join("\n");
 }
 
-function acceptanceChecks(arms) {
+function acceptanceChecks(arms, runs) {
   const baseline = arms.find((arm) => arm.arm === "baseline");
   const skill = arms.find((arm) => arm.arm === "skill");
+  const m4 = arms.find((arm) => arm.arm === "m4-reviewer-proof-control");
+  const m3SkillRerun = arms.find((arm) => arm.arm === "m3-baldpatch-skill-rerun")
+    || arms.find((arm) => arm.arm === "baldpatch-skill");
+
+  if (m4 && m3SkillRerun) {
+    return m4AcceptanceChecks(m3SkillRerun, m4, runs);
+  }
 
   if (!baseline || !skill) {
     return m2AcceptanceChecks(arms);
@@ -156,6 +163,60 @@ function acceptanceChecks(arms) {
     reviewerPreferenceCheck(skill, {
       gate: "reviewer_preference",
       targetLabel: "skill",
+    }),
+  ];
+}
+
+function m4AcceptanceChecks(control, target, runs) {
+  const pairwise = pairwisePreferenceSummary(runs, {
+    controlArm: control.arm,
+    targetArm: target.arm,
+  });
+
+  return [
+    {
+      gate: "m4_success_6_of_6",
+      status: target.runs === 6 && target.success_count === 6 ? "pass" : "fail",
+      detail: `${target.arm} success ${target.success_count}/${target.runs}`,
+    },
+    {
+      gate: "m4_pairwise_task_wins_vs_m3_skill",
+      status: pairwise.target_task_wins >= 4 ? "pass" : "fail",
+      detail: `${target.arm} won ${pairwise.target_task_wins}/${pairwise.tasks} tasks vs ${control.arm}`,
+    },
+    {
+      gate: "m4_pairwise_votes_vs_m3_skill",
+      status: pairwise.target_votes >= 10 ? "pass" : "fail",
+      detail: `${target.arm} received ${pairwise.target_votes}/${pairwise.total_votes} reviewer votes vs ${control.arm}`,
+    },
+    {
+      gate: "m4_no_unanimous_loss_vs_m3_skill",
+      status: pairwise.unanimous_target_losses === 0 ? "pass" : "fail",
+      detail: `${target.arm} had ${pairwise.unanimous_target_losses} unanimous task losses vs ${control.arm}`,
+    },
+    {
+      gate: "m4_median_loc_not_higher_vs_m3_skill",
+      status: isNumber(target.median_loc)
+        && isNumber(control.median_loc)
+        && target.median_loc <= control.median_loc
+        ? "pass"
+        : "fail",
+      detail: `${target.arm} median LOC ${formatNumber(target.median_loc)} vs ${control.arm} ${formatNumber(control.median_loc)}`,
+    },
+    toolCallBudgetCheck(control, target, {
+      gate: "m4_tool_call_budget_vs_m3_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+    humanReworkCheck(control, target, {
+      gate: "m4_human_rework_not_worse_vs_m3_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+    underbuildRiskCheck(control, target, {
+      gate: "m4_underbuild_risk_not_worse_vs_m3_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
     }),
   ];
 }
@@ -420,8 +481,50 @@ function underbuildFindings(run) {
     return 0;
   }
   return run.reviewer_assessments.filter((assessment) => {
-    return assessment.abstraction_judgment === "underbuilt";
+    return assessment.abstraction_judgment === "underbuilt"
+      || ["medium", "high"].includes(assessment.underbuild_risk);
   }).length;
+}
+
+function pairwisePreferenceSummary(runs, {
+  controlArm,
+  targetArm,
+}) {
+  const byTask = new Map();
+
+  for (const run of runs) {
+    if (run.arm !== controlArm && run.arm !== targetArm) {
+      continue;
+    }
+    const task = byTask.get(run.task_id) || {
+      control_votes: 0,
+      target_votes: 0,
+      total_votes: 0,
+    };
+    for (const preference of Array.isArray(run.reviewer_preferences) ? run.reviewer_preferences : []) {
+      if (preference.preferred !== true) {
+        continue;
+      }
+      task.total_votes += 1;
+      if (run.arm === targetArm) {
+        task.target_votes += 1;
+      } else {
+        task.control_votes += 1;
+      }
+    }
+    byTask.set(run.task_id, task);
+  }
+
+  const tasks = [...byTask.values()];
+  return {
+    tasks: tasks.length,
+    target_task_wins: tasks.filter((task) => task.target_votes > task.control_votes).length,
+    target_votes: tasks.reduce((total, task) => total + task.target_votes, 0),
+    total_votes: tasks.reduce((total, task) => total + task.total_votes, 0),
+    unanimous_target_losses: tasks.filter((task) => {
+      return task.total_votes >= 3 && task.target_votes === 0;
+    }).length,
+  };
 }
 
 function reviewerAgreement(runs) {

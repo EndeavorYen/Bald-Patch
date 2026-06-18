@@ -92,6 +92,8 @@ describe("build-blind-review-packet", () => {
       },
       dependency_judgment: "",
       abstraction_judgment: "",
+      overbuild_risk: "",
+      underbuild_risk: "",
     });
   });
 

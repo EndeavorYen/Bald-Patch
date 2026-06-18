@@ -107,6 +107,8 @@ describe("apply-blind-review", () => {
     assert.equal(baseline.reviewer_assessments[0].decision, "request-changes");
     assert.equal(baseline.reviewer_assessments[0].scores.correctness, 3);
     assert.equal(baseline.reviewer_assessments[0].dependency_judgment, "avoidable");
+    assert.equal(baseline.reviewer_assessments[0].overbuild_risk, "medium");
+    assert.equal(baseline.reviewer_assessments[0].underbuild_risk, "none");
 
     assert.equal(skill.reviewer_preferred, true);
     assert.equal(skill.human_rework_minutes, 2.5);
@@ -288,6 +290,8 @@ function richAnswer({
         },
         dependency_judgment: "avoidable",
         abstraction_judgment: "avoidable",
+        overbuild_risk: "medium",
+        underbuild_risk: "none",
       },
       B: {
         decision: "accept",
@@ -300,6 +304,8 @@ function richAnswer({
         },
         dependency_judgment: "none",
         abstraction_judgment: "underbuilt",
+        overbuild_risk: "low",
+        underbuild_risk: "medium",
       },
     },
   };
