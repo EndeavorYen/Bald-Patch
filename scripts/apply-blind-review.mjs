@@ -188,6 +188,8 @@ function normalizeAssessment({
     scores: assessment.scores || {},
     dependency_judgment: assessment.dependency_judgment ?? null,
     abstraction_judgment: assessment.abstraction_judgment ?? null,
+    overbuild_risk: assessment.overbuild_risk ?? null,
+    underbuild_risk: assessment.underbuild_risk ?? null,
   };
 }
 

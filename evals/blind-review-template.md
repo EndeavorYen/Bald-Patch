@@ -16,6 +16,7 @@ Reviewer:
 4. Which patch requires less human rework?
 5. Would each patch be accepted or require changes?
 6. Are dependency or abstraction choices justified, avoidable, or underbuilt?
+7. Is each patch carrying overbuild or underbuild risk? Use `none`, `low`, `medium`, or `high`.
 
 ## Answer Format
 
@@ -42,7 +43,9 @@ Save one JSON file per reviewer. Use the reviewer id only for agreement tracking
             "maintainability": 2
           },
           "dependency_judgment": "avoidable",
-          "abstraction_judgment": "avoidable"
+          "abstraction_judgment": "avoidable",
+          "overbuild_risk": "medium",
+          "underbuild_risk": "none"
         },
         "B": {
           "decision": "accept",
@@ -55,7 +58,9 @@ Save one JSON file per reviewer. Use the reviewer id only for agreement tracking
             "maintainability": 5
           },
           "dependency_judgment": "none",
-          "abstraction_judgment": "justified"
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "low",
+          "underbuild_risk": "none"
         }
       }
     }

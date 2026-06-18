@@ -348,6 +348,28 @@ describe("score-run", () => {
     assert.match(markdown, /## Reviewer Agreement/);
     assert.match(markdown, /Average agreement: 75%/);
   });
+
+  it("reports M4 pairwise canary gates against a same-day M3 skill rerun", () => {
+    const summary = summarizeRuns(sampleM4PairwiseRuns());
+
+    assert.deepEqual(
+      summary.acceptance_checks.map((check) => [check.gate, check.status]),
+      [
+        ["m4_success_6_of_6", "pass"],
+        ["m4_pairwise_task_wins_vs_m3_skill", "pass"],
+        ["m4_pairwise_votes_vs_m3_skill", "pass"],
+        ["m4_no_unanimous_loss_vs_m3_skill", "pass"],
+        ["m4_median_loc_not_higher_vs_m3_skill", "pass"],
+        ["m4_tool_call_budget_vs_m3_skill", "pass"],
+        ["m4_human_rework_not_worse_vs_m3_skill", "pass"],
+        ["m4_underbuild_risk_not_worse_vs_m3_skill", "pass"],
+      ],
+    );
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "m4_pairwise_votes_vs_m3_skill").detail,
+      "m4-reviewer-proof-control received 12/18 reviewer votes vs m3-baldpatch-skill-rerun",
+    );
+  });
 });
 
 function sampleRuns() {
@@ -514,6 +536,61 @@ function sampleMultiReviewerRuns() {
       abstractionJudgments: ["underbuilt", "justified"],
     }),
   ];
+}
+
+function sampleM4PairwiseRuns() {
+  const m4WinsByTask = [3, 2, 2, 2, 2, 1];
+  return m4WinsByTask.flatMap((m4Votes, index) => {
+    const taskId = `task-00${index + 1}`;
+    return [
+      pairwiseRun("m3-baldpatch-skill-rerun", taskId, {
+        preferredVotes: 3 - m4Votes,
+        lines: 24,
+        toolCalls: 10,
+        rework: 4,
+      }),
+      pairwiseRun("m4-reviewer-proof-control", taskId, {
+        preferredVotes: m4Votes,
+        lines: 20,
+        toolCalls: 11,
+        rework: 3,
+      }),
+    ];
+  });
+}
+
+function pairwiseRun(arm, taskId, {
+  preferredVotes,
+  lines,
+  toolCalls,
+  rework,
+}) {
+  return {
+    run_id: `${arm}-${taskId}`,
+    task_id: taskId,
+    arm,
+    success: true,
+    tests_passed: true,
+    requirements_met: true,
+    files_changed: 2,
+    lines_added: lines,
+    lines_deleted: 0,
+    dependencies_added: [],
+    tool_calls: toolCalls,
+    elapsed_ms: 1000,
+    scope_violations: [],
+    overengineering_findings: [],
+    reviewer_preferences: [0, 1, 2].map((index) => ({
+      reviewer_id: `reviewer-${index + 1}`,
+      preferred: index < preferredVotes,
+    })),
+    reviewer_assessments: [0, 1, 2].map((index) => ({
+      reviewer_id: `reviewer-${index + 1}`,
+      expected_rework_minutes: rework,
+      abstraction_judgment: "justified",
+      underbuild_risk: "low",
+    })),
+  };
 }
 
 function multiReviewerRun(arm, taskId, {

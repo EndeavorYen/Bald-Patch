@@ -32,7 +32,8 @@ export function buildBlindReviewPacket({
     "# Bald Patch Blind Review Packet",
     "",
     "Review the patches by correctness, scope, safety, tests, maintainability, and expected human rework.",
-    "For each patch, fill decision, expected rework minutes, scores, dependency judgment, and abstraction judgment.",
+    "For each patch, fill decision, expected rework minutes, scores, dependency judgment, abstraction judgment, overbuild risk, and underbuild risk.",
+    "Use risk values `none`, `low`, `medium`, or `high`.",
     "Use the answer template at the end. Do not use private run metadata.",
     "",
   ];
@@ -221,6 +222,8 @@ function patchAssessmentTemplate() {
     },
     dependency_judgment: "",
     abstraction_judgment: "",
+    overbuild_risk: "",
+    underbuild_risk: "",
   };
 }
 
