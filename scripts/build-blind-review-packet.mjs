@@ -40,18 +40,17 @@ export function buildBlindReviewPacket({
   const key = [];
   const answerTemplate = [];
 
-  for (const [taskId, taskRuns] of [...groups.entries()].sort(([left], [right]) => {
-    return left.localeCompare(right);
-  })) {
+  for (const group of [...groups.values()].sort(compareReviewGroups)) {
+    const { taskId, seed, runs: taskRuns } = group;
     if (taskRuns.length < 2) {
-      throw new Error(`Need at least two successful runs for task ${taskId}`);
+      throw new Error(`Need at least two successful runs for ${reviewGroupName(group)}`);
     }
     if (taskRuns.length > PATCH_LABELS.length) {
-      throw new Error(`Too many patches for task ${taskId}`);
+      throw new Error(`Too many patches for ${reviewGroupName(group)}`);
     }
 
     const task = taskMap.get(taskId);
-    packetLines.push(`## Task ${taskId}`, "");
+    packetLines.push(reviewGroupHeading(group), "");
     if (task) {
       packetLines.push(`Request: ${task.title}`, "");
       if (task.prompt) {
@@ -66,6 +65,7 @@ export function buildBlindReviewPacket({
       patchLabels.push(patch);
       key.push({
         task_id: taskId,
+        ...(seed === undefined ? {} : { seed }),
         patch,
         arm: run.arm,
         run_id: run.run_id,
@@ -79,6 +79,7 @@ export function buildBlindReviewPacket({
 
     answerTemplate.push({
       task_id: taskId,
+      ...(seed === undefined ? {} : { seed }),
       preferred_patch: "",
       confidence: null,
       reason: "",
@@ -122,12 +123,50 @@ function groupSuccessfulRuns(runs) {
     if (run.blocked || run.success !== true) {
       continue;
     }
-    if (!groups.has(run.task_id)) {
-      groups.set(run.task_id, []);
+    const groupId = reviewGroupId(run);
+    if (!groups.has(groupId)) {
+      groups.set(groupId, {
+        taskId: run.task_id,
+        seed: run.seed,
+        runs: [],
+      });
     }
-    groups.get(run.task_id).push(run);
+    groups.get(groupId).runs.push(run);
   }
   return groups;
+}
+
+function reviewGroupId(run) {
+  return run.seed === undefined ? run.task_id : `${run.task_id}::seed-${run.seed}`;
+}
+
+function compareReviewGroups(left, right) {
+  const taskOrder = left.taskId.localeCompare(right.taskId);
+  if (taskOrder !== 0) {
+    return taskOrder;
+  }
+  if (left.seed === undefined && right.seed === undefined) {
+    return 0;
+  }
+  if (left.seed === undefined) {
+    return -1;
+  }
+  if (right.seed === undefined) {
+    return 1;
+  }
+  return left.seed - right.seed;
+}
+
+function reviewGroupName(group) {
+  return group.seed === undefined
+    ? `task ${group.taskId}`
+    : `task ${group.taskId} seed ${group.seed}`;
+}
+
+function reviewGroupHeading(group) {
+  return group.seed === undefined
+    ? `## Task ${group.taskId}`
+    : `## Task ${group.taskId} (seed ${group.seed})`;
 }
 
 function checkoutPath(run, checkoutsRoot) {

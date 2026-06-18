@@ -10,7 +10,11 @@ const MODE_ARMS = {
   m5: ["natural-baseline", "prompt-control", "old-baldpatch-skill", "provisional-baldpatch-skill"],
   m7: ["old-baldpatch-skill", "revised-baldpatch-skill"],
   m8: ["revised-baldpatch-skill", "m8-timer-proof-draft"],
+  m9: ["revised-baldpatch-skill", "m9-timer-proof-draft"],
 };
+
+const PUBLIC_TASK_ID_MODES = new Set(["m2", "m4", "m5", "m7", "m8", "m9"]);
+const M9_SEEDS = [1, 2, 3, 4, 5];
 
 const GENERIC_PROMPT_CONTROL = "Avoid unnecessary dependencies, speculative abstractions, and unrelated rewrites while preserving correctness, tests, and existing behavior.";
 const REVIEWER_PROOF_CONTROL = `Before editing, identify the smallest reviewer-visible proof for this task.
@@ -30,6 +34,11 @@ const M8_TIMER_PROOF_ADDENDUM = `M8 diagnostic addendum:
 - Do not add broader timer machinery, sleeps, global fake timers, or extra helper API solely for this proof.
 - Keep LOC pressure active: add this proof only where the request asks to preserve an injected timer path or equivalent callback behavior.`;
 
+const M9_TIMER_PROOF_ADDENDUM = M8_TIMER_PROOF_ADDENDUM.replace(
+  "M8 diagnostic addendum:",
+  "M9 repeatability timer-proof addendum:",
+);
+
 export function loadTasks(taskRoot = "evals/tasks", options = {}) {
   return readTasks(taskRoot, options);
 }
@@ -37,20 +46,24 @@ export function loadTasks(taskRoot = "evals/tasks", options = {}) {
 export function buildRunPlan(tasks, options = {}) {
   const { arms, mode } = normalizeOptions(options);
   return tasks.flatMap((task) => {
-    const taskId = ["m2", "m4", "m5", "m7", "m8"].includes(mode) ? task.public_id || task.id : task.id;
-    return arms.map((arm) => ({
-      task_id: taskId,
-      ...(taskId !== task.id ? { fixture_task_id: task.id } : {}),
-      arm,
-      fixture_project: task.fixture?.project || null,
-      fixture_verify: task.fixture?.verify || null,
-      prompt: buildPrompt(task, arm, { mode }),
-    }));
+    const taskId = PUBLIC_TASK_ID_MODES.has(mode) ? task.public_id || task.id : task.id;
+    return seedsForMode(mode).flatMap((seed) => {
+      return arms.map((arm) => ({
+        task_id: taskId,
+        ...(taskId !== task.id ? { fixture_task_id: task.id } : {}),
+        ...(seed === null ? {} : { seed }),
+        arm,
+        fixture_project: task.fixture?.project || null,
+        fixture_verify: task.fixture?.verify || null,
+        prompt: buildPrompt(task, arm, { mode, seed }),
+      }));
+    });
   });
 }
 
 export function buildPrompt(task, arm, {
   mode = modeForArm(arm),
+  seed = null,
 } = {}) {
   if (mode === "m4") {
     return buildM4Prompt(task);
@@ -66,6 +79,10 @@ export function buildPrompt(task, arm, {
 
   if (mode === "m8") {
     return buildM8Prompt(task, arm);
+  }
+
+  if (mode === "m9") {
+    return buildM9Prompt(task, arm, seed);
   }
 
   if (mode === "m2") {
@@ -218,6 +235,44 @@ function buildM8Prompt(task, arm) {
   ].join("\n");
 }
 
+function buildM9Prompt(task, arm, seed) {
+  const seedLine = `M9 repeatability seed: ${seed}. Treat this as an independent execution; do not inspect or reuse prior M7, M8, or M9 artifacts.`;
+  if (arm === "revised-baldpatch-skill") {
+    return [
+      buildM7Prompt(task, arm),
+      "",
+      seedLine,
+    ].join("\n");
+  }
+
+  if (arm !== "m9-timer-proof-draft") {
+    throw new Error(`Unsupported M9 arm: ${arm}`);
+  }
+
+  const snapshot = {
+    label: "M9 timer-proof draft",
+    text: readSkillSnapshot("post-m5-baldpatch-patch"),
+  };
+
+  return [
+    `# ${task.neutral_title || task.title}`,
+    "",
+    task.natural_prompt || task.prompt,
+    "",
+    `Use this exact ${snapshot.label} Bald Patch guidance for this run. Do not use another Bald Patch skill version.`,
+    "",
+    "```markdown",
+    snapshot.text.trim(),
+    "",
+    M9_TIMER_PROOF_ADDENDUM,
+    "```",
+    "",
+    "After implementing, run the smallest meaningful verification and leave the working tree ready for diff metrics.",
+    "",
+    seedLine,
+  ].join("\n");
+}
+
 function readSkillSnapshot(name) {
   return readFileSync(new URL(`../evals/skill-snapshots/${name}/SKILL.md`, import.meta.url), "utf8");
 }
@@ -243,6 +298,10 @@ function armsForMode(mode) {
   return MODE_ARMS[mode];
 }
 
+function seedsForMode(mode) {
+  return mode === "m9" ? M9_SEEDS : [null];
+}
+
 function modeForArm(arm) {
   if (MODE_ARMS.m4.includes(arm)) {
     return "m4";
@@ -258,6 +317,10 @@ function modeForArm(arm) {
 
   if (MODE_ARMS.m8.includes(arm)) {
     return "m8";
+  }
+
+  if (MODE_ARMS.m9.includes(arm)) {
+    return "m9";
   }
 
   return MODE_ARMS.m2.includes(arm) ? "m2" : "m1";

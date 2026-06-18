@@ -121,6 +121,62 @@ describe("build-blind-review-packet", () => {
     assert.match(result.packet, /\+export function formatAmount\(amount\) \{/);
   });
 
+  it("groups seeded repeatability runs by task and seed", () => {
+    const runs = sampleSeededRuns();
+    for (const run of runs) {
+      createPatchedCheckout(run.run_id, `export const total = ${run.seed};\n`);
+    }
+
+    const result = buildBlindReviewPacket({
+      checkoutsRoot,
+      random: sequenceRandom([0.1, 0.1]),
+      runs,
+      tasks: [
+        {
+          public_id: "m5-task-008",
+          neutral_title: "Respect an injected timer delay",
+          natural_prompt: "Add a custom delayMs option while preserving the injected timer path.",
+        },
+      ],
+    });
+
+    assert.match(result.packet, /## Task m5-task-008 \(seed 1\)/);
+    assert.match(result.packet, /## Task m5-task-008 \(seed 2\)/);
+    assert.equal((result.packet.match(/## Task m5-task-008/g) || []).length, 2);
+    assert.equal((result.packet.match(/### Patch A/g) || []).length, 2);
+    assert.equal((result.packet.match(/### Patch C/g) || []).length, 0);
+
+    assert.deepEqual(
+      result.key.map((entry) => `${entry.task_id}:${entry.seed}:${entry.patch}:${entry.arm}`),
+      [
+        "m5-task-008:1:A:m9-timer-proof-draft",
+        "m5-task-008:1:B:revised-baldpatch-skill",
+        "m5-task-008:2:A:m9-timer-proof-draft",
+        "m5-task-008:2:B:revised-baldpatch-skill",
+      ],
+    );
+
+    assert.deepEqual(
+      parseAnswerTemplate(result.packet).map((answer) => ({
+        task_id: answer.task_id,
+        seed: answer.seed,
+        patches: Object.keys(answer.patches),
+      })),
+      [
+        {
+          task_id: "m5-task-008",
+          seed: 1,
+          patches: ["A", "B"],
+        },
+        {
+          task_id: "m5-task-008",
+          seed: 2,
+          patches: ["A", "B"],
+        },
+      ],
+    );
+  });
+
   it("rejects empty packets when no successful runs are available", () => {
     assert.throws(
       () => buildBlindReviewPacket({
@@ -193,6 +249,43 @@ function sampleRuns() {
       task_id: "task-011",
       fixture_task_id: "shared-format-helper",
       arm: "baldpatch-skill",
+      model: "gpt-5.5",
+      success: true,
+    },
+  ];
+}
+
+function sampleSeededRuns() {
+  return [
+    {
+      run_id: "m9-m5-task-008-seed-1-revised-baldpatch-skill",
+      task_id: "m5-task-008",
+      seed: 1,
+      arm: "revised-baldpatch-skill",
+      model: "gpt-5.5",
+      success: true,
+    },
+    {
+      run_id: "m9-m5-task-008-seed-1-m9-timer-proof-draft",
+      task_id: "m5-task-008",
+      seed: 1,
+      arm: "m9-timer-proof-draft",
+      model: "gpt-5.5",
+      success: true,
+    },
+    {
+      run_id: "m9-m5-task-008-seed-2-revised-baldpatch-skill",
+      task_id: "m5-task-008",
+      seed: 2,
+      arm: "revised-baldpatch-skill",
+      model: "gpt-5.5",
+      success: true,
+    },
+    {
+      run_id: "m9-m5-task-008-seed-2-m9-timer-proof-draft",
+      task_id: "m5-task-008",
+      seed: 2,
+      arm: "m9-timer-proof-draft",
       model: "gpt-5.5",
       success: true,
     },

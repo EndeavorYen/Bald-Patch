@@ -46,12 +46,12 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 Codex M2 through M7 evidence shows that the skill is still
+The 2026-06-18 and 2026-06-19 Codex M2 through M8 evidence shows that the skill is still
 docs-first and advisory. M4 found a concrete reviewer-proof signal, M5 did not
 show that the provisional skill generalized on holdout tasks, and M6 narrowed
 the live skill wording. M7 gives reviewer-positive evidence for that narrowing,
 but it still does not prove that Bald Patch reliably produces smaller patches.
-M8 planning keeps the next step diagnostic rather than expansive.
+M8 keeps the next step diagnostic rather than expansive.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -85,6 +85,9 @@ M8 planning keeps the next step diagnostic rather than expansive.
   security policy for diff disclosure.
 - M8 does not support changing the live skill. The timer-proof draft lost the
   primary `m5-task-008` canary to the revised skill in partial review.
+- M9 is now designed as a 20-row same-arm repeatability check on `m5-task-008`
+  and `m5-task-011`: two arms, five seeds per task, and a required 3/3 blind
+  review before any later skill-change proposal.
 
 See:
 
@@ -103,6 +106,8 @@ See:
 - [M8 go/no-go analysis](evals/reports/2026-06-19-m8-go-no-go-analysis.md)
 - [M8 diagnostic partial-reviewed eval report](evals/reports/2026-06-19-m8-diagnostic-partial-reviewed.md)
 - [M8 diagnostic analysis](evals/reports/2026-06-19-m8-diagnostic-analysis.md)
+- [M9 repeatability design](docs/m9-repeatability-design.md)
+- [M9 execution plan](docs/m9-execution-plan.md)
 - [M8 diagnostic design](docs/m8-diagnostic-design.md)
 - [M8 execution plan](docs/m8-execution-plan.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
@@ -111,9 +116,10 @@ See:
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is deciding whether M8 needs a repeatability check or a
-different review workflow. Hooks, plugins, and broader automation remain out of
-scope until reviewed evidence shows durable human value.
+The next milestone is executing M9 only after explicit approval and only if the
+review workflow can complete all three blind reviews. Hooks, plugins, and
+broader automation remain out of scope until reviewed evidence shows durable
+human value.
 
 ## Repository Layout
 
@@ -146,10 +152,12 @@ node scripts/run-ab.mjs --jsonl
 node scripts/run-ab.mjs --mode m2 --jsonl
 node scripts/run-ab.mjs --mode m5 --jsonl
 node scripts/run-ab.mjs --mode m8 --jsonl
+node scripts/run-ab.mjs --mode m9 --jsonl
 node scripts/run-m1-eval.mjs --task parser-edge-case --arm baseline
 node scripts/run-m1-eval.mjs --mode m2 --task parser-edge-case --arm prompt-control
 node scripts/run-m1-eval.mjs --mode m5 --task m5-holdout-terse-cli-output --arm provisional-baldpatch-skill
 node scripts/run-m1-eval.mjs --mode m8 --task m5-holdout-injected-timer --arm m8-timer-proof-draft
+node scripts/run-m1-eval.mjs --mode m9 --task m5-holdout-injected-timer --arm m9-timer-proof-draft --limit 1
 node scripts/prepare-fixture.mjs --task native-date-picker --out /private/tmp/bald-patch/native-date-picker-baseline --force
 node scripts/verify-fixture.mjs --task native-date-picker --cwd /private/tmp/bald-patch/native-date-picker-baseline
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md
@@ -211,7 +219,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 10. M8: inspect M7 losses and decide whether to tune timer proof, reduce low-information tie-breakers, or run a larger holdout. Done, with a targeted diagnostic recommendation.
 11. M8: design the targeted diagnostic before any skill rewrite or larger holdout. Done.
 12. M8: run the approval-gated diagnostic eval and blind review. Done, with partial blind review and no skill-change signal.
-13. Decide whether to repeat M8 with same-arm seeds or pause skill tuning until review workflow policy is resolved.
+13. M9: design a same-arm repeatability check for the M8 reversal canaries. Done.
+14. M9: run approval-gated coding eval and complete 3/3 blind review before any skill-change proposal.
 
 ## References
 

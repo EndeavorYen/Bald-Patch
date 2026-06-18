@@ -63,6 +63,70 @@ describe("apply-blind-review", () => {
     );
   });
 
+  it("decodes seeded repeatability answers without mixing same-task seeds", () => {
+    const result = applyBlindReview({
+      answers: [
+        {
+          task_id: "m5-task-008",
+          seed: 1,
+          preferred_patch: "A",
+          confidence: 4,
+          reason: "Draft proof is clearer.",
+        },
+        {
+          task_id: "m5-task-008",
+          seed: 2,
+          preferred_patch: "B",
+          confidence: 5,
+          reason: "Revised patch is cleaner.",
+        },
+      ],
+      key: sampleSeededKey(),
+      runs: sampleSeededRuns(),
+    });
+
+    assert.deepEqual(result.decisions.map((decision) => ({
+      task_id: decision.task_id,
+      seed: decision.seed,
+      arm: decision.arm,
+      run_id: decision.run_id,
+    })), [
+      {
+        task_id: "m5-task-008",
+        seed: 1,
+        arm: "m9-timer-proof-draft",
+        run_id: "m9-m5-task-008-seed-1-m9-timer-proof-draft",
+      },
+      {
+        task_id: "m5-task-008",
+        seed: 2,
+        arm: "revised-baldpatch-skill",
+        run_id: "m9-m5-task-008-seed-2-revised-baldpatch-skill",
+      },
+    ]);
+    assert.deepEqual(result.runs.map((run) => ({
+      run_id: run.run_id,
+      reviewer_preferred: run.reviewer_preferred,
+    })), [
+      {
+        run_id: "m9-m5-task-008-seed-1-revised-baldpatch-skill",
+        reviewer_preferred: false,
+      },
+      {
+        run_id: "m9-m5-task-008-seed-1-m9-timer-proof-draft",
+        reviewer_preferred: true,
+      },
+      {
+        run_id: "m9-m5-task-008-seed-2-revised-baldpatch-skill",
+        reviewer_preferred: true,
+      },
+      {
+        run_id: "m9-m5-task-008-seed-2-m9-timer-proof-draft",
+        reviewer_preferred: false,
+      },
+    ]);
+  });
+
   it("aggregates multiple reviewers with per-patch rework and rubric fields", () => {
     const result = applyBlindReview({
       answerSets: [
@@ -247,6 +311,68 @@ function sampleKey() {
       patch: "B",
       arm: "skill",
       run_id: "task-b-skill",
+    },
+  ];
+}
+
+function sampleSeededRuns() {
+  return [
+    {
+      run_id: "m9-m5-task-008-seed-1-revised-baldpatch-skill",
+      task_id: "m5-task-008",
+      seed: 1,
+      arm: "revised-baldpatch-skill",
+    },
+    {
+      run_id: "m9-m5-task-008-seed-1-m9-timer-proof-draft",
+      task_id: "m5-task-008",
+      seed: 1,
+      arm: "m9-timer-proof-draft",
+    },
+    {
+      run_id: "m9-m5-task-008-seed-2-revised-baldpatch-skill",
+      task_id: "m5-task-008",
+      seed: 2,
+      arm: "revised-baldpatch-skill",
+    },
+    {
+      run_id: "m9-m5-task-008-seed-2-m9-timer-proof-draft",
+      task_id: "m5-task-008",
+      seed: 2,
+      arm: "m9-timer-proof-draft",
+    },
+  ];
+}
+
+function sampleSeededKey() {
+  return [
+    {
+      task_id: "m5-task-008",
+      seed: 1,
+      patch: "A",
+      arm: "m9-timer-proof-draft",
+      run_id: "m9-m5-task-008-seed-1-m9-timer-proof-draft",
+    },
+    {
+      task_id: "m5-task-008",
+      seed: 1,
+      patch: "B",
+      arm: "revised-baldpatch-skill",
+      run_id: "m9-m5-task-008-seed-1-revised-baldpatch-skill",
+    },
+    {
+      task_id: "m5-task-008",
+      seed: 2,
+      patch: "A",
+      arm: "m9-timer-proof-draft",
+      run_id: "m9-m5-task-008-seed-2-m9-timer-proof-draft",
+    },
+    {
+      task_id: "m5-task-008",
+      seed: 2,
+      patch: "B",
+      arm: "revised-baldpatch-skill",
+      run_id: "m9-m5-task-008-seed-2-revised-baldpatch-skill",
     },
   ];
 }

@@ -136,6 +136,22 @@ describe("run-m1-eval", () => {
     assert.match(rows[0].verify, /--task m5-holdout-injected-timer\b/);
   });
 
+  it("dry-runs M9 seeded repeatability contexts", () => {
+    const rows = runEval({
+      arm: "m9-timer-proof-draft",
+      limit: 1,
+      mode: "m9",
+      outRoot: path.join(tmpRoot, "m9-dry"),
+      runIdPrefix: "m9",
+      taskId: "m5-holdout-injected-timer",
+    });
+
+    assert.equal(rows[0].run_id, "m9-m5-task-008-seed-1-m9-timer-proof-draft");
+    assert.equal(rows[0].seed, 1);
+    assert.match(rows[0].prompt_file, /m9-m5-task-008-seed-1-m9-timer-proof-draft/);
+    assert.match(rows[0].verify, /--task m5-holdout-injected-timer\b/);
+  });
+
   it("renders shell-quoted agent command placeholders", () => {
     const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
       fixture_dir: "/tmp/fixture with space",
