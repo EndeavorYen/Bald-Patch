@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -69,5 +69,56 @@ describe("eval fixtures", () => {
       assert.equal(verification.ok, false, `${task.id} should fail hidden acceptance before patch`);
       assert.equal(verification.phase, "acceptance");
     }
+  });
+
+  it("accepts shared amount formatter solutions without requiring a specific helper filename", () => {
+    const prepared = prepareFixture({
+      taskId: "shared-format-helper",
+      outDir: path.join(tmpRoot, "m2-shared-format-helper-flexible-name"),
+      force: true,
+    });
+
+    writeFileSync(
+      path.join(prepared.out, "src/formatAmount.js"),
+      [
+        "export function formatAmount(cents) {",
+        '  return `$${(cents / 100).toFixed(2)}`;',
+        "}",
+        "",
+      ].join("\n"),
+    );
+    writeFileSync(
+      path.join(prepared.out, "src/invoice.js"),
+      [
+        'import { formatAmount } from "./formatAmount.js";',
+        "",
+        "export { formatAmount as formatInvoiceTotal };",
+        "",
+        "export function invoiceSummary(cents) {",
+        "  return `Invoice total: ${formatAmount(cents)}`;",
+        "}",
+        "",
+      ].join("\n"),
+    );
+    writeFileSync(
+      path.join(prepared.out, "src/receipt.js"),
+      [
+        'import { formatAmount } from "./formatAmount.js";',
+        "",
+        "export { formatAmount as formatReceiptTotal };",
+        "",
+        "export function receiptSummary(cents) {",
+        "  return `Receipt total: ${formatAmount(cents)}`;",
+        "}",
+        "",
+      ].join("\n"),
+    );
+
+    const verification = verifyFixture({
+      taskId: "shared-format-helper",
+      cwd: prepared.out,
+    });
+
+    assert.equal(verification.ok, true, verification.stdout || verification.stderr);
   });
 });

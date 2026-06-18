@@ -254,7 +254,7 @@ function locReductionCheck(control, target, {
   return {
     gate,
     status: reduction >= 0.2 ? "pass" : "fail",
-    detail: `${targetLabel} median LOC ${formatNumber(target.median_loc)} vs ${controlLabel} ${formatNumber(control.median_loc)} (${formatPercent(reduction)} lower)`,
+    detail: `${targetLabel} median LOC ${formatNumber(target.median_loc)} vs ${controlLabel} ${formatNumber(control.median_loc)} (${formatDecreaseDeltaPercent(reduction)})`,
   };
 }
 
@@ -278,7 +278,7 @@ function dependencyReductionCheck(control, target, {
   return {
     gate,
     status: reduction >= 0.5 ? "pass" : "fail",
-    detail: `${targetLabel} dependency additions ${target.dependency_additions} vs ${controlLabel} ${control.dependency_additions} (${formatPercent(reduction)} lower)`,
+    detail: `${targetLabel} dependency additions ${target.dependency_additions} vs ${controlLabel} ${control.dependency_additions} (${formatDecreaseDeltaPercent(reduction)})`,
   };
 }
 
@@ -299,7 +299,7 @@ function toolCallBudgetCheck(control, target, {
   return {
     gate,
     status: increase <= 0.15 ? "pass" : "fail",
-    detail: `${targetLabel} median tool calls ${formatNumber(target.median_tool_calls)} vs ${controlLabel} ${formatNumber(control.median_tool_calls)} (${formatPercent(increase)} higher)`,
+    detail: `${targetLabel} median tool calls ${formatNumber(target.median_tool_calls)} vs ${controlLabel} ${formatNumber(control.median_tool_calls)} (${formatDeltaPercent(increase)})`,
   };
 }
 
@@ -591,6 +591,30 @@ function formatNumber(value) {
 
 function formatPercent(value) {
   return isNumber(value) ? `${Math.round(value * 100)}%` : "-";
+}
+
+function formatDeltaPercent(value) {
+  if (!isNumber(value)) {
+    return "-";
+  }
+  if (value === 0) {
+    return "unchanged";
+  }
+
+  const direction = value > 0 ? "higher" : "lower";
+  return `${Math.abs(Math.round(value * 100))}% ${direction}`;
+}
+
+function formatDecreaseDeltaPercent(value) {
+  if (!isNumber(value)) {
+    return "-";
+  }
+  if (value === 0) {
+    return "unchanged";
+  }
+
+  const direction = value > 0 ? "lower" : "higher";
+  return `${Math.abs(Math.round(value * 100))}% ${direction}`;
 }
 
 function parseArgs(argv) {
