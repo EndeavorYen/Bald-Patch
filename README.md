@@ -51,6 +51,7 @@ docs-first and advisory. M4 found a concrete reviewer-proof signal, M5 did not
 show that the provisional skill generalized on holdout tasks, and M6 narrowed
 the live skill wording. M7 gives reviewer-positive evidence for that narrowing,
 but it still does not prove that Bald Patch reliably produces smaller patches.
+M8 planning keeps the next step diagnostic rather than expansive.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -75,6 +76,7 @@ but it still does not prove that Bald Patch reliably produces smaller patches.
 - M7 recovered 6/8 prior M5 loss tasks and split the regression canaries: revised lost `m5-task-008` but won `m5-task-012`.
 - M7 is reviewer-positive but strict-gate-incomplete: revised median LOC was 18 versus old skill 17.5, with median expected rework 0 on both arms.
 - M7 supports keeping the post-M5 narrowing as provisional reviewer-value guidance. It does not support a graduation claim or stronger automation.
+- M8 go/no-go analysis says to run a targeted diagnostic design before any skill rewrite or larger holdout.
 
 See:
 
@@ -90,17 +92,17 @@ See:
 - [M6 skill diagnosis](evals/reports/2026-06-18-m6-skill-diagnosis.md)
 - [M7 pairwise reviewed eval report](evals/reports/2026-06-18-m7-pairwise-reviewed.md)
 - [M7 pairwise analysis](evals/reports/2026-06-18-m7-pairwise-analysis.md)
+- [M8 go/no-go analysis](evals/reports/2026-06-19-m8-go-no-go-analysis.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
 - [M7 execution plan](docs/m7-execution-plan.md)
 - [M5 holdout design](docs/m5-holdout-design.md)
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is M8 planning: inspect the M7 losses, especially the
-injected timer canary and low-information tie-breakers, before deciding whether
-another skill edit or a larger holdout run is justified. Hooks, plugins, and
-broader automation remain out of scope until reviewed evidence shows durable
-human value.
+The next milestone is M8 diagnostic design: isolate the injected-timer canary,
+discount low-information tie-breakers, and keep graduation gates separate from
+diagnostic gates. Hooks, plugins, and broader automation remain out of scope
+until reviewed evidence shows durable human value.
 
 ## Repository Layout
 
@@ -193,7 +195,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 7. M6: diagnose M5 failures and narrow the live skill wording. Done.
 8. M7: prepare a pairwise revised-skill check before any graduation claim. Done.
 9. M7: run external pairwise coding and blind review after explicit approval. Done, with reviewer-positive but strict-gate-incomplete evidence.
-10. M8: inspect M7 losses and decide whether to tune timer proof, reduce low-information tie-breakers, or run a larger holdout.
+10. M8: inspect M7 losses and decide whether to tune timer proof, reduce low-information tie-breakers, or run a larger holdout. Done, with a targeted diagnostic recommendation.
+11. M8: design the targeted diagnostic before any skill rewrite or larger holdout.
 
 ## References
 
