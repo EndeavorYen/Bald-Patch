@@ -46,22 +46,26 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 Codex M2 reviewed run is useful negative evidence for the current skill.
+The 2026-06-18 Codex M2 and M3 reviewed runs are useful negative evidence for the current skill.
 
-- All three arms passed correctness checks: 11/11 each.
-- Bald Patch reduced median tool calls by 15% versus both controls.
-- Bald Patch did not reduce median LOC versus natural-baseline and was 6% higher than prompt-control.
-- Blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
-- Reviewer losses were concentrated in tasks where the smaller patch had weaker preserved-behavior, timer, or helper test evidence.
+- M2: all three arms passed correctness checks: 11/11 each.
+- M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
+- M3 targeted the M2 tasks where reviewer-trust guidance should have helped.
+- M3: all three arms passed correctness checks on the six-task smoke set: 6/6 each.
+- M3: Bald Patch reduced median tool calls to 10 versus natural-baseline 14.5 and prompt-control 13.5.
+- M3: Bald Patch did not reduce median LOC and reviewer preference fell to 11%, versus natural-baseline 50% and prompt-control 39%.
+- M3 failure analysis shows the current guidance is too coarse: it encourages proof, but not always the reviewer-valued shape of proof.
 
 See:
 
 - [M1 reviewed eval report](evals/reports/2026-06-18-m1-codex-reviewed.md)
 - [M1 reviewed evidence analysis](evals/reports/2026-06-18-m1-codex-reviewed-analysis.md)
 - [M2 reviewed eval report](evals/reports/2026-06-18-m2-codex-reviewed.md)
+- [M3 smoke reviewed eval report](evals/reports/2026-06-18-m3-smoke-reviewed.md)
+- [M3 smoke failure analysis](evals/reports/2026-06-18-m3-smoke-failure-analysis.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is to tune reviewer-trust guidance and rerun the benchmark, not to add hooks or broader automation.
+The next milestone is a narrow M4 canary for reviewer-proof shape, not hooks, plugins, or broader automation.
 
 ## Repository Layout
 
