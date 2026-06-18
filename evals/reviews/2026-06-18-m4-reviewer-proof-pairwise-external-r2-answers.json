@@ -1,0 +1,221 @@
+{
+  "reviewer_id": "reviewer-2",
+  "answers": [
+    {
+      "task_id": "task-001",
+      "preferred_patch": "B",
+      "confidence": 4,
+      "reason": "Both satisfy the flag behavior, but B keeps the existing focused unit coverage while adding JSON coverage with a smaller behavioral diff.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    },
+    {
+      "task_id": "task-002",
+      "preferred_patch": "A",
+      "confidence": 5,
+      "reason": "Both implement the debounce correctly, but A uses mock timers for deterministic, fast boundary testing while B relies on real elapsed time and is slower/flakier.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    },
+    {
+      "task_id": "task-003",
+      "preferred_patch": "B",
+      "confidence": 4,
+      "reason": "Both cover common valid and obviously invalid emails, but B is a smaller, clearer validation change with comparable coverage and less helper code to review.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "low",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    },
+    {
+      "task_id": "task-005",
+      "preferred_patch": "B",
+      "confidence": 5,
+      "reason": "The implementation is identical, but B has stronger coverage for populated state, serialization, and default form state.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    },
+    {
+      "task_id": "task-008",
+      "preferred_patch": "A",
+      "confidence": 4,
+      "reason": "A gives explicit per-path dry-run output, preserves write-mode behavior with a test, and handles no-target output more cleanly than B.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "low"
+        }
+      }
+    },
+    {
+      "task_id": "task-011",
+      "preferred_patch": "B",
+      "confidence": 4,
+      "reason": "Both introduce a shared helper and align dollar formatting, but B preserves the existing summary-to-format-function structure with the smaller, more maintainable diff.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "low",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    }
+  ]
+}

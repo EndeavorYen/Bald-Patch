@@ -276,13 +276,13 @@ Expected: secondary comparison never replaces the primary pairwise gate because 
 - Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r2-answers.json`
 - Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-r3-answers.json`
 
-- [ ] **Step 1: Get explicit approval for external blind review**
+- [x] **Step 1: Get explicit approval for external blind review**
 
 Ask for approval because code diffs and reviewer prompts will be sent to external Codex/OpenAI services.
 
 Expected: do not send the blind packet externally until the user approves this specific M4 pairwise review.
 
-- [ ] **Step 2: Run three reviewers using the pairwise risk schema**
+- [x] **Step 2: Run three reviewers using the pairwise risk schema**
 
 Each reviewer must return:
 
@@ -309,8 +309,9 @@ Expected: three valid answer files, each covering all six task ids and both anon
 - Create: `evals/runs/2026-06-18-m4-reviewer-proof-pairwise-reviewed.jsonl`
 - Create: `evals/reviews/2026-06-18-m4-reviewer-proof-pairwise-external-review-summary.md`
 - Create: `evals/reports/2026-06-18-m4-reviewer-proof-pairwise-reviewed.md`
+- Create: `evals/reports/2026-06-18-m4-reviewer-proof-pairwise-analysis.md`
 
-- [ ] **Step 1: Decode blind review answers**
+- [x] **Step 1: Decode blind review answers**
 
 ```bash
 rtk node scripts/apply-blind-review.mjs \
@@ -325,7 +326,7 @@ rtk node scripts/apply-blind-review.mjs \
 
 Expected: reviewed rows contain three reviewer preferences and reviewer assessments per run.
 
-- [ ] **Step 2: Score the reviewed M4 canary**
+- [x] **Step 2: Score the reviewed M4 canary**
 
 ```bash
 rtk node scripts/score-run.mjs \
@@ -336,7 +337,7 @@ rtk node scripts/score-run.mjs \
 
 Expected: report emits M4-specific pairwise gates for task wins, reviewer votes, unanimous losses, LOC, tool calls, rework, and underbuild risk.
 
-- [ ] **Step 3: Make the skill-edit decision**
+- [x] **Step 3: Make the skill-edit decision**
 
 Decision rule:
 
@@ -347,6 +348,11 @@ If M4 passes, still require an M5 holdout before claiming generalized Bald Patch
 ```
 
 Expected: no skill changes are made from weak or ambiguous evidence.
+
+Result: M4 is positive but mixed evidence. It won 5/6 tasks and 14/18 reviewer
+votes, but failed the no-unanimous-loss gate on `task-001` and the median LOC
+gate. The next step is a provisional skill draft constrained by those failures,
+followed by M5 holdout evidence before any generalization claim.
 
 ### Task 7: Verify And Publish
 

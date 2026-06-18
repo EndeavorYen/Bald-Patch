@@ -46,7 +46,9 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 Codex M2 and M3 reviewed runs are useful negative evidence for the current skill.
+The 2026-06-18 Codex M2, M3, and M4 reviewed runs show that the current skill
+still needs work, but M4 found a concrete reviewer-proof signal worth testing in
+a provisional skill draft.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -55,6 +57,10 @@ The 2026-06-18 Codex M2 and M3 reviewed runs are useful negative evidence for th
 - M3: Bald Patch reduced median tool calls to 10 versus natural-baseline 14.5 and prompt-control 13.5.
 - M3: Bald Patch did not reduce median LOC and reviewer preference fell to 11%, versus natural-baseline 50% and prompt-control 39%.
 - M3 failure analysis shows the current guidance is too coarse: it encourages proof, but not always the reviewer-valued shape of proof.
+- M4 reran the current `baldpatch-skill` arm and a prompt-only `m4-reviewer-proof-control` arm on the same six tasks, then used a three-reviewer blind pairwise review.
+- M4 succeeded 6/6 tasks, won 5/6 task-level comparisons, and received 14/18 reviewer votes against the same-day skill rerun.
+- M4 is still mixed evidence: it failed the no-unanimous-loss gate on `task-001` and had higher median LOC than the skill rerun, 25 vs 18.
+- M4 supports a provisional skill draft with narrower rule wording. It does not prove Bald Patch generalizes.
 
 See:
 
@@ -63,9 +69,13 @@ See:
 - [M2 reviewed eval report](evals/reports/2026-06-18-m2-codex-reviewed.md)
 - [M3 smoke reviewed eval report](evals/reports/2026-06-18-m3-smoke-reviewed.md)
 - [M3 smoke failure analysis](evals/reports/2026-06-18-m3-smoke-failure-analysis.md)
+- [M4 reviewer-proof pairwise reviewed eval report](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-reviewed.md)
+- [M4 reviewer-proof pairwise analysis](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-analysis.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is a narrow M4 canary for reviewer-proof shape, not hooks, plugins, or broader automation.
+The next milestone is a provisional skill draft constrained by the M4 failures,
+followed by an M5 holdout eval. Hooks, plugins, and broader automation remain
+out of scope until reviewed evidence shows durable human value.
 
 ## Repository Layout
 
@@ -150,9 +160,9 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 1. M1: deterministic evaluation scaffolding and 10-task smoke eval. Done.
 2. M1: decode blind review and publish reviewed evidence. Done.
 3. M2: clean baseline, prompt-control, Bald Patch arms, and multi-reviewer blind review. Done.
-4. M3: tune `$baldpatch-patch` for reviewer-valued test evidence and rerun M2.
-5. M3: strengthen `$baldpatch-review` only if reruns show reviewer value.
-6. M4: optional non-blocking Codex Stop hook and plugin packaging only after evaluation shows human value.
+4. M3: tune `$baldpatch-patch` for reviewer-valued test evidence and rerun M2. Done, with negative evidence.
+5. M4: run same-day pairwise reviewer-proof canary before changing the skill. Done, with positive but mixed evidence.
+6. M5: draft provisional skill wording and test it on holdout tasks before any hooks, plugins, or broader automation.
 
 ## References
 

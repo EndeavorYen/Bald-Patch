@@ -1,0 +1,221 @@
+{
+  "reviewer_id": "reviewer-1",
+  "answers": [
+    {
+      "task_id": "task-001",
+      "preferred_patch": "B",
+      "confidence": 4,
+      "reason": "Both implement the flag correctly, but B preserves the existing unit coverage for buildSummary/formatText while adding focused JSON CLI coverage.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    },
+    {
+      "task_id": "task-002",
+      "preferred_patch": "A",
+      "confidence": 5,
+      "reason": "The implementation is equivalent, but A uses deterministic mocked timers and verifies the 249ms/250ms boundary without slowing or flaking tests.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "low"
+        }
+      }
+    },
+    {
+      "task_id": "task-003",
+      "preferred_patch": "A",
+      "confidence": 3,
+      "reason": "Both satisfy the request, but A's explicit helper is easier to review and has broader invalid-address coverage while still accepting common valid forms.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 4,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "low",
+          "underbuild_risk": "low"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 4,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "low"
+        }
+      }
+    },
+    {
+      "task_id": "task-005",
+      "preferred_patch": "B",
+      "confidence": 4,
+      "reason": "The source change is identical, and B adds slightly stronger tests for populated state and default new-form state.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    },
+    {
+      "task_id": "task-008",
+      "preferred_patch": "A",
+      "confidence": 4,
+      "reason": "A prints each dry-run target path explicitly, verifies no writes occur, and adds a guard that write-mode output remains unchanged.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "none",
+          "overbuild_risk": "none",
+          "underbuild_risk": "low"
+        }
+      }
+    },
+    {
+      "task_id": "task-011",
+      "preferred_patch": "B",
+      "confidence": 3,
+      "reason": "Both introduce a shared formatter and align receipt output, but B keeps the existing summary-to-total helper structure with a smaller source diff.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "low",
+          "underbuild_risk": "none"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified",
+          "overbuild_risk": "none",
+          "underbuild_risk": "none"
+        }
+      }
+    }
+  ]
+}
