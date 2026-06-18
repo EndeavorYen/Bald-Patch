@@ -12,15 +12,43 @@ reviewer preference, expected rework, or patch size. M9 completed the cleanest
 repeatability check so far and did not support adopting the timer-proof
 addendum.
 
-## Asset Map
+## Asset Inventory
 
-| Area | Status | Use |
-| --- | --- | --- |
-| `baldpatch-review` and `scope-lint` | Mature enough to reuse | Advisory overbuild and scope evidence. |
-| Blind review packet flow | Mature enough to reuse | Reviewer preference, rework, and risk evidence. |
-| Run records and scoring | Mature enough to reuse | Comparable eval reports and gate checks. |
-| `$baldpatch-patch` live skill | Frozen, provisional | Small-diff guidance only; not a proven advantage claim. |
-| Micro fixture skill tuning | Paused | Too noisy for more wording tweaks without better discrimination. |
+Bald Patch should now be read as a toolkit with four asset classes.
+
+### Mature Assets
+
+| Asset | Use |
+| --- | --- |
+| `scripts/scope-lint.mjs` | Advisory scope evidence for dependency churn, broad surfaces, and suspicious abstractions. |
+| `scripts/baldpatch-review.mjs` | Non-blocking review findings for overbuild risks. |
+| Blind review packet flow | Anonymized patch comparison without exposing arm names. |
+| `scripts/apply-blind-review.mjs` | Decoded reviewer votes, expected rework, and risk fields. |
+| `scripts/score-run.mjs` | Deterministic reports and acceptance-gate summaries. |
+| JSONL run records | Durable evidence for coding rows, reviewer rows, and blocked runs. |
+
+### Experimental Assets
+
+| Asset | Use |
+| --- | --- |
+| `$baldpatch-patch` live skill | Frozen, provisional small-diff guidance. It is not a proven advantage claim. |
+| Skill snapshots under `evals/skill-snapshots/` | Historical comparisons for old, provisional, and revised skill prompts. |
+
+### Historical Evidence
+
+| Asset | Use |
+| --- | --- |
+| M1-M9 reports | Explain what was tested, what failed, and why the project pivoted. |
+| M1-M9 run records and review summaries | Reproduce evidence tables and reviewer preference claims. |
+| Fixture definitions | Preserve the micro-task evidence base while E1 decides what to keep or retire. |
+
+### Deferred Work
+
+| Item | Condition To Revisit |
+| --- | --- |
+| Hooks, plugins, or always-on automation | Only after durable reviewed evidence shows human value. |
+| More live skill wording edits | Only after E1/E2/E3 produce better task discrimination and review evidence. |
+| New external eval rounds | Only after a written design explains why the task suite is less noisy than M1-M9. |
 
 ## Next Tracks
 
@@ -35,6 +63,21 @@ addendum.
 If the next higher-quality holdout still cannot show stable, repeatable gains in
 reviewer preference or expected rework, stop skill research and keep Bald Patch
 as eval and review tooling.
+
+## Restart Criteria
+
+Restart skill research only when all of these are true:
+
+- A task suite has higher discrimination than the M1-M9 micro fixtures.
+- Reviewer preference is not mostly driven by test names, fixture wording, or
+  equivalent-patch tie-breakers.
+- Expected rework improves or another reviewer-value gain is stated before the
+  run.
+- Underbuild, overbuild, and dependency risk do not increase.
+- The proposal completes a same-day, complete three-reviewer blind review.
+
+If any criterion is missing, keep work in E1/E2/E3 instead of editing the live
+skill.
 
 ## Boundaries
 

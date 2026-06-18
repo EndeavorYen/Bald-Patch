@@ -77,6 +77,12 @@ describe("baldpatch-patch skill", () => {
     assert.match(posture, /E3: Review Evidence Productization/i);
     assert.match(posture, /Stop Rule/i);
     assert.match(posture, /stop skill research/i);
+    assert.match(posture, /Mature Assets/i);
+    assert.match(posture, /Experimental Assets/i);
+    assert.match(posture, /Historical Evidence/i);
+    assert.match(posture, /Deferred Work/i);
+    assert.match(posture, /Restart Criteria/i);
+    assert.match(posture, /complete three-reviewer blind review/i);
   });
 
   it("documents the M5 holdout design before claiming generalization", () => {
