@@ -1,0 +1,269 @@
+{
+  "reviewer_id": "external-codex-m3-r3",
+  "answers": [
+    {
+      "task_id": "task-001",
+      "preferred_patch": "B",
+      "confidence": 0.78,
+      "reason": "Patch B is the smallest complete change, preserves default output, adds JSON output, and tests both modes without adding an unnecessary exported formatter.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "avoidable"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-002",
+      "preferred_patch": "C",
+      "confidence": 0.72,
+      "reason": "Patch C implements the debounce correctly and uses mocked timers with cleanup, avoiding slower real-time tests while keeping the behavior covered.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-003",
+      "preferred_patch": "A",
+      "confidence": 0.76,
+      "reason": "Patch A has the strongest validation for common valid addresses and obvious invalid cases, including local-part dot rules and domain label constraints.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 4,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 4,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-005",
+      "preferred_patch": "B",
+      "confidence": 0.82,
+      "reason": "All patches make the same production change, but Patch B has the best test coverage, including populated due date state and default serialization.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-008",
+      "preferred_patch": "A",
+      "confidence": 0.86,
+      "reason": "Patch A makes dry-run output explicitly say what would be modified and verifies write mode remains untouched by dry-run behavior.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-011",
+      "preferred_patch": "A",
+      "confidence": 0.84,
+      "reason": "Patch A introduces the shared helper and keeps summaries flowing through the existing formatter functions, preserving labels with the least disruption.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    }
+  ]
+}
