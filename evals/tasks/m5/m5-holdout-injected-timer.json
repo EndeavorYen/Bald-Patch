@@ -7,8 +7,8 @@
   "m5_case": "downside",
   "title": "Respect an injected timer delay",
   "neutral_title": "Respect an injected timer delay",
-  "natural_prompt": "Add a custom delayMs option to scheduleReminder while preserving the existing default delay and injected timer path.",
-  "prompt": "Add a custom delayMs option to scheduleReminder while preserving the existing default delay and injected timer path.",
+  "natural_prompt": "Add a custom delayMs option to the existing scheduleReminder options object while preserving the existing default delay and injected timer path.",
+  "prompt": "Add a custom delayMs option to the existing scheduleReminder options object while preserving the existing default delay and injected timer path.",
   "success_criteria": [
     "Custom delayMs is passed to the injected timer",
     "Default delay remains 1000ms",
