@@ -46,10 +46,11 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 Codex M2, M3, M4, M5, and M6 evidence shows that the skill is
-still docs-first and advisory. M4 found a concrete reviewer-proof signal, but
-M5 did not show that the provisional skill generalizes on holdout tasks. M6
-therefore narrows the live skill wording instead of graduating it.
+The 2026-06-18 Codex M2 through M7 evidence shows that the skill is still
+docs-first and advisory. M4 found a concrete reviewer-proof signal, M5 did not
+show that the provisional skill generalized on holdout tasks, and M6 narrowed
+the live skill wording. M7 gives reviewer-positive evidence for that narrowing,
+but it still does not prove that Bald Patch reliably produces smaller patches.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -68,7 +69,12 @@ therefore narrows the live skill wording instead of graduating it.
 - M5 is negative or mixed evidence, not a graduation signal. It supports diagnosis and narrower rule work, not hooks, plugins, or broader automation.
 - M6 diagnosed the M5 task-level failures and replaced the live skill's provisional M4 constraints with conditional post-M5 constraints.
 - M6 keeps timer, validation, form, output, and wrapper guidance only where it reduces reviewer risk; it does not claim the revised skill improves reviewer preference yet.
-- M7 is prepared as a focused pairwise check: revised post-M5 skill versus old skill on eight M5 loss cases plus two regression canaries. It still requires explicit approval before any external model execution.
+- M7 ran a focused pairwise check: revised post-M5 skill versus old skill on eight M5 loss cases plus two regression canaries.
+- M7 succeeded 10/10 tasks on both arms, with no dependency additions or scope warnings.
+- M7 reviewers preferred the revised skill on 7/10 tasks and 18/30 votes, exactly meeting the vote threshold.
+- M7 recovered 6/8 prior M5 loss tasks and split the regression canaries: revised lost `m5-task-008` but won `m5-task-012`.
+- M7 is reviewer-positive but strict-gate-incomplete: revised median LOC was 18 versus old skill 17.5, with median expected rework 0 on both arms.
+- M7 supports keeping the post-M5 narrowing as provisional reviewer-value guidance. It does not support a graduation claim or stronger automation.
 
 See:
 
@@ -82,16 +88,19 @@ See:
 - [M5 holdout reviewed eval report](evals/reports/2026-06-18-m5-holdout-reviewed.md)
 - [M5 holdout analysis](evals/reports/2026-06-18-m5-holdout-analysis.md)
 - [M6 skill diagnosis](evals/reports/2026-06-18-m6-skill-diagnosis.md)
+- [M7 pairwise reviewed eval report](evals/reports/2026-06-18-m7-pairwise-reviewed.md)
+- [M7 pairwise analysis](evals/reports/2026-06-18-m7-pairwise-analysis.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
 - [M7 execution plan](docs/m7-execution-plan.md)
 - [M5 holdout design](docs/m5-holdout-design.md)
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is M7 external execution after explicit approval: compare the
-revised post-M5 skill against the old skill in a pairwise blind review. Hooks,
-plugins, and broader automation remain out of scope until reviewed evidence
-shows durable human value.
+The next milestone is M8 planning: inspect the M7 losses, especially the
+injected timer canary and low-information tie-breakers, before deciding whether
+another skill edit or a larger holdout run is justified. Hooks, plugins, and
+broader automation remain out of scope until reviewed evidence shows durable
+human value.
 
 ## Repository Layout
 
@@ -183,7 +192,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 6. M5: draft provisional skill wording and test it on holdout tasks before any hooks, plugins, or broader automation. Done, with negative or mixed evidence.
 7. M6: diagnose M5 failures and narrow the live skill wording. Done.
 8. M7: prepare a pairwise revised-skill check before any graduation claim. Done.
-9. M7: run external pairwise coding and blind review after explicit approval.
+9. M7: run external pairwise coding and blind review after explicit approval. Done, with reviewer-positive but strict-gate-incomplete evidence.
+10. M8: inspect M7 losses and decide whether to tune timer proof, reduce low-information tie-breakers, or run a larger holdout.
 
 ## References
 
