@@ -9,6 +9,7 @@ const MODE_ARMS = {
   m4: ["m4-reviewer-proof-control"],
   m5: ["natural-baseline", "prompt-control", "old-baldpatch-skill", "provisional-baldpatch-skill"],
   m7: ["old-baldpatch-skill", "revised-baldpatch-skill"],
+  m8: ["revised-baldpatch-skill", "m8-timer-proof-draft"],
 };
 
 const GENERIC_PROMPT_CONTROL = "Avoid unnecessary dependencies, speculative abstractions, and unrelated rewrites while preserving correctness, tests, and existing behavior.";
@@ -24,6 +25,11 @@ Rules:
 
 After implementing, run the smallest meaningful verification and leave the working tree ready for diff metrics.`;
 
+const M8_TIMER_PROOF_ADDENDUM = `M8 diagnostic addendum:
+- When preserving an injected scheduler or timer path, prove both the scheduling argument and the callback side effect. For example, a delay option test should also execute the injected callback and assert the original notification/message still happens.
+- Do not add broader timer machinery, sleeps, global fake timers, or extra helper API solely for this proof.
+- Keep LOC pressure active: add this proof only where the request asks to preserve an injected timer path or equivalent callback behavior.`;
+
 export function loadTasks(taskRoot = "evals/tasks", options = {}) {
   return readTasks(taskRoot, options);
 }
@@ -31,7 +37,7 @@ export function loadTasks(taskRoot = "evals/tasks", options = {}) {
 export function buildRunPlan(tasks, options = {}) {
   const { arms, mode } = normalizeOptions(options);
   return tasks.flatMap((task) => {
-    const taskId = ["m2", "m4", "m5", "m7"].includes(mode) ? task.public_id || task.id : task.id;
+    const taskId = ["m2", "m4", "m5", "m7", "m8"].includes(mode) ? task.public_id || task.id : task.id;
     return arms.map((arm) => ({
       task_id: taskId,
       ...(taskId !== task.id ? { fixture_task_id: task.id } : {}),
@@ -56,6 +62,10 @@ export function buildPrompt(task, arm, {
 
   if (mode === "m7") {
     return buildM7Prompt(task, arm);
+  }
+
+  if (mode === "m8") {
+    return buildM8Prompt(task, arm);
   }
 
   if (mode === "m2") {
@@ -177,6 +187,37 @@ function buildM7Prompt(task, arm) {
   ].join("\n");
 }
 
+function buildM8Prompt(task, arm) {
+  if (arm === "revised-baldpatch-skill") {
+    return buildM7Prompt(task, arm);
+  }
+
+  if (arm !== "m8-timer-proof-draft") {
+    throw new Error(`Unsupported M8 arm: ${arm}`);
+  }
+
+  const snapshot = {
+    label: "M8 timer-proof draft",
+    text: readSkillSnapshot("post-m5-baldpatch-patch"),
+  };
+
+  return [
+    `# ${task.neutral_title || task.title}`,
+    "",
+    task.natural_prompt || task.prompt,
+    "",
+    `Use this exact ${snapshot.label} Bald Patch guidance for this run. Do not use another Bald Patch skill version.`,
+    "",
+    "```markdown",
+    snapshot.text.trim(),
+    "",
+    M8_TIMER_PROOF_ADDENDUM,
+    "```",
+    "",
+    "After implementing, run the smallest meaningful verification and leave the working tree ready for diff metrics.",
+  ].join("\n");
+}
+
 function readSkillSnapshot(name) {
   return readFileSync(new URL(`../evals/skill-snapshots/${name}/SKILL.md`, import.meta.url), "utf8");
 }
@@ -213,6 +254,10 @@ function modeForArm(arm) {
 
   if (MODE_ARMS.m7.includes(arm)) {
     return "m7";
+  }
+
+  if (MODE_ARMS.m8.includes(arm)) {
+    return "m8";
   }
 
   return MODE_ARMS.m2.includes(arm) ? "m2" : "m1";

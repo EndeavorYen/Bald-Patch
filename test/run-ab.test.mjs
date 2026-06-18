@@ -176,4 +176,29 @@ describe("run-ab", () => {
     assert.match(plan[1].prompt, /raw or terse CLI output/);
     assert.doesNotMatch(plan[1].prompt, /Provisional M4 Constraints/);
   });
+
+  it("builds M8 revised and timer-proof draft prompts from explicit snapshots", () => {
+    const task = {
+      id: "m5-holdout-injected-timer",
+      public_id: "m5-task-008",
+      title: "Respect an injected timer delay",
+      neutral_title: "Respect an injected timer delay",
+      natural_prompt: "Add a custom delayMs option while preserving the injected timer path.",
+      prompt: "Add a custom delayMs option while preserving the injected timer path.",
+    };
+    const plan = buildRunPlan([task], { mode: "m8" });
+
+    assert.deepEqual(plan.map((run) => run.arm), [
+      "revised-baldpatch-skill",
+      "m8-timer-proof-draft",
+    ]);
+    assert.equal(plan[0].task_id, "m5-task-008");
+    assert.equal(plan[0].fixture_task_id, "m5-holdout-injected-timer");
+    assert.match(plan[0].prompt, /Use this exact revised post-M5 Bald Patch skill guidance/);
+    assert.doesNotMatch(plan[0].prompt, /M8 diagnostic addendum/);
+    assert.match(plan[1].prompt, /Use this exact M8 timer-proof draft Bald Patch guidance/);
+    assert.match(plan[1].prompt, /M8 diagnostic addendum/);
+    assert.match(plan[1].prompt, /prove both the scheduling argument and the callback side effect/);
+    assert.match(plan[1].prompt, /Keep LOC pressure active/);
+  });
 });
