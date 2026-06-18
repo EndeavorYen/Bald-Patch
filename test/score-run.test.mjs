@@ -235,6 +235,86 @@ describe("score-run", () => {
     );
   });
 
+  it("describes tool-call decreases as lower in acceptance details", () => {
+    const summary = summarizeRuns([
+      {
+        run_id: "control",
+        task_id: "task-a",
+        arm: "natural-baseline",
+        success: true,
+        tests_passed: true,
+        requirements_met: true,
+        files_changed: 1,
+        lines_added: 1,
+        lines_deleted: 0,
+        dependencies_added: [],
+        tool_calls: 20,
+        elapsed_ms: 1000,
+        scope_violations: [],
+      },
+      {
+        run_id: "target",
+        task_id: "task-a",
+        arm: "baldpatch-skill",
+        success: true,
+        tests_passed: true,
+        requirements_met: true,
+        files_changed: 1,
+        lines_added: 1,
+        lines_deleted: 0,
+        dependencies_added: [],
+        tool_calls: 17,
+        elapsed_ms: 1000,
+        scope_violations: [],
+      },
+    ]);
+
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "tool_call_budget_vs_natural-baseline").detail,
+      "baldpatch-skill median tool calls 17 vs natural-baseline 20 (15% lower)",
+    );
+  });
+
+  it("describes LOC increases as higher in acceptance details", () => {
+    const summary = summarizeRuns([
+      {
+        run_id: "control",
+        task_id: "task-a",
+        arm: "natural-baseline",
+        success: true,
+        tests_passed: true,
+        requirements_met: true,
+        files_changed: 1,
+        lines_added: 16,
+        lines_deleted: 0,
+        dependencies_added: [],
+        tool_calls: 10,
+        elapsed_ms: 1000,
+        scope_violations: [],
+      },
+      {
+        run_id: "target",
+        task_id: "task-a",
+        arm: "baldpatch-skill",
+        success: true,
+        tests_passed: true,
+        requirements_met: true,
+        files_changed: 1,
+        lines_added: 17,
+        lines_deleted: 0,
+        dependencies_added: [],
+        tool_calls: 10,
+        elapsed_ms: 1000,
+        scope_violations: [],
+      },
+    ]);
+
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "median_loc_reduction_vs_natural-baseline").detail,
+      "baldpatch-skill median LOC 17 vs natural-baseline 16 (6% higher)",
+    );
+  });
+
   it("reports multi-reviewer preference, rework, agreement, and underbuild findings", () => {
     const summary = summarizeRuns(sampleMultiReviewerRuns());
     const skill = summary.arms.find((arm) => arm.arm === "baldpatch-skill");
