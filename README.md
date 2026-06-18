@@ -127,6 +127,7 @@ See:
 - [M9 repeatability blind review summary](evals/reviews/2026-06-19-m9-repeatability-external-review-summary.md)
 - [M9 repeatability analysis](evals/reports/2026-06-19-m9-repeatability-analysis.md)
 - [Post-M9 project posture](docs/posture.md)
+- [Final project report](docs/final-report.md)
 - [M8 diagnostic design](docs/m8-diagnostic-design.md)
 - [M8 execution plan](docs/m8-execution-plan.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
