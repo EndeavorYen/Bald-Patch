@@ -46,9 +46,10 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 Codex M2, M3, M4, and M5 reviewed runs show that the current
-skill still needs work. M4 found a concrete reviewer-proof signal, but M5 did
-not show that the provisional skill generalizes on holdout tasks.
+The 2026-06-18 Codex M2, M3, M4, M5, and M6 evidence shows that the skill is
+still docs-first and advisory. M4 found a concrete reviewer-proof signal, but
+M5 did not show that the provisional skill generalizes on holdout tasks. M6
+therefore narrows the live skill wording instead of graduating it.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -65,6 +66,8 @@ not show that the provisional skill generalizes on holdout tasks.
 - M5 succeeded 12/12 tasks on every arm, with no dependency additions or scope warnings.
 - M5 reviewer preference did not support the provisional skill: natural-baseline and old skill each received 12/36 reviewer votes, provisional skill received 10/36, and prompt-control received 2/36.
 - M5 is negative or mixed evidence, not a graduation signal. It supports diagnosis and narrower rule work, not hooks, plugins, or broader automation.
+- M6 diagnosed the M5 task-level failures and replaced the live skill's provisional M4 constraints with conditional post-M5 constraints.
+- M6 keeps timer, validation, form, output, and wrapper guidance only where it reduces reviewer risk; it does not claim the revised skill improves reviewer preference yet.
 
 See:
 
@@ -77,14 +80,15 @@ See:
 - [M4 reviewer-proof pairwise analysis](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-analysis.md)
 - [M5 holdout reviewed eval report](evals/reports/2026-06-18-m5-holdout-reviewed.md)
 - [M5 holdout analysis](evals/reports/2026-06-18-m5-holdout-analysis.md)
+- [M6 skill diagnosis](evals/reports/2026-06-18-m6-skill-diagnosis.md)
 - [M5 holdout design](docs/m5-holdout-design.md)
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is M5 diagnosis: inspect why old skill and natural-baseline
-produced the preferred patches, then decide whether to narrow or roll back the
-provisional skill wording. Hooks, plugins, and broader automation remain out of
-scope until reviewed evidence shows durable human value.
+The next milestone is an M6/M7 pairwise check: compare the revised live skill
+against the old skill on M5 loss cases and a small number of holdout wins.
+Hooks, plugins, and broader automation remain out of scope until reviewed
+evidence shows durable human value.
 
 ## Repository Layout
 
@@ -174,7 +178,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 4. M3: tune `$baldpatch-patch` for reviewer-valued test evidence and rerun M2. Done, with negative evidence.
 5. M4: run same-day pairwise reviewer-proof canary before changing the skill. Done, with positive but mixed evidence.
 6. M5: draft provisional skill wording and test it on holdout tasks before any hooks, plugins, or broader automation. Done, with negative or mixed evidence.
-7. M6: diagnose M5 failures and decide whether to narrow or roll back the provisional skill wording.
+7. M6: diagnose M5 failures and narrow the live skill wording. Done.
+8. M6/M7: run a pairwise revised-skill check before any graduation claim.
 
 ## References
 
