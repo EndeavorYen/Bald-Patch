@@ -1499,6 +1499,15 @@ index 19d16fd..4f4525a 100644
 +    assert.equal(receiptSummary(1234), "Receipt total: $12.34");
    });
  });
+diff --git a/src/formatAmount.js b/src/formatAmount.js
+new file mode 100644
+index 0000000..021af62
+--- /dev/null
++++ b/src/formatAmount.js
+@@ -0,0 +1,3 @@
++export function formatAmount(cents) {
++  return `$${(cents / 100).toFixed(2)}`;
++}
 ```
 
 ### Patch B
@@ -1562,6 +1571,15 @@ index 19d16fd..6f2b639 100644
 +    assert.equal(receiptSummary(1234), "Receipt total: $12.34");
    });
  });
+diff --git a/src/formatAmount.js b/src/formatAmount.js
+new file mode 100644
+index 0000000..021af62
+--- /dev/null
++++ b/src/formatAmount.js
+@@ -0,0 +1,3 @@
++export function formatAmount(cents) {
++  return `$${(cents / 100).toFixed(2)}`;
++}
 ```
 
 ### Patch C
@@ -1611,6 +1629,15 @@ index 19d16fd..4f4525a 100644
 +    assert.equal(receiptSummary(1234), "Receipt total: $12.34");
    });
  });
+diff --git a/src/formatAmount.js b/src/formatAmount.js
+new file mode 100644
+index 0000000..021af62
+--- /dev/null
++++ b/src/formatAmount.js
+@@ -0,0 +1,3 @@
++export function formatAmount(cents) {
++  return `$${(cents / 100).toFixed(2)}`;
++}
 ```
 
 ## Answer Template

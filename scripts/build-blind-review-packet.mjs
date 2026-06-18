@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -144,7 +144,56 @@ function gitDiff(cwd, base) {
   if (result.status !== 0) {
     throw new Error(result.stderr.trim() || `git diff failed in ${cwd}`);
   }
-  return result.stdout || "(empty diff)";
+  const untrackedDiffs = gitUntrackedFiles(cwd).map((file) => newFileDiff(cwd, file));
+  const chunks = [result.stdout.trimEnd(), ...untrackedDiffs].filter(Boolean);
+  return chunks.length > 0 ? chunks.join("\n") : "(empty diff)";
+}
+
+function gitUntrackedFiles(cwd) {
+  const result = spawnSync("git", ["ls-files", "--others", "--exclude-standard", "-z"], {
+    cwd,
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    throw new Error(result.stderr.trim() || `git ls-files failed in ${cwd}`);
+  }
+  return result.stdout.split("\0").filter(Boolean);
+}
+
+function newFileDiff(cwd, file) {
+  const absolutePath = path.join(cwd, file);
+  const mode = statSync(absolutePath).mode & 0o111 ? "100755" : "100644";
+  const content = readFileSync(absolutePath, "utf8");
+  const hash = gitHashObject(cwd, file).slice(0, 7);
+  const lines = content.endsWith("\n") ? content.split("\n").slice(0, -1) : content.split("\n");
+  const diffLines = [
+    `diff --git a/${file} b/${file}`,
+    `new file mode ${mode}`,
+    `index 0000000..${hash}`,
+    "--- /dev/null",
+    `+++ b/${file}`,
+  ];
+
+  if (lines.length > 0 && lines[0] !== "") {
+    diffLines.push(`@@ -0,0 +1,${lines.length} @@`);
+    diffLines.push(...lines.map((line) => `+${line}`));
+    if (!content.endsWith("\n")) {
+      diffLines.push("\\ No newline at end of file");
+    }
+  }
+
+  return diffLines.join("\n");
+}
+
+function gitHashObject(cwd, file) {
+  const result = spawnSync("git", ["hash-object", "--no-filters", "--", file], {
+    cwd,
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    throw new Error(result.stderr.trim() || `git hash-object failed for ${file} in ${cwd}`);
+  }
+  return result.stdout.trim();
 }
 
 function shuffle(values, random) {
