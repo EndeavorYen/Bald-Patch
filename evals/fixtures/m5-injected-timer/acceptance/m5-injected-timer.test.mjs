@@ -18,7 +18,8 @@ describe("m5 injected timer acceptance", () => {
         callback();
         return "timer-token";
       },
-    }, "stand up", { delayMs: 250 });
+      delayMs: 250,
+    }, "stand up");
 
     assert.equal(token, "timer-token");
     assert.deepEqual(delays, [250]);
