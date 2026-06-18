@@ -127,6 +127,7 @@ See:
 - [M9 repeatability blind review summary](evals/reviews/2026-06-19-m9-repeatability-external-review-summary.md)
 - [M9 repeatability analysis](evals/reports/2026-06-19-m9-repeatability-analysis.md)
 - [Post-M9 project posture](docs/posture.md)
+- [Closure plan](docs/closure-plan.md)
 - [Final project report](docs/final-report.md)
 - [M8 diagnostic design](docs/m8-diagnostic-design.md)
 - [M8 execution plan](docs/m8-execution-plan.md)
@@ -140,7 +141,8 @@ The next milestone is E1/E2/E3: improve eval discrimination, design more
 realistic task suites, and productize review evidence. Hooks, plugins, and
 broader automation remain out of scope until reviewed evidence shows durable
 human value. The asset inventory and restart criteria live in
-[docs/posture.md](docs/posture.md).
+[docs/posture.md](docs/posture.md). The phase-close target and E1/E2/E3 gates
+live in [docs/closure-plan.md](docs/closure-plan.md).
 
 ## Repository Layout
 
