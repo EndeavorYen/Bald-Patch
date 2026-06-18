@@ -80,6 +80,11 @@ M8 planning keeps the next step diagnostic rather than expansive.
 - M8 diagnostic design defines a 12-row local plan comparing the revised skill
   against a prompt-scoped timer-proof draft. It is not external eval evidence
   yet.
+- M8 external coding eval completed 12/12 successfully, but blind review is
+  partial: 2/3 external reviewers completed and the third was blocked by local
+  security policy for diff disclosure.
+- M8 does not support changing the live skill. The timer-proof draft lost the
+  primary `m5-task-008` canary to the revised skill in partial review.
 
 See:
 
@@ -96,6 +101,8 @@ See:
 - [M7 pairwise reviewed eval report](evals/reports/2026-06-18-m7-pairwise-reviewed.md)
 - [M7 pairwise analysis](evals/reports/2026-06-18-m7-pairwise-analysis.md)
 - [M8 go/no-go analysis](evals/reports/2026-06-19-m8-go-no-go-analysis.md)
+- [M8 diagnostic partial-reviewed eval report](evals/reports/2026-06-19-m8-diagnostic-partial-reviewed.md)
+- [M8 diagnostic analysis](evals/reports/2026-06-19-m8-diagnostic-analysis.md)
 - [M8 diagnostic design](docs/m8-diagnostic-design.md)
 - [M8 execution plan](docs/m8-execution-plan.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
@@ -104,10 +111,9 @@ See:
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is M8 diagnostic execution after explicit approval: isolate
-the injected-timer canary, discount low-information tie-breakers, and keep
-graduation gates separate from diagnostic gates. Hooks, plugins, and broader
-automation remain out of scope until reviewed evidence shows durable human value.
+The next milestone is deciding whether M8 needs a repeatability check or a
+different review workflow. Hooks, plugins, and broader automation remain out of
+scope until reviewed evidence shows durable human value.
 
 ## Repository Layout
 
@@ -204,7 +210,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 9. M7: run external pairwise coding and blind review after explicit approval. Done, with reviewer-positive but strict-gate-incomplete evidence.
 10. M8: inspect M7 losses and decide whether to tune timer proof, reduce low-information tie-breakers, or run a larger holdout. Done, with a targeted diagnostic recommendation.
 11. M8: design the targeted diagnostic before any skill rewrite or larger holdout. Done.
-12. M8: run the approval-gated diagnostic eval and blind review.
+12. M8: run the approval-gated diagnostic eval and blind review. Done, with partial blind review and no skill-change signal.
+13. Decide whether to repeat M8 with same-arm seeds or pause skill tuning until review workflow policy is resolved.
 
 ## References
 
