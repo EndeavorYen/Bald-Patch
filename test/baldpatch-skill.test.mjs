@@ -6,6 +6,7 @@ const SKILL_PATH = ".agents/skills/baldpatch-patch/SKILL.md";
 const OPENAI_YAML_PATH = ".agents/skills/baldpatch-patch/agents/openai.yaml";
 const REVIEW_SKILL_PATH = ".agents/skills/baldpatch-review/SKILL.md";
 const REVIEW_OPENAI_YAML_PATH = ".agents/skills/baldpatch-review/agents/openai.yaml";
+const M5_DESIGN_PATH = "docs/m5-holdout-design.md";
 
 describe("baldpatch-patch skill", () => {
   it("has complete trigger metadata and concise instructions", () => {
@@ -37,6 +38,39 @@ describe("baldpatch-patch skill", () => {
     assert.match(skill, /preserved behavior/i);
     assert.match(skill, /deterministic timer/i);
     assert.match(skill, /shared helper/i);
+  });
+
+  it("contains provisional M4 reviewer-proof wording with downside constraints", () => {
+    const skill = readFileSync(SKILL_PATH, "utf8");
+
+    assert.match(skill, /provisional/i);
+    assert.match(skill, /M4/i);
+    assert.match(skill, /positive but mixed/i);
+    assert.match(skill, /Do not replace existing high-signal focused tests/i);
+    assert.match(skill, /smallest public behavior test/i);
+    assert.match(skill, /do not add or export a helper solely/i);
+    assert.match(skill, /scoped deterministic timer/i);
+    assert.match(skill, /accepted\/rejected boundary/i);
+    assert.match(skill, /default state preservation/i);
+    assert.match(skill, /smallest semantic label/i);
+    assert.match(skill, /preserve existing wrapper call paths/i);
+  });
+
+  it("documents the M5 holdout design before claiming generalization", () => {
+    const design = readFileSync(M5_DESIGN_PATH, "utf8");
+
+    assert.match(design, /12-18 tasks/i);
+    assert.match(design, /at least half holdout/i);
+    assert.match(design, /old skill/i);
+    assert.match(design, /natural-baseline/i);
+    assert.match(design, /prompt-control/i);
+    assert.match(design, /helper extraction/i);
+    assert.match(design, /timer proof/i);
+    assert.match(design, /validation boundaries/i);
+    assert.match(design, /form defaults/i);
+    assert.match(design, /output labels/i);
+    assert.match(design, /wrapper preservation/i);
+    assert.match(design, /Do not run external M5/i);
   });
 
   it("keeps OpenAI UI metadata aligned with the explicit skill name", () => {
