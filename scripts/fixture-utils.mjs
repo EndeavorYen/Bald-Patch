@@ -6,13 +6,33 @@ const TASK_GROUPS_BY_MODE = {
   m2: ["real", "traps", "positive"],
   m4: ["real", "traps", "positive"],
   m5: ["m5"],
+  m7: ["m5"],
+};
+
+const TASK_FILTERS_BY_MODE = {
+  m7: new Set([
+    "m5-task-001",
+    "m5-task-002",
+    "m5-task-003",
+    "m5-task-004",
+    "m5-task-005",
+    "m5-task-007",
+    "m5-task-008",
+    "m5-task-010",
+    "m5-task-011",
+    "m5-task-012",
+  ]),
 };
 
 const ALL_TASK_GROUPS = Array.from(new Set(Object.values(TASK_GROUPS_BY_MODE).flat()));
 
 export function readTasks(taskRoot = "evals/tasks", options = {}) {
   const mode = options.mode || "m1";
-  return readTaskGroups(taskRoot, taskGroupsForMode(mode));
+  const tasks = readTaskGroups(taskRoot, taskGroupsForMode(mode));
+  const filter = TASK_FILTERS_BY_MODE[mode];
+  return filter
+    ? tasks.filter((task) => filter.has(task.public_id || task.id))
+    : tasks;
 }
 
 export function findTask(taskId, taskRoot = "evals/tasks", options = {}) {

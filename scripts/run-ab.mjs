@@ -8,6 +8,7 @@ const MODE_ARMS = {
   m2: ["natural-baseline", "prompt-control", "baldpatch-skill"],
   m4: ["m4-reviewer-proof-control"],
   m5: ["natural-baseline", "prompt-control", "old-baldpatch-skill", "provisional-baldpatch-skill"],
+  m7: ["old-baldpatch-skill", "revised-baldpatch-skill"],
 };
 
 const GENERIC_PROMPT_CONTROL = "Avoid unnecessary dependencies, speculative abstractions, and unrelated rewrites while preserving correctness, tests, and existing behavior.";
@@ -30,7 +31,7 @@ export function loadTasks(taskRoot = "evals/tasks", options = {}) {
 export function buildRunPlan(tasks, options = {}) {
   const { arms, mode } = normalizeOptions(options);
   return tasks.flatMap((task) => {
-    const taskId = ["m2", "m4", "m5"].includes(mode) ? task.public_id || task.id : task.id;
+    const taskId = ["m2", "m4", "m5", "m7"].includes(mode) ? task.public_id || task.id : task.id;
     return arms.map((arm) => ({
       task_id: taskId,
       ...(taskId !== task.id ? { fixture_task_id: task.id } : {}),
@@ -51,6 +52,10 @@ export function buildPrompt(task, arm, {
 
   if (mode === "m5") {
     return buildM5Prompt(task, arm);
+  }
+
+  if (mode === "m7") {
+    return buildM7Prompt(task, arm);
   }
 
   if (mode === "m2") {
@@ -141,6 +146,37 @@ function buildM5Prompt(task, arm) {
   ].join("\n");
 }
 
+function buildM7Prompt(task, arm) {
+  let snapshot;
+  if (arm === "old-baldpatch-skill") {
+    snapshot = {
+      label: "old",
+      text: readSkillSnapshot("pre-m5-baldpatch-patch"),
+    };
+  } else if (arm === "revised-baldpatch-skill") {
+    snapshot = {
+      label: "revised post-M5",
+      text: readSkillSnapshot("post-m5-baldpatch-patch"),
+    };
+  } else {
+    throw new Error(`Unsupported M7 arm: ${arm}`);
+  }
+
+  return [
+    `# ${task.neutral_title || task.title}`,
+    "",
+    task.natural_prompt || task.prompt,
+    "",
+    `Use this exact ${snapshot.label} Bald Patch skill guidance for this run. Do not use another Bald Patch skill version.`,
+    "",
+    "```markdown",
+    snapshot.text.trim(),
+    "```",
+    "",
+    "After implementing, run the smallest meaningful verification and leave the working tree ready for diff metrics.",
+  ].join("\n");
+}
+
 function readSkillSnapshot(name) {
   return readFileSync(new URL(`../evals/skill-snapshots/${name}/SKILL.md`, import.meta.url), "utf8");
 }
@@ -173,6 +209,10 @@ function modeForArm(arm) {
 
   if (MODE_ARMS.m5.includes(arm)) {
     return "m5";
+  }
+
+  if (MODE_ARMS.m7.includes(arm)) {
+    return "m7";
   }
 
   return MODE_ARMS.m2.includes(arm) ? "m2" : "m1";

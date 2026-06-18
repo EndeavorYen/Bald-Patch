@@ -151,4 +151,29 @@ describe("run-ab", () => {
     assert.match(plan[3].prompt, /Provisional M4 Constraints/);
     assert.match(plan[3].prompt, /Do not replace existing high-signal focused tests/);
   });
+
+  it("builds M7 old and revised skill prompts from explicit snapshots", () => {
+    const task = {
+      id: "m5-holdout-terse-cli-output",
+      public_id: "m5-task-011",
+      title: "Add raw CLI output",
+      neutral_title: "Add raw CLI output",
+      natural_prompt: "Add a --raw flag that prints only item IDs, one per line.",
+      prompt: "Add a --raw flag that prints only item IDs, one per line.",
+    };
+    const plan = buildRunPlan([task], { mode: "m7" });
+
+    assert.deepEqual(plan.map((run) => run.arm), [
+      "old-baldpatch-skill",
+      "revised-baldpatch-skill",
+    ]);
+    assert.equal(plan[0].task_id, "m5-task-011");
+    assert.equal(plan[0].fixture_task_id, "m5-holdout-terse-cli-output");
+    assert.match(plan[0].prompt, /Use this exact old Bald Patch skill guidance/);
+    assert.doesNotMatch(plan[0].prompt, /Post-M5 Constraints/);
+    assert.match(plan[1].prompt, /Use this exact revised post-M5 Bald Patch skill guidance/);
+    assert.match(plan[1].prompt, /Post-M5 Constraints/);
+    assert.match(plan[1].prompt, /raw or terse CLI output/);
+    assert.doesNotMatch(plan[1].prompt, /Provisional M4 Constraints/);
+  });
 });

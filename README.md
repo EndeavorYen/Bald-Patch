@@ -68,6 +68,7 @@ therefore narrows the live skill wording instead of graduating it.
 - M5 is negative or mixed evidence, not a graduation signal. It supports diagnosis and narrower rule work, not hooks, plugins, or broader automation.
 - M6 diagnosed the M5 task-level failures and replaced the live skill's provisional M4 constraints with conditional post-M5 constraints.
 - M6 keeps timer, validation, form, output, and wrapper guidance only where it reduces reviewer risk; it does not claim the revised skill improves reviewer preference yet.
+- M7 is prepared as a focused pairwise check: revised post-M5 skill versus old skill on eight M5 loss cases plus two regression canaries. It still requires explicit approval before any external model execution.
 
 See:
 
@@ -81,14 +82,16 @@ See:
 - [M5 holdout reviewed eval report](evals/reports/2026-06-18-m5-holdout-reviewed.md)
 - [M5 holdout analysis](evals/reports/2026-06-18-m5-holdout-analysis.md)
 - [M6 skill diagnosis](evals/reports/2026-06-18-m6-skill-diagnosis.md)
+- [M7 pairwise design](docs/m7-pairwise-design.md)
+- [M7 execution plan](docs/m7-execution-plan.md)
 - [M5 holdout design](docs/m5-holdout-design.md)
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is an M6/M7 pairwise check: compare the revised live skill
-against the old skill on M5 loss cases and a small number of holdout wins.
-Hooks, plugins, and broader automation remain out of scope until reviewed
-evidence shows durable human value.
+The next milestone is M7 external execution after explicit approval: compare the
+revised post-M5 skill against the old skill in a pairwise blind review. Hooks,
+plugins, and broader automation remain out of scope until reviewed evidence
+shows durable human value.
 
 ## Repository Layout
 
@@ -179,7 +182,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 5. M4: run same-day pairwise reviewer-proof canary before changing the skill. Done, with positive but mixed evidence.
 6. M5: draft provisional skill wording and test it on holdout tasks before any hooks, plugins, or broader automation. Done, with negative or mixed evidence.
 7. M6: diagnose M5 failures and narrow the live skill wording. Done.
-8. M6/M7: run a pairwise revised-skill check before any graduation claim.
+8. M7: prepare a pairwise revised-skill check before any graduation claim. Done.
+9. M7: run external pairwise coding and blind review after explicit approval.
 
 ## References
 
