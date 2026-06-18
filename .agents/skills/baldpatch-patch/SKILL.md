@@ -25,18 +25,20 @@ Produce the smallest safe patch that fully solves the request. Optimize for revi
 
 - Treat regression proof as part of safe scope, not optional LOC.
 - If the request says to keep existing output or behavior, keep or add one preserved behavior assertion.
-- For debounce or timer behavior, prefer scoped deterministic timer tests over real sleeps or global timer ceremony.
-- For validators, name and test the accepted/rejected boundary before choosing the implementation.
-- For form-state additions, prove populated field behavior and default state preservation when the existing API exposes defaults.
-- For user-facing script output, add the smallest semantic label that makes new data unambiguous.
-- For shared helper changes, preserve existing wrapper call paths unless the request explicitly asks to collapse them; test the helper or call sites that prove integration.
+- For debounce or timer behavior, prefer deterministic proof that exercises the same injected scheduler or timer path over real sleeps or global timer ceremony.
+- For validators, name and test the accepted/rejected boundary, including task-relevant bad cases that reviewers would expect to fail.
+- For form-state additions, prove populated field behavior; prove default state preservation only when the existing API exposes a meaningful default contract.
+- For user-facing script output, add the smallest semantic label when new data would be ambiguous; keep raw or terse CLI output at the CLI boundary when compatibility or the request calls for it.
+- For shared helper changes, preserve existing wrapper call paths unless the request explicitly asks to collapse them or direct helper use clearly removes duplicate public surface; test the helper or call sites that prove integration.
 
-## Provisional M4 Constraints
+## Post-M5 Constraints
 
-M4 is positive but mixed evidence, not proof that Bald Patch generalizes. Apply these reviewer-proof rules conservatively:
+M5 is negative or mixed evidence for the provisional M4 wording. Apply reviewer-proof rules as conditional risk checks, not hard rules:
 
 - Do not replace existing high-signal focused tests with broader but weaker public-entry tests.
 - For a tiny branch, add the smallest public behavior test needed for the branch; do not add or export a helper solely to make that branch testable.
+- For real duplication or an explicit helper request, a small local helper can be the clearest patch; use the existing module shape and avoid unnecessary new public API.
+- Do not stretch semantic labels, formatter options, or wrapper preservation beyond the request just to satisfy a rule.
 - Keep LOC pressure active: more proof is useful only when it reduces reviewer doubt or expected rework.
 
 ## Guardrails
@@ -60,7 +62,7 @@ Every rule should pay rent in an eval task:
 | Avoid broad rewrites | `small-refactor-no-rewrite`, `parser-edge-case` |
 | Avoid speculative provider/plugin architecture | `single-provider-no-plugin-architecture` |
 | Preserve existing behavior while adding CLI/script output | `cli-json-flag`, `script-dry-run-output` |
-| Provisional reviewer-proof shape | M4 `task-001`, `task-002`, `task-003`, `task-005`, `task-008`, `task-011` |
+| Post-M5 reviewer-proof constraints | M5 `m5-task-001` through `m5-task-012` |
 
 ## Review Checklist
 

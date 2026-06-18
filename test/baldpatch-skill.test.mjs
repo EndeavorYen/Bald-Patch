@@ -36,24 +36,26 @@ describe("baldpatch-patch skill", () => {
     const skill = readFileSync(SKILL_PATH, "utf8");
 
     assert.match(skill, /preserved behavior/i);
-    assert.match(skill, /deterministic timer/i);
+    assert.match(skill, /deterministic proof/i);
+    assert.match(skill, /injected scheduler or timer path/i);
     assert.match(skill, /shared helper/i);
   });
 
-  it("contains provisional M4 reviewer-proof wording with downside constraints", () => {
+  it("contains post-M5 reviewer-proof wording with downside constraints", () => {
     const skill = readFileSync(SKILL_PATH, "utf8");
 
-    assert.match(skill, /provisional/i);
-    assert.match(skill, /M4/i);
-    assert.match(skill, /positive but mixed/i);
+    assert.match(skill, /Post-M5 Constraints/i);
+    assert.match(skill, /negative or mixed evidence/i);
+    assert.match(skill, /conditional risk checks/i);
     assert.match(skill, /Do not replace existing high-signal focused tests/i);
     assert.match(skill, /smallest public behavior test/i);
     assert.match(skill, /do not add or export a helper solely/i);
-    assert.match(skill, /scoped deterministic timer/i);
+    assert.match(skill, /injected scheduler or timer path/i);
     assert.match(skill, /accepted\/rejected boundary/i);
-    assert.match(skill, /default state preservation/i);
-    assert.match(skill, /smallest semantic label/i);
+    assert.match(skill, /meaningful default contract/i);
+    assert.match(skill, /raw or terse CLI output/i);
     assert.match(skill, /preserve existing wrapper call paths/i);
+    assert.match(skill, /explicitly asks to collapse them/i);
   });
 
   it("documents the M5 holdout design before claiming generalization", () => {
