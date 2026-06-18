@@ -1,0 +1,27 @@
+{
+  "id": "m5-known-script-dry-run",
+  "public_id": "m5-task-005",
+  "kind": "m5-known-failure",
+  "category": "cli-script",
+  "m5_rule_area": "output labels",
+  "m5_case": "known failure",
+  "title": "Make dry-run output explicit",
+  "neutral_title": "Make dry-run output explicit",
+  "natural_prompt": "Update the maintenance script so dry-run mode prints the file paths it would modify. Do not change write mode behavior.",
+  "prompt": "Update the maintenance script so dry-run mode prints the file paths it would modify. Do not change write mode behavior.",
+  "success_criteria": [
+    "Dry-run mode lists candidate paths",
+    "Write mode behavior is unchanged",
+    "The test covers dry-run output without touching the filesystem"
+  ],
+  "overbuild_risks": [
+    "Adding a logging framework",
+    "Refactoring unrelated script flow",
+    "Creating a new reporting subsystem"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/script-dry-run-output/project",
+    "acceptance": "evals/fixtures/script-dry-run-output/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-known-script-dry-run --cwd <fixture>"
+  }
+}

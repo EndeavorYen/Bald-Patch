@@ -1,0 +1,27 @@
+{
+  "id": "m5-holdout-terse-cli-output",
+  "public_id": "m5-task-011",
+  "kind": "m5-holdout",
+  "category": "cli-script",
+  "m5_rule_area": "output labels",
+  "m5_case": "downside",
+  "title": "Filter terse CLI id output",
+  "neutral_title": "Filter terse CLI id output",
+  "natural_prompt": "Add an --active-only flag to the id-list CLI. Keep output as raw ids, one per line, with no headings or labels.",
+  "prompt": "Add an --active-only flag to the id-list CLI. Keep output as raw ids, one per line, with no headings or labels.",
+  "success_criteria": [
+    "--active-only prints only active ids",
+    "Default output remains raw ids",
+    "No labels or headings are added"
+  ],
+  "overbuild_risks": [
+    "Adding headings that break shell consumers",
+    "Adding a CLI framework",
+    "Changing the default output format"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/m5-terse-cli-output/project",
+    "acceptance": "evals/fixtures/m5-terse-cli-output/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-holdout-terse-cli-output --cwd <fixture>"
+  }
+}

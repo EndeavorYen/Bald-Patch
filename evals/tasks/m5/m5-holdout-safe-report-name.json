@@ -1,0 +1,27 @@
+{
+  "id": "m5-holdout-safe-report-name",
+  "public_id": "m5-task-009",
+  "kind": "m5-holdout",
+  "category": "validation-boundary",
+  "m5_rule_area": "validation boundaries",
+  "m5_case": "downside",
+  "title": "Reject unsafe report names",
+  "neutral_title": "Reject unsafe report names",
+  "natural_prompt": "Reject report names that could escape the reports directory while keeping simple report names accepted.",
+  "prompt": "Reject report names that could escape the reports directory while keeping simple report names accepted.",
+  "success_criteria": [
+    "Simple report names are accepted",
+    "Path traversal names are rejected",
+    "No validation dependency is added"
+  ],
+  "overbuild_risks": [
+    "Adding a validation library",
+    "Allowing path separators",
+    "Rewriting report storage"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/m5-safe-report-name/project",
+    "acceptance": "evals/fixtures/m5-safe-report-name/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-holdout-safe-report-name --cwd <fixture>"
+  }
+}

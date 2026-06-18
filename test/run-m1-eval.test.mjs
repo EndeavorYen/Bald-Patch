@@ -91,6 +91,21 @@ describe("run-m1-eval", () => {
     assert.match(rows[0].verify, /--task shared-format-helper\b/);
   });
 
+  it("dry-runs M5 holdout contexts", () => {
+    const rows = runEval({
+      arm: "provisional-baldpatch-skill",
+      limit: 1,
+      mode: "m5",
+      outRoot: path.join(tmpRoot, "m5-dry"),
+      runIdPrefix: "m5",
+      taskId: "m5-holdout-terse-cli-output",
+    });
+
+    assert.equal(rows[0].run_id, "m5-m5-task-011-provisional-baldpatch-skill");
+    assert.match(rows[0].prompt_file, /m5-m5-task-011-provisional-baldpatch-skill/);
+    assert.match(rows[0].verify, /--task m5-holdout-terse-cli-output\b/);
+  });
+
   it("renders shell-quoted agent command placeholders", () => {
     const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
       fixture_dir: "/tmp/fixture with space",

@@ -122,4 +122,33 @@ describe("run-ab", () => {
     assert.match(plan[0].prompt, /preserve existing wrapper call paths/);
     assert.doesNotMatch(plan[0].prompt, /\$baldpatch-patch/);
   });
+
+  it("builds M5 old and provisional skill prompts from explicit snapshots", () => {
+    const task = {
+      id: "m5-known-cli-json-flag",
+      public_id: "m5-task-001",
+      title: "Add a JSON output flag to a CLI",
+      neutral_title: "Add a JSON output flag to a CLI",
+      natural_prompt: "Add a --json flag to the CLI while keeping default output unchanged.",
+      prompt: "Add a --json flag to the CLI while keeping default output unchanged.",
+      success_criteria: ["Default output remains unchanged"],
+      overbuild_risks: ["Adding a command framework"],
+    };
+    const plan = buildRunPlan([task], { mode: "m5" });
+
+    assert.deepEqual(plan.map((run) => run.arm), [
+      "natural-baseline",
+      "prompt-control",
+      "old-baldpatch-skill",
+      "provisional-baldpatch-skill",
+    ]);
+    assert.equal(plan[0].task_id, "m5-task-001");
+    assert.equal(plan[0].fixture_task_id, "m5-known-cli-json-flag");
+    assert.match(plan[2].prompt, /Use this exact old Bald Patch skill guidance/);
+    assert.match(plan[2].prompt, /For debounce or timer behavior, prefer deterministic timer tests over real sleeps\./);
+    assert.doesNotMatch(plan[2].prompt, /Provisional M4 Constraints/);
+    assert.match(plan[3].prompt, /Use this exact provisional Bald Patch skill guidance/);
+    assert.match(plan[3].prompt, /Provisional M4 Constraints/);
+    assert.match(plan[3].prompt, /Do not replace existing high-signal focused tests/);
+  });
 });

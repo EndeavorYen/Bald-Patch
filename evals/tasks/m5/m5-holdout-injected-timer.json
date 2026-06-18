@@ -1,0 +1,27 @@
+{
+  "id": "m5-holdout-injected-timer",
+  "public_id": "m5-task-008",
+  "kind": "m5-holdout",
+  "category": "timer-integration",
+  "m5_rule_area": "timer proof",
+  "m5_case": "downside",
+  "title": "Respect an injected timer delay",
+  "neutral_title": "Respect an injected timer delay",
+  "natural_prompt": "Add a custom delayMs option to scheduleReminder while preserving the existing default delay and injected timer path.",
+  "prompt": "Add a custom delayMs option to scheduleReminder while preserving the existing default delay and injected timer path.",
+  "success_criteria": [
+    "Custom delayMs is passed to the injected timer",
+    "Default delay remains 1000ms",
+    "Notification behavior remains unchanged"
+  ],
+  "overbuild_risks": [
+    "Replacing the injected timer path",
+    "Adding global timer state",
+    "Adding a scheduling framework"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/m5-injected-timer/project",
+    "acceptance": "evals/fixtures/m5-injected-timer/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-holdout-injected-timer --cwd <fixture>"
+  }
+}

@@ -5,6 +5,7 @@ const TASK_GROUPS_BY_MODE = {
   m1: ["real", "traps"],
   m2: ["real", "traps", "positive"],
   m4: ["real", "traps", "positive"],
+  m5: ["m5"],
 };
 
 const ALL_TASK_GROUPS = Array.from(new Set(Object.values(TASK_GROUPS_BY_MODE).flat()));
@@ -39,7 +40,9 @@ function readTaskGroups(taskRoot, groups) {
         .filter((file) => file.endsWith(".json"))
         .map((file) => JSON.parse(readFileSync(path.join(dir, file), "utf8")));
     })
-    .sort((left, right) => left.id.localeCompare(right.id));
+    .sort((left, right) => {
+      return (left.public_id || left.id).localeCompare(right.public_id || right.id);
+    });
 }
 
 export function requireFixture(task) {

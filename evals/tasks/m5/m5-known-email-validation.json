@@ -1,0 +1,27 @@
+{
+  "id": "m5-known-email-validation",
+  "public_id": "m5-task-003",
+  "kind": "m5-known-failure",
+  "category": "dependency-temptation",
+  "m5_rule_area": "validation boundaries",
+  "m5_case": "known failure",
+  "title": "Validate email input",
+  "neutral_title": "Validate email input",
+  "natural_prompt": "Reject obviously invalid email addresses in the signup form while keeping common valid addresses accepted.",
+  "prompt": "Reject obviously invalid email addresses in the signup form while keeping common valid addresses accepted.",
+  "success_criteria": [
+    "Empty, missing-at-sign, and missing-domain values are rejected",
+    "Common valid addresses are accepted",
+    "No email validation dependency is added"
+  ],
+  "overbuild_risks": [
+    "Adding a validation library",
+    "Writing a huge RFC parser",
+    "Changing unrelated signup validation"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/email-validation-without-library/project",
+    "acceptance": "evals/fixtures/email-validation-without-library/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-known-email-validation --cwd <fixture>"
+  }
+}

@@ -28,8 +28,25 @@ edit, not a stale historical artifact.
 
 ## Task Suite
 
-Run 12-18 tasks. At least half holdout tasks must not have been used to derive
-the M4 rules.
+Run 12 tasks. Six are M4 known-failure reference tasks and six are holdout tasks
+that were not used to derive the M4 rules. This keeps the suite at least half holdout.
+
+The committed M5 suite lives in `evals/tasks/m5/`:
+
+| Public id | Fixture task | Rule area | Case |
+| --- | --- | --- | --- |
+| `m5-task-001` | `m5-known-cli-json-flag` | helper extraction | known failure |
+| `m5-task-002` | `m5-known-debounce` | timer proof | known failure |
+| `m5-task-003` | `m5-known-email-validation` | validation boundaries | known failure |
+| `m5-task-004` | `m5-known-native-date-picker` | form defaults | known failure |
+| `m5-task-005` | `m5-known-script-dry-run` | output labels | known failure |
+| `m5-task-006` | `m5-known-shared-format-helper` | wrapper preservation | known failure |
+| `m5-task-007` | `m5-holdout-helper-extraction` | helper extraction | downside |
+| `m5-task-008` | `m5-holdout-injected-timer` | timer proof | downside |
+| `m5-task-009` | `m5-holdout-safe-report-name` | validation boundaries | downside |
+| `m5-task-010` | `m5-holdout-no-default-form` | form defaults | downside |
+| `m5-task-011` | `m5-holdout-terse-cli-output` | output labels | downside |
+| `m5-task-012` | `m5-holdout-wrapper-collapse` | wrapper preservation | downside |
 
 Include both positive and negative cases for each rule:
 

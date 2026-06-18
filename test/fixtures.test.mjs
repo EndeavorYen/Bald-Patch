@@ -71,6 +71,33 @@ describe("eval fixtures", () => {
     }
   });
 
+  it("prepares M5 curated tasks from clean standalone projects", () => {
+    const m5Tasks = readTasks(undefined, { mode: "m5" });
+
+    assert.equal(m5Tasks.length, 12);
+
+    for (const task of m5Tasks) {
+      const prepared = prepareFixture({
+        taskId: task.id,
+        outDir: path.join(tmpRoot, `m5-${task.id}`),
+        force: true,
+      });
+
+      const publicTests = spawnSync("npm", ["test"], {
+        cwd: prepared.out,
+        encoding: "utf8",
+      });
+      assert.equal(publicTests.status, 0, publicTests.stderr || publicTests.stdout);
+
+      const verification = verifyFixture({
+        taskId: task.id,
+        cwd: prepared.out,
+      });
+      assert.equal(verification.ok, false, `${task.id} should fail hidden acceptance before patch`);
+      assert.equal(verification.phase, "acceptance");
+    }
+  });
+
   it("accepts shared amount formatter solutions without requiring a specific helper filename", () => {
     const prepared = prepareFixture({
       taskId: "shared-format-helper",

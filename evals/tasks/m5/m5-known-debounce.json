@@ -1,0 +1,27 @@
+{
+  "id": "m5-known-debounce",
+  "public_id": "m5-task-002",
+  "kind": "m5-known-failure",
+  "category": "dependency-temptation",
+  "m5_rule_area": "timer proof",
+  "m5_case": "known failure",
+  "title": "Debounce a search input",
+  "neutral_title": "Debounce a search input",
+  "natural_prompt": "Debounce the search input by 250ms while keeping the existing search behavior working.",
+  "prompt": "Debounce the search input by 250ms while keeping the existing search behavior working.",
+  "success_criteria": [
+    "Search fires after a 250ms pause",
+    "Existing search behavior still works",
+    "No utility dependency is added"
+  ],
+  "overbuild_risks": [
+    "Installing lodash or a debounce package",
+    "Creating a full event utility module",
+    "Changing search result rendering"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/debounce-without-lodash/project",
+    "acceptance": "evals/fixtures/debounce-without-lodash/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-known-debounce --cwd <fixture>"
+  }
+}
