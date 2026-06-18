@@ -109,6 +109,7 @@ rework or another clearly stated reviewer-value gain.
 ## References
 
 - [Post-M9 project posture](posture.md)
+- [Closure plan](closure-plan.md)
 - [M1 reviewed evidence analysis](../evals/reports/2026-06-18-m1-codex-reviewed-analysis.md)
 - [M2 reviewed eval report](../evals/reports/2026-06-18-m2-codex-reviewed.md)
 - [M3 failure analysis](../evals/reports/2026-06-18-m3-smoke-failure-analysis.md)

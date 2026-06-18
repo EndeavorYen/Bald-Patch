@@ -58,6 +58,8 @@ Bald Patch should now be read as a toolkit with four asset classes.
 | [E2: Realistic Task Suite](https://github.com/EndeavorYen/Bald-Patch/issues/60) | Design larger but fully verifiable repo slices that better represent real review pressure. |
 | [E3: Review Evidence Productization](https://github.com/EndeavorYen/Bald-Patch/issues/61) | Make review packets, decoded summaries, scope evidence, and reports easier to run and consume. |
 
+The phase-close target and track gates are in [closure-plan.md](closure-plan.md).
+
 ## Stop Rule
 
 If the next higher-quality holdout still cannot show stable, repeatable gains in
