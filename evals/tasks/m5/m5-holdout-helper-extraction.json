@@ -1,0 +1,27 @@
+{
+  "id": "m5-holdout-helper-extraction",
+  "public_id": "m5-task-007",
+  "kind": "m5-holdout",
+  "category": "justified-refactor",
+  "m5_rule_area": "helper extraction",
+  "m5_case": "downside",
+  "title": "Centralize duplicated amount formatting",
+  "neutral_title": "Centralize duplicated amount formatting",
+  "natural_prompt": "Centralize the duplicated cents-to-dollar formatting used by invoice and receipt line items. Keep both labels unchanged.",
+  "prompt": "Centralize the duplicated cents-to-dollar formatting used by invoice and receipt line items. Keep both labels unchanged.",
+  "success_criteria": [
+    "Invoice and receipt lines keep their labels",
+    "Both line items share one amount formatting implementation",
+    "No currency formatting package is added"
+  ],
+  "overbuild_risks": [
+    "Adding a formatting package",
+    "Changing output labels",
+    "Creating a broad billing abstraction"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/m5-helper-extraction/project",
+    "acceptance": "evals/fixtures/m5-helper-extraction/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-holdout-helper-extraction --cwd <fixture>"
+  }
+}

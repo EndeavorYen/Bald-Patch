@@ -1,0 +1,27 @@
+{
+  "id": "m5-holdout-wrapper-collapse",
+  "public_id": "m5-task-012",
+  "kind": "m5-holdout",
+  "category": "justified-refactor",
+  "m5_rule_area": "wrapper preservation",
+  "m5_case": "downside",
+  "title": "Collapse obsolete total-format wrappers",
+  "neutral_title": "Collapse obsolete total-format wrappers",
+  "natural_prompt": "Replace the invoice and receipt total-format wrapper functions with one shared formatAmount helper, and call that helper directly from both summaries.",
+  "prompt": "Replace the invoice and receipt total-format wrapper functions with one shared formatAmount helper, and call that helper directly from both summaries.",
+  "success_criteria": [
+    "Invoice and receipt summaries still render dollar totals",
+    "Both summaries call the shared formatAmount helper directly",
+    "Obsolete wrapper exports are removed"
+  ],
+  "overbuild_risks": [
+    "Keeping obsolete wrapper exports despite the request",
+    "Changing summary labels",
+    "Adding a currency formatting package"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/m5-wrapper-collapse/project",
+    "acceptance": "evals/fixtures/m5-wrapper-collapse/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-holdout-wrapper-collapse --cwd <fixture>"
+  }
+}

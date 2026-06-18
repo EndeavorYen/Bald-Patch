@@ -59,7 +59,7 @@ describe("baldpatch-patch skill", () => {
   it("documents the M5 holdout design before claiming generalization", () => {
     const design = readFileSync(M5_DESIGN_PATH, "utf8");
 
-    assert.match(design, /12-18 tasks/i);
+    assert.match(design, /Run 12 tasks/i);
     assert.match(design, /at least half holdout/i);
     assert.match(design, /old skill/i);
     assert.match(design, /natural-baseline/i);

@@ -72,6 +72,7 @@ See:
 - [M4 reviewer-proof pairwise reviewed eval report](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-reviewed.md)
 - [M4 reviewer-proof pairwise analysis](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-analysis.md)
 - [M5 holdout design](docs/m5-holdout-design.md)
+- [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
 The next milestone is a provisional skill draft constrained by the M4 failures,
@@ -107,8 +108,10 @@ node scripts/scope-lint.mjs --base main --json
 node scripts/baldpatch-review.mjs --base main
 node scripts/run-ab.mjs --jsonl
 node scripts/run-ab.mjs --mode m2 --jsonl
+node scripts/run-ab.mjs --mode m5 --jsonl
 node scripts/run-m1-eval.mjs --task parser-edge-case --arm baseline
 node scripts/run-m1-eval.mjs --mode m2 --task parser-edge-case --arm prompt-control
+node scripts/run-m1-eval.mjs --mode m5 --task m5-holdout-terse-cli-output --arm provisional-baldpatch-skill
 node scripts/prepare-fixture.mjs --task native-date-picker --out /private/tmp/bald-patch/native-date-picker-baseline --force
 node scripts/verify-fixture.mjs --task native-date-picker --cwd /private/tmp/bald-patch/native-date-picker-baseline
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md

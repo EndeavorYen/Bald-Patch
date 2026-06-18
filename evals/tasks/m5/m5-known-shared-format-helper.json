@@ -1,0 +1,27 @@
+{
+  "id": "m5-known-shared-format-helper",
+  "public_id": "m5-task-006",
+  "kind": "m5-known-failure",
+  "category": "justified-refactor",
+  "m5_rule_area": "wrapper preservation",
+  "m5_case": "known failure",
+  "title": "Align billing total formatting",
+  "neutral_title": "Align billing total formatting",
+  "natural_prompt": "Introduce a shared `formatAmount` helper and use it from both invoice and receipt summaries, so both show totals as dollar amounts while keeping their labels unchanged.",
+  "prompt": "Introduce a shared `formatAmount` helper and use it from both invoice and receipt summaries, so both show totals as dollar amounts while keeping their labels unchanged.",
+  "success_criteria": [
+    "Invoice and receipt totals both render as dollar amounts",
+    "Both summaries use a shared amount formatter",
+    "Existing summary labels remain unchanged"
+  ],
+  "overbuild_risks": [
+    "Only patching one billing summary",
+    "Leaving duplicate amount formatting in each summary",
+    "Adding a currency-formatting package"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/shared-format-helper/project",
+    "acceptance": "evals/fixtures/shared-format-helper/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-known-shared-format-helper --cwd <fixture>"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "m5-holdout-no-default-form",
+  "public_id": "m5-task-010",
+  "kind": "m5-holdout",
+  "category": "form-state",
+  "m5_rule_area": "form defaults",
+  "m5_case": "downside",
+  "title": "Serialize an optional nickname field",
+  "neutral_title": "Serialize an optional nickname field",
+  "natural_prompt": "Accept an optional nickname field from submitted profile form entries. Keep existing name serialization unchanged.",
+  "prompt": "Accept an optional nickname field from submitted profile form entries. Keep existing name serialization unchanged.",
+  "success_criteria": [
+    "Nickname is serialized when submitted",
+    "Existing name serialization is unchanged",
+    "No default form model is introduced"
+  ],
+  "overbuild_risks": [
+    "Adding an unused default-state layer",
+    "Changing submitted field names",
+    "Adding a form framework"
+  ],
+  "fixture": {
+    "project": "evals/fixtures/m5-no-default-form/project",
+    "acceptance": "evals/fixtures/m5-no-default-form/acceptance",
+    "verify": "node scripts/verify-fixture.mjs --task m5-holdout-no-default-form --cwd <fixture>"
+  }
+}

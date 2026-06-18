@@ -80,4 +80,27 @@ describe("M1 eval tasks", () => {
       ["m4-reviewer-proof-control"],
     );
   });
+
+  it("defines a curated M5 suite with at least half holdout tasks", () => {
+    const m5Tasks = readTasks(TASK_ROOT, { mode: "m5" });
+    const m5Plan = buildRunPlan(m5Tasks, { mode: "m5" });
+
+    assert.equal(m5Tasks.length, 12);
+    assert.equal(m5Tasks.filter((task) => task.kind === "m5-known-failure").length, 6);
+    assert.equal(m5Tasks.filter((task) => task.kind === "m5-holdout").length, 6);
+    assert.equal(m5Plan.length, 48);
+    assert.deepEqual([...new Set(m5Plan.map((run) => run.arm))], [
+      "natural-baseline",
+      "prompt-control",
+      "old-baldpatch-skill",
+      "provisional-baldpatch-skill",
+    ]);
+
+    for (const task of m5Tasks) {
+      assert.match(task.public_id, /^m5-task-\d{3}$/);
+      assert.equal(typeof task.m5_rule_area, "string");
+      assert.equal(typeof task.m5_case, "string");
+      assert.match(task.fixture.verify, new RegExp(`--task ${task.id}\\b`));
+    }
+  });
 });
