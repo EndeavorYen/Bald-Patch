@@ -25,8 +25,19 @@ Produce the smallest safe patch that fully solves the request. Optimize for revi
 
 - Treat regression proof as part of safe scope, not optional LOC.
 - If the request says to keep existing output or behavior, keep or add one preserved behavior assertion.
-- For debounce or timer behavior, prefer deterministic timer tests over real sleeps.
-- For shared helper changes, test the shared helper or both call sites when that proves the integration.
+- For debounce or timer behavior, prefer scoped deterministic timer tests over real sleeps or global timer ceremony.
+- For validators, name and test the accepted/rejected boundary before choosing the implementation.
+- For form-state additions, prove populated field behavior and default state preservation when the existing API exposes defaults.
+- For user-facing script output, add the smallest semantic label that makes new data unambiguous.
+- For shared helper changes, preserve existing wrapper call paths unless the request explicitly asks to collapse them; test the helper or call sites that prove integration.
+
+## Provisional M4 Constraints
+
+M4 is positive but mixed evidence, not proof that Bald Patch generalizes. Apply these reviewer-proof rules conservatively:
+
+- Do not replace existing high-signal focused tests with broader but weaker public-entry tests.
+- For a tiny branch, add the smallest public behavior test needed for the branch; do not add or export a helper solely to make that branch testable.
+- Keep LOC pressure active: more proof is useful only when it reduces reviewer doubt or expected rework.
 
 ## Guardrails
 
@@ -49,6 +60,7 @@ Every rule should pay rent in an eval task:
 | Avoid broad rewrites | `small-refactor-no-rewrite`, `parser-edge-case` |
 | Avoid speculative provider/plugin architecture | `single-provider-no-plugin-architecture` |
 | Preserve existing behavior while adding CLI/script output | `cli-json-flag`, `script-dry-run-output` |
+| Provisional reviewer-proof shape | M4 `task-001`, `task-002`, `task-003`, `task-005`, `task-008`, `task-011` |
 
 ## Review Checklist
 

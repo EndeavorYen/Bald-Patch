@@ -71,6 +71,7 @@ See:
 - [M3 smoke failure analysis](evals/reports/2026-06-18-m3-smoke-failure-analysis.md)
 - [M4 reviewer-proof pairwise reviewed eval report](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-reviewed.md)
 - [M4 reviewer-proof pairwise analysis](evals/reports/2026-06-18-m4-reviewer-proof-pairwise-analysis.md)
+- [M5 holdout design](docs/m5-holdout-design.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
 The next milestone is a provisional skill draft constrained by the M4 failures,
