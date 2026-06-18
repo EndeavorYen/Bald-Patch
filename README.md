@@ -139,7 +139,8 @@ See:
 The next milestone is E1/E2/E3: improve eval discrimination, design more
 realistic task suites, and productize review evidence. Hooks, plugins, and
 broader automation remain out of scope until reviewed evidence shows durable
-human value.
+human value. The asset inventory and restart criteria live in
+[docs/posture.md](docs/posture.md).
 
 ## Repository Layout
 
