@@ -121,6 +121,21 @@ describe("run-m1-eval", () => {
     assert.match(rows[0].verify, /--task m5-holdout-terse-cli-output\b/);
   });
 
+  it("dry-runs M8 diagnostic contexts", () => {
+    const rows = runEval({
+      arm: "m8-timer-proof-draft",
+      limit: 1,
+      mode: "m8",
+      outRoot: path.join(tmpRoot, "m8-dry"),
+      runIdPrefix: "m8",
+      taskId: "m5-holdout-injected-timer",
+    });
+
+    assert.equal(rows[0].run_id, "m8-m5-task-008-m8-timer-proof-draft");
+    assert.match(rows[0].prompt_file, /m8-m5-task-008-m8-timer-proof-draft/);
+    assert.match(rows[0].verify, /--task m5-holdout-injected-timer\b/);
+  });
+
   it("renders shell-quoted agent command placeholders", () => {
     const command = renderAgentCommand("agent --cwd {fixture} --prompt {promptFile}", {
       fixture_dir: "/tmp/fixture with space",

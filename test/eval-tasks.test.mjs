@@ -127,4 +127,24 @@ describe("M1 eval tasks", () => {
       "revised-baldpatch-skill",
     ]);
   });
+
+  it("defines an M8 diagnostic suite from timer and tie-breaker probes", () => {
+    const m8Tasks = readTasks(TASK_ROOT, { mode: "m8" });
+    const m8Plan = buildRunPlan(m8Tasks, { mode: "m8" });
+
+    assert.equal(m8Tasks.length, 6);
+    assert.deepEqual(m8Tasks.map((task) => task.public_id), [
+      "m5-task-002",
+      "m5-task-003",
+      "m5-task-004",
+      "m5-task-005",
+      "m5-task-008",
+      "m5-task-011",
+    ]);
+    assert.equal(m8Plan.length, 12);
+    assert.deepEqual([...new Set(m8Plan.map((run) => run.arm))], [
+      "revised-baldpatch-skill",
+      "m8-timer-proof-draft",
+    ]);
+  });
 });

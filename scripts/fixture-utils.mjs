@@ -7,6 +7,7 @@ const TASK_GROUPS_BY_MODE = {
   m4: ["real", "traps", "positive"],
   m5: ["m5"],
   m7: ["m5"],
+  m8: ["m5"],
 };
 
 const TASK_FILTERS_BY_MODE = {
@@ -21,6 +22,14 @@ const TASK_FILTERS_BY_MODE = {
     "m5-task-010",
     "m5-task-011",
     "m5-task-012",
+  ]),
+  m8: new Set([
+    "m5-task-002",
+    "m5-task-003",
+    "m5-task-004",
+    "m5-task-005",
+    "m5-task-008",
+    "m5-task-011",
   ]),
 };
 

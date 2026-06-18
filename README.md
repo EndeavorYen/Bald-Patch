@@ -77,6 +77,9 @@ M8 planning keeps the next step diagnostic rather than expansive.
 - M7 is reviewer-positive but strict-gate-incomplete: revised median LOC was 18 versus old skill 17.5, with median expected rework 0 on both arms.
 - M7 supports keeping the post-M5 narrowing as provisional reviewer-value guidance. It does not support a graduation claim or stronger automation.
 - M8 go/no-go analysis says to run a targeted diagnostic design before any skill rewrite or larger holdout.
+- M8 diagnostic design defines a 12-row local plan comparing the revised skill
+  against a prompt-scoped timer-proof draft. It is not external eval evidence
+  yet.
 
 See:
 
@@ -93,16 +96,18 @@ See:
 - [M7 pairwise reviewed eval report](evals/reports/2026-06-18-m7-pairwise-reviewed.md)
 - [M7 pairwise analysis](evals/reports/2026-06-18-m7-pairwise-analysis.md)
 - [M8 go/no-go analysis](evals/reports/2026-06-19-m8-go-no-go-analysis.md)
+- [M8 diagnostic design](docs/m8-diagnostic-design.md)
+- [M8 execution plan](docs/m8-execution-plan.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
 - [M7 execution plan](docs/m7-execution-plan.md)
 - [M5 holdout design](docs/m5-holdout-design.md)
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is M8 diagnostic design: isolate the injected-timer canary,
-discount low-information tie-breakers, and keep graduation gates separate from
-diagnostic gates. Hooks, plugins, and broader automation remain out of scope
-until reviewed evidence shows durable human value.
+The next milestone is M8 diagnostic execution after explicit approval: isolate
+the injected-timer canary, discount low-information tie-breakers, and keep
+graduation gates separate from diagnostic gates. Hooks, plugins, and broader
+automation remain out of scope until reviewed evidence shows durable human value.
 
 ## Repository Layout
 
@@ -134,9 +139,11 @@ node scripts/baldpatch-review.mjs --base main
 node scripts/run-ab.mjs --jsonl
 node scripts/run-ab.mjs --mode m2 --jsonl
 node scripts/run-ab.mjs --mode m5 --jsonl
+node scripts/run-ab.mjs --mode m8 --jsonl
 node scripts/run-m1-eval.mjs --task parser-edge-case --arm baseline
 node scripts/run-m1-eval.mjs --mode m2 --task parser-edge-case --arm prompt-control
 node scripts/run-m1-eval.mjs --mode m5 --task m5-holdout-terse-cli-output --arm provisional-baldpatch-skill
+node scripts/run-m1-eval.mjs --mode m8 --task m5-holdout-injected-timer --arm m8-timer-proof-draft
 node scripts/prepare-fixture.mjs --task native-date-picker --out /private/tmp/bald-patch/native-date-picker-baseline --force
 node scripts/verify-fixture.mjs --task native-date-picker --cwd /private/tmp/bald-patch/native-date-picker-baseline
 node scripts/score-run.mjs --input evals/runs/2026-06-17.jsonl --output evals/reports/2026-06-17.md
@@ -196,7 +203,8 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 8. M7: prepare a pairwise revised-skill check before any graduation claim. Done.
 9. M7: run external pairwise coding and blind review after explicit approval. Done, with reviewer-positive but strict-gate-incomplete evidence.
 10. M8: inspect M7 losses and decide whether to tune timer proof, reduce low-information tie-breakers, or run a larger holdout. Done, with a targeted diagnostic recommendation.
-11. M8: design the targeted diagnostic before any skill rewrite or larger holdout.
+11. M8: design the targeted diagnostic before any skill rewrite or larger holdout. Done.
+12. M8: run the approval-gated diagnostic eval and blind review.
 
 ## References
 
