@@ -82,6 +82,21 @@ export function renderMarkdownReport(summary, {
     }
   }
 
+  lines.push("", "## Acceptance Gate Failures", "");
+
+  const failedAcceptanceChecks = summary.acceptance_checks.filter((check) => {
+    return check.status === "fail";
+  });
+  if (failedAcceptanceChecks.length === 0) {
+    lines.push("- None");
+  } else {
+    lines.push("| Gate | Detail |");
+    lines.push("| --- | --- |");
+    for (const check of failedAcceptanceChecks) {
+      lines.push(`| ${check.gate} | ${check.detail} |`);
+    }
+  }
+
   lines.push("", "## Hard Gate Failures", "");
 
   if (summary.hard_gate_failures.length === 0) {
