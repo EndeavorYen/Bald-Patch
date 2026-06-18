@@ -1,6 +1,7 @@
 # Bald Patch Blind Review Packet
 
 Review the patches by correctness, scope, safety, tests, maintainability, and expected human rework.
+For each patch, fill decision, expected rework minutes, scores, dependency judgment, and abstraction judgment.
 Use the answer template at the end. Do not use private run metadata.
 
 ## Task task-001
@@ -1620,67 +1621,485 @@ index 19d16fd..4f4525a 100644
     "task_id": "task-001",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-002",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-003",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-004",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-005",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-006",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-007",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-008",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-009",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-010",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   },
   {
     "task_id": "task-011",
     "preferred_patch": "",
     "confidence": null,
-    "reason": ""
+    "reason": "",
+    "patches": {
+      "A": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "B": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      },
+      "C": {
+        "decision": "",
+        "expected_rework_minutes": null,
+        "scores": {
+          "requirements": null,
+          "correctness_safety": null,
+          "test_adequacy": null,
+          "maintainability_reviewability": null
+        },
+        "dependency_judgment": "",
+        "abstraction_judgment": ""
+      }
+    }
   }
 ]
 ```

@@ -32,6 +32,7 @@ export function buildBlindReviewPacket({
     "# Bald Patch Blind Review Packet",
     "",
     "Review the patches by correctness, scope, safety, tests, maintainability, and expected human rework.",
+    "For each patch, fill decision, expected rework minutes, scores, dependency judgment, and abstraction judgment.",
     "Use the answer template at the end. Do not use private run metadata.",
     "",
   ];
@@ -58,8 +59,10 @@ export function buildBlindReviewPacket({
     }
 
     const shuffled = shuffle(taskRuns, random);
+    const patchLabels = [];
     shuffled.forEach((run, index) => {
       const patch = PATCH_LABELS[index];
+      patchLabels.push(patch);
       key.push({
         task_id: taskId,
         patch,
@@ -78,6 +81,9 @@ export function buildBlindReviewPacket({
       preferred_patch: "",
       confidence: null,
       reason: "",
+      patches: Object.fromEntries(patchLabels.map((patch) => {
+        return [patch, patchAssessmentTemplate()];
+      })),
     });
   }
 
@@ -152,6 +158,21 @@ function shuffle(values, random) {
 
 function defaultRandom() {
   return randomInt(0, 0x100000000) / 0x100000000;
+}
+
+function patchAssessmentTemplate() {
+  return {
+    decision: "",
+    expected_rework_minutes: null,
+    scores: {
+      requirements: null,
+      correctness_safety: null,
+      test_adequacy: null,
+      maintainability_reviewability: null,
+    },
+    dependency_judgment: "",
+    abstraction_judgment: "",
+  };
 }
 
 function seededRandom(seed) {

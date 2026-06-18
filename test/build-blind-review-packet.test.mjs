@@ -78,6 +78,21 @@ describe("build-blind-review-packet", () => {
         model: "gpt-5.5",
       },
     ]);
+
+    const [answer] = parseAnswerTemplate(result.packet);
+    assert.deepEqual(Object.keys(answer.patches), ["A", "B", "C"]);
+    assert.deepEqual(answer.patches.A, {
+      decision: "",
+      expected_rework_minutes: null,
+      scores: {
+        requirements: null,
+        correctness_safety: null,
+        test_adequacy: null,
+        maintainability_reviewability: null,
+      },
+      dependency_judgment: "",
+      abstraction_judgment: "",
+    });
   });
 
   it("requires at least two successful patches per reviewed task", () => {
@@ -210,4 +225,10 @@ function git(args, cwd) {
     encoding: "utf8",
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
+}
+
+function parseAnswerTemplate(packet) {
+  const match = packet.match(/## Answer Template\n\n```json\n([\s\S]+?)\n```/);
+  assert.ok(match, "answer template block not found");
+  return JSON.parse(match[1]);
 }
