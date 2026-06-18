@@ -142,9 +142,15 @@ export function renderMarkdownReport(summary, {
 function acceptanceChecks(arms, runs) {
   const baseline = arms.find((arm) => arm.arm === "baseline");
   const skill = arms.find((arm) => arm.arm === "skill");
+  const m7Old = arms.find((arm) => arm.arm === "old-baldpatch-skill");
+  const m7Revised = arms.find((arm) => arm.arm === "revised-baldpatch-skill");
   const m4 = arms.find((arm) => arm.arm === "m4-reviewer-proof-control");
   const m3SkillRerun = arms.find((arm) => arm.arm === "m3-baldpatch-skill-rerun")
     || arms.find((arm) => arm.arm === "baldpatch-skill");
+
+  if (m7Old && m7Revised) {
+    return m7AcceptanceChecks(m7Old, m7Revised, runs);
+  }
 
   if (m4 && m3SkillRerun) {
     return m4AcceptanceChecks(m3SkillRerun, m4, runs);
@@ -230,6 +236,80 @@ function m4AcceptanceChecks(control, target, runs) {
     }),
     underbuildRiskCheck(control, target, {
       gate: "m4_underbuild_risk_not_worse_vs_m3_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+  ];
+}
+
+function m7AcceptanceChecks(control, target, runs) {
+  const pairwise = pairwisePreferenceSummary(runs, {
+    controlArm: control.arm,
+    targetArm: target.arm,
+  });
+  const priorLossTasks = new Set([
+    "m5-task-001",
+    "m5-task-002",
+    "m5-task-003",
+    "m5-task-004",
+    "m5-task-005",
+    "m5-task-007",
+    "m5-task-010",
+    "m5-task-011",
+  ]);
+  const regressionCanaries = ["m5-task-008", "m5-task-012"];
+  const priorLossWins = pairwise.by_task.filter((task) => {
+    return priorLossTasks.has(task.task_id) && task.target_votes > task.control_votes;
+  }).length;
+  const canaryLosses = pairwise.by_task.filter((task) => {
+    return regressionCanaries.includes(task.task_id) && task.target_votes < task.control_votes;
+  }).map((task) => task.task_id);
+
+  return [
+    correctnessCheck(control, target, {
+      gate: "m7_correctness_not_worse_vs_old_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+    {
+      gate: "m7_pairwise_task_wins_vs_old_skill",
+      status: pairwise.target_task_wins >= 6 ? "pass" : "fail",
+      detail: `${target.arm} won ${pairwise.target_task_wins}/${pairwise.tasks} tasks vs ${control.arm}`,
+    },
+    {
+      gate: "m7_pairwise_votes_vs_old_skill",
+      status: pairwise.target_votes >= 18 ? "pass" : "fail",
+      detail: `${target.arm} received ${pairwise.target_votes}/${pairwise.total_votes} reviewer votes vs ${control.arm}`,
+    },
+    {
+      gate: "m7_prior_loss_recovery_vs_old_skill",
+      status: priorLossWins >= 5 ? "pass" : "fail",
+      detail: `${target.arm} won ${priorLossWins}/8 prior M5 loss tasks vs ${control.arm}`,
+    },
+    {
+      gate: "m7_regression_canaries_vs_old_skill",
+      status: canaryLosses.length < 2 ? "pass" : "fail",
+      detail: canaryLosses.length === 0
+        ? `${target.arm} did not lose M5 regression canaries`
+        : `${target.arm} lost M5 regression canaries: ${canaryLosses.join(", ")}`,
+    },
+    humanReworkCheck(control, target, {
+      gate: "m7_human_rework_not_worse_vs_old_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+    underbuildRiskCheck(control, target, {
+      gate: "m7_underbuild_risk_not_worse_vs_old_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+    locNotHigherUnlessReworkImprovesCheck(control, target, {
+      gate: "m7_median_loc_not_higher_unless_rework_improves_vs_old_skill",
+      targetLabel: target.arm,
+      controlLabel: control.arm,
+    }),
+    toolCallBudgetCheck(control, target, {
+      gate: "m7_tool_call_budget_vs_old_skill",
       targetLabel: target.arm,
       controlLabel: control.arm,
     }),
@@ -331,6 +411,28 @@ function locReductionCheck(control, target, {
     gate,
     status: reduction >= 0.2 ? "pass" : "fail",
     detail: `${targetLabel} median LOC ${formatNumber(target.median_loc)} vs ${controlLabel} ${formatNumber(control.median_loc)} (${formatDecreaseDeltaPercent(reduction)})`,
+  };
+}
+
+function locNotHigherUnlessReworkImprovesCheck(control, target, {
+  gate,
+  targetLabel,
+  controlLabel,
+}) {
+  if (!isNumber(control.median_loc) || !isNumber(target.median_loc)) {
+    return {
+      gate,
+      status: "pending",
+      detail: "median LOC unavailable",
+    };
+  }
+  const reworkImproved = isNumber(control.median_human_rework_minutes)
+    && isNumber(target.median_human_rework_minutes)
+    && target.median_human_rework_minutes < control.median_human_rework_minutes;
+  return {
+    gate,
+    status: target.median_loc <= control.median_loc || reworkImproved ? "pass" : "fail",
+    detail: `${targetLabel} median LOC ${formatNumber(target.median_loc)} vs ${controlLabel} ${formatNumber(control.median_loc)}; median rework ${formatNumber(target.median_human_rework_minutes)} vs ${formatNumber(control.median_human_rework_minutes)} min`,
   };
 }
 
@@ -531,6 +633,10 @@ function pairwisePreferenceSummary(runs, {
   }
 
   const tasks = [...byTask.values()];
+  const byTaskRows = [...byTask.entries()].map(([task_id, task]) => ({
+    task_id,
+    ...task,
+  }));
   return {
     tasks: tasks.length,
     target_task_wins: tasks.filter((task) => task.target_votes > task.control_votes).length,
@@ -539,6 +645,7 @@ function pairwisePreferenceSummary(runs, {
     unanimous_target_losses: tasks.filter((task) => {
       return task.total_votes >= 3 && task.target_votes === 0;
     }).length,
+    by_task: byTaskRows,
   };
 }
 

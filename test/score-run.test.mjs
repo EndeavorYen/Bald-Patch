@@ -376,6 +376,33 @@ describe("score-run", () => {
       "m4-reviewer-proof-control received 12/18 reviewer votes vs m3-baldpatch-skill-rerun",
     );
   });
+
+  it("reports M7 pairwise gates against the old skill", () => {
+    const summary = summarizeRuns(sampleM7PairwiseRuns());
+
+    assert.deepEqual(
+      summary.acceptance_checks.map((check) => [check.gate, check.status]),
+      [
+        ["m7_correctness_not_worse_vs_old_skill", "pass"],
+        ["m7_pairwise_task_wins_vs_old_skill", "pass"],
+        ["m7_pairwise_votes_vs_old_skill", "pass"],
+        ["m7_prior_loss_recovery_vs_old_skill", "pass"],
+        ["m7_regression_canaries_vs_old_skill", "pass"],
+        ["m7_human_rework_not_worse_vs_old_skill", "pass"],
+        ["m7_underbuild_risk_not_worse_vs_old_skill", "pass"],
+        ["m7_median_loc_not_higher_unless_rework_improves_vs_old_skill", "pass"],
+        ["m7_tool_call_budget_vs_old_skill", "pass"],
+      ],
+    );
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "m7_pairwise_votes_vs_old_skill").detail,
+      "revised-baldpatch-skill received 18/30 reviewer votes vs old-baldpatch-skill",
+    );
+    assert.equal(
+      summary.acceptance_checks.find((check) => check.gate === "m7_prior_loss_recovery_vs_old_skill").detail,
+      "revised-baldpatch-skill won 6/8 prior M5 loss tasks vs old-baldpatch-skill",
+    );
+  });
 });
 
 function sampleRuns() {
@@ -563,6 +590,35 @@ function sampleM4PairwiseRuns() {
       }),
     ];
   });
+}
+
+function sampleM7PairwiseRuns() {
+  const targetVotesByTask = {
+    "m5-task-001": 3,
+    "m5-task-002": 2,
+    "m5-task-003": 2,
+    "m5-task-004": 2,
+    "m5-task-005": 2,
+    "m5-task-007": 0,
+    "m5-task-008": 2,
+    "m5-task-010": 2,
+    "m5-task-011": 0,
+    "m5-task-012": 3,
+  };
+  return Object.entries(targetVotesByTask).flatMap(([taskId, targetVotes]) => [
+    pairwiseRun("old-baldpatch-skill", taskId, {
+      preferredVotes: 3 - targetVotes,
+      lines: 20,
+      toolCalls: 10,
+      rework: 4,
+    }),
+    pairwiseRun("revised-baldpatch-skill", taskId, {
+      preferredVotes: targetVotes,
+      lines: 18,
+      toolCalls: 11,
+      rework: 3,
+    }),
+  ]);
 }
 
 function pairwiseRun(arm, taskId, {

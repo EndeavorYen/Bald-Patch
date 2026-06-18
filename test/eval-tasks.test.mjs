@@ -103,4 +103,28 @@ describe("M1 eval tasks", () => {
       assert.match(task.fixture.verify, new RegExp(`--task ${task.id}\\b`));
     }
   });
+
+  it("defines an M7 pairwise suite from M5 loss cases and regression canaries", () => {
+    const m7Tasks = readTasks(TASK_ROOT, { mode: "m7" });
+    const m7Plan = buildRunPlan(m7Tasks, { mode: "m7" });
+
+    assert.equal(m7Tasks.length, 10);
+    assert.deepEqual(m7Tasks.map((task) => task.public_id), [
+      "m5-task-001",
+      "m5-task-002",
+      "m5-task-003",
+      "m5-task-004",
+      "m5-task-005",
+      "m5-task-007",
+      "m5-task-008",
+      "m5-task-010",
+      "m5-task-011",
+      "m5-task-012",
+    ]);
+    assert.equal(m7Plan.length, 20);
+    assert.deepEqual([...new Set(m7Plan.map((run) => run.arm))], [
+      "old-baldpatch-skill",
+      "revised-baldpatch-skill",
+    ]);
+  });
 });
