@@ -53,7 +53,8 @@ the live skill wording. M7 gives reviewer-positive evidence for that narrowing,
 but it still does not prove that Bald Patch reliably produces smaller patches.
 M8 kept the next step diagnostic rather than expansive. M9 completed that
 diagnostic repeatability loop and did not support adopting the timer-proof
-addendum or changing the live skill.
+addendum or changing the live skill. The project is now pivoting from skill
+wording iteration toward anti-overbuild eval and review evidence.
 
 - M2: all three arms passed correctness checks: 11/11 each.
 - M2: Bald Patch reduced median tool calls by 15% versus both controls, but blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
@@ -98,6 +99,9 @@ addendum or changing the live skill.
   7/15 reviewer votes for the draft, but aggregate preference was only 10/30.
 - M9 decision: do not change the live skill, do not adopt the timer-proof
   addendum, and do not expand into hooks, plugins, or stronger automation.
+- Post-M9 decision: freeze `$baldpatch-patch` wording and stop pursuing
+  reviewer advantage through more micro-fixture prompt tuning until task
+  discrimination improves.
 
 See:
 
@@ -122,6 +126,7 @@ See:
 - [M9 repeatability reviewed eval report](evals/reports/2026-06-19-m9-repeatability-reviewed.md)
 - [M9 repeatability blind review summary](evals/reviews/2026-06-19-m9-repeatability-external-review-summary.md)
 - [M9 repeatability analysis](evals/reports/2026-06-19-m9-repeatability-analysis.md)
+- [Post-M9 project posture](docs/posture.md)
 - [M8 diagnostic design](docs/m8-diagnostic-design.md)
 - [M8 execution plan](docs/m8-execution-plan.md)
 - [M7 pairwise design](docs/m7-pairwise-design.md)
@@ -130,9 +135,8 @@ See:
 - [M5 execution plan](docs/m5-execution-plan.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone is deciding whether an M10 should improve fixture/reviewer
-discrimination, run a broader holdout without the noisy timer addendum, or
-pause skill tuning until the review signal is stronger. Hooks, plugins, and
+The next milestone is E1/E2/E3: improve eval discrimination, design more
+realistic task suites, and productize review evidence. Hooks, plugins, and
 broader automation remain out of scope until reviewed evidence shows durable
 human value.
 
@@ -236,7 +240,10 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 12. M8: run the approval-gated diagnostic eval and blind review. Done, with partial blind review and no skill-change signal.
 13. M9: design a same-arm repeatability check for the M8 reversal canaries. Done.
 14. M9: run approval-gated coding eval and complete 3/3 blind review before any skill-change proposal. Done, with no skill-change signal.
-15. M10: decide whether to improve reviewer/fixture discrimination, run a broader holdout, or pause skill tuning.
+15. Post-M9 pivot: freeze live skill wording and reposition Bald Patch as eval/review evidence tooling. In progress.
+16. E1: audit eval discrimination and task quality. See [#59](https://github.com/EndeavorYen/Bald-Patch/issues/59).
+17. E2: design a realistic but fully verifiable task suite. See [#60](https://github.com/EndeavorYen/Bald-Patch/issues/60).
+18. E3: productize review evidence reports, packets, and scope summaries. See [#61](https://github.com/EndeavorYen/Bald-Patch/issues/61).
 
 ## References
 

@@ -7,6 +7,7 @@ const OPENAI_YAML_PATH = ".agents/skills/baldpatch-patch/agents/openai.yaml";
 const REVIEW_SKILL_PATH = ".agents/skills/baldpatch-review/SKILL.md";
 const REVIEW_OPENAI_YAML_PATH = ".agents/skills/baldpatch-review/agents/openai.yaml";
 const M5_DESIGN_PATH = "docs/m5-holdout-design.md";
+const POSTURE_PATH = "docs/posture.md";
 
 describe("baldpatch-patch skill", () => {
   it("has complete trigger metadata and concise instructions", () => {
@@ -56,6 +57,26 @@ describe("baldpatch-patch skill", () => {
     assert.match(skill, /raw or terse CLI output/i);
     assert.match(skill, /preserve existing wrapper call paths/i);
     assert.match(skill, /explicitly asks to collapse them/i);
+  });
+
+  it("marks the live patch skill as frozen after M9", () => {
+    const skill = readFileSync(SKILL_PATH, "utf8");
+
+    assert.match(skill, /Post-M9 Freeze/i);
+    assert.match(skill, /Stable \(post-M5, frozen after M9\)/i);
+    assert.match(skill, /Do not tune this skill's wording/i);
+    assert.match(skill, /timer-proof addendum/i);
+  });
+
+  it("documents the post-M9 project posture and stop rule", () => {
+    const posture = readFileSync(POSTURE_PATH, "utf8");
+
+    assert.match(posture, /anti-overbuild eval and review evidence system/i);
+    assert.match(posture, /E1: Eval Discrimination/i);
+    assert.match(posture, /E2: Realistic Task Suite/i);
+    assert.match(posture, /E3: Review Evidence Productization/i);
+    assert.match(posture, /Stop Rule/i);
+    assert.match(posture, /stop skill research/i);
   });
 
   it("documents the M5 holdout design before claiming generalization", () => {
