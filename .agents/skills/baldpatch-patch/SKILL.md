@@ -7,6 +7,14 @@ description: Guide Codex to solve coding tasks with the smallest safe diff while
 
 Produce the smallest safe patch that fully solves the request. Optimize for reviewer trust, not code golf.
 
+## Post-M9 Freeze
+
+Status: Stable (post-M5, frozen after M9).
+
+M9 did not support adopting the timer-proof addendum or changing this live skill.
+Do not tune this skill's wording again unless a later eval with better task
+discrimination shows stable reviewer preference or lower expected rework.
+
 ## Workflow
 
 1. Restate the concrete behavior change in one sentence.
