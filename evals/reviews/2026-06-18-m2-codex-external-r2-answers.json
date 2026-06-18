@@ -1,0 +1,489 @@
+{
+  "reviewer_id": "external-codex-r2",
+  "answers": [
+    {
+      "task_id": "task-001",
+      "preferred_patch": "A",
+      "confidence": 0.82,
+      "reason": "All patches implement the flag correctly, but A also verifies the default CLI path through main, directly covering the unchanged human-readable behavior.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-002",
+      "preferred_patch": "B",
+      "confidence": 0.86,
+      "reason": "The implementation is equivalent across patches, but B uses deterministic fake timers, avoiding slow or flaky real-time waits while proving the 250ms debounce and cancellation behavior.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 10,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 10,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-003",
+      "preferred_patch": "B",
+      "confidence": 0.84,
+      "reason": "B has the most defensible validation for common email formats, including domain label edge cases, without adding dependencies or overcomplicating the form validator.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 4,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 10,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 4,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-004",
+      "preferred_patch": "B",
+      "confidence": 0.55,
+      "reason": "All three patches are effectively identical and satisfy the request with native details/summary markup while preserving the existing fields.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-005",
+      "preferred_patch": "C",
+      "confidence": 0.78,
+      "reason": "All patches wire the due date into rendering and serialization, but C's regression test best covers preserving existing title data alongside the new due-date field.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-006",
+      "preferred_patch": "C",
+      "confidence": 0.72,
+      "reason": "The implementation is correct in all patches, and C has the stronger regression test because it verifies multiple trailing blank lines are removed without changing the API.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-007",
+      "preferred_patch": "B",
+      "confidence": 0.68,
+      "reason": "All patches preserve valid-date formatting and avoid throwing, but B directly tests the omitted-date case that best matches a missing date.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-008",
+      "preferred_patch": "B",
+      "confidence": 0.84,
+      "reason": "B cleanly builds the dry-run message, lists the would-modify paths clearly, covers nested paths, and verifies write-mode output remains unchanged.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 4,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 4
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-009",
+      "preferred_patch": "C",
+      "confidence": 0.55,
+      "reason": "The patches are functionally identical and correctly add one new provider while preserving GitHub behavior and unknown-provider errors.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-010",
+      "preferred_patch": "A",
+      "confidence": 0.72,
+      "reason": "A is the smallest correct cleanup and keeps behavior identical; B adds a brittle source-inspection test that is not worth the maintenance cost for this simple duplicate-branch removal.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 5,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 3
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "avoidable"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 3,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    },
+    {
+      "task_id": "task-011",
+      "preferred_patch": "B",
+      "confidence": 0.86,
+      "reason": "All patches introduce and use the shared helper, but B also tests the helper directly and verifies both summaries show dollar totals with labels unchanged.",
+      "patches": {
+        "A": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "B": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 5,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        },
+        "C": {
+          "decision": "accept",
+          "expected_rework_minutes": 0,
+          "scores": {
+            "requirements": 5,
+            "correctness_safety": 5,
+            "test_adequacy": 4,
+            "maintainability_reviewability": 5
+          },
+          "dependency_judgment": "none",
+          "abstraction_judgment": "justified"
+        }
+      }
+    }
+  ]
+}

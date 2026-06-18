@@ -106,6 +106,19 @@ describe("build-blind-review-packet", () => {
     );
   });
 
+  it("includes untracked new files in patch diffs", () => {
+    const result = buildBlindReviewPacket({
+      checkoutsRoot,
+      random: sequenceRandom([0.1, 0.9]),
+      runs: sampleRuns(),
+      tasks: sampleTasks(),
+    });
+
+    assert.match(result.packet, /diff --git a\/formatAmount\.js b\/formatAmount\.js/);
+    assert.match(result.packet, /new file mode 100644/);
+    assert.match(result.packet, /\+export function formatAmount\(amount\) \{/);
+  });
+
   it("rejects empty packets when no successful runs are available", () => {
     assert.throws(
       () => buildBlindReviewPacket({
@@ -212,6 +225,10 @@ function createPatchedCheckout(runId, source) {
   ], dir);
   git(["branch", "-M", "main"], dir);
   writeFileSync(path.join(dir, "value.js"), source);
+  writeFileSync(
+    path.join(dir, "formatAmount.js"),
+    "export function formatAmount(amount) {\n  return amount.toFixed(2);\n}\n",
+  );
 }
 
 function sequenceRandom(values) {
