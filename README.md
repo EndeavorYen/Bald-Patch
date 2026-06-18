@@ -46,20 +46,22 @@ If M1 fails, the next step is to improve the rule or skill design. It is not to 
 
 ## Current Evidence Status
 
-The 2026-06-18 Codex M1 run is a calibration result, not proof that Bald Patch works.
+The 2026-06-18 Codex M2 reviewed run is useful negative evidence for the current skill.
 
-- Baseline and skill arms both passed correctness checks: 10/10 each.
-- Median LOC changed was only 3% lower for the skill arm, below the 20% target.
-- Dependency and scope signals were weak: neither arm added dependencies or produced scope warnings.
-- Decoded blind review preferred baseline on 6/10 tasks and skill on 4/10 tasks, so the reviewer preference gate failed.
+- All three arms passed correctness checks: 11/11 each.
+- Bald Patch reduced median tool calls by 15% versus both controls.
+- Bald Patch did not reduce median LOC versus natural-baseline and was 6% higher than prompt-control.
+- Blind reviewers preferred natural-baseline on 58% of votes, prompt-control on 21%, and Bald Patch on 21%.
+- Reviewer losses were concentrated in tasks where the smaller patch had weaker preserved-behavior, timer, or helper test evidence.
 
 See:
 
 - [M1 reviewed eval report](evals/reports/2026-06-18-m1-codex-reviewed.md)
 - [M1 reviewed evidence analysis](evals/reports/2026-06-18-m1-codex-reviewed-analysis.md)
+- [M2 reviewed eval report](evals/reports/2026-06-18-m2-codex-reviewed.md)
 - [M2 eval design](docs/m2-eval-design.md)
 
-The next milestone should redesign the experiment rather than expand the current skill from M1 alone.
+The next milestone is to tune reviewer-trust guidance and rerun the benchmark, not to add hooks or broader automation.
 
 ## Repository Layout
 
@@ -143,9 +145,9 @@ See [docs/installation.md](docs/installation.md) for the current docs-first inst
 
 1. M1: deterministic evaluation scaffolding and 10-task smoke eval. Done.
 2. M1: decode blind review and publish reviewed evidence. Done.
-3. M2: redesign the benchmark with clean baseline, prompt-control, and Bald Patch arms.
-4. M2: add leakage-resistant holdout tasks and multi-reviewer blind review.
-5. M3: strengthen `$baldpatch-review` only if M2 shows reviewer value.
+3. M2: clean baseline, prompt-control, Bald Patch arms, and multi-reviewer blind review. Done.
+4. M3: tune `$baldpatch-patch` for reviewer-valued test evidence and rerun M2.
+5. M3: strengthen `$baldpatch-review` only if reruns show reviewer value.
 6. M4: optional non-blocking Codex Stop hook and plugin packaging only after evaluation shows human value.
 
 ## References

@@ -31,6 +31,14 @@ describe("baldpatch-patch skill", () => {
     }
   });
 
+  it("treats reviewer-valued regression proof as part of safe scope", () => {
+    const skill = readFileSync(SKILL_PATH, "utf8");
+
+    assert.match(skill, /preserved behavior/i);
+    assert.match(skill, /deterministic timer/i);
+    assert.match(skill, /shared helper/i);
+  });
+
   it("keeps OpenAI UI metadata aligned with the explicit skill name", () => {
     const metadata = readFileSync(OPENAI_YAML_PATH, "utf8");
 

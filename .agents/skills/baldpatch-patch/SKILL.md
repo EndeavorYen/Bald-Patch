@@ -21,6 +21,13 @@ Produce the smallest safe patch that fully solves the request. Optimize for revi
 6. Run the narrowest meaningful verification, then broaden only if risk requires it.
 7. Before final response, review the diff for avoidable scope, dependency, and abstraction.
 
+## Reviewer Trust Tests
+
+- Treat regression proof as part of safe scope, not optional LOC.
+- If the request says to keep existing output or behavior, keep or add one preserved behavior assertion.
+- For debounce or timer behavior, prefer deterministic timer tests over real sleeps.
+- For shared helper changes, test the shared helper or both call sites when that proves the integration.
+
 ## Guardrails
 
 - Do not remove validation, auth, permission checks, data-loss protection, accessibility, or error handling to shrink a diff.
@@ -47,6 +54,7 @@ Every rule should pay rent in an eval task:
 
 - Does the patch meet every requested requirement?
 - Did tests or focused checks prove the behavior?
+- Did preserved behavior and reviewer-risky edge cases keep enough test evidence?
 - Are changed files limited to the task?
 - Were dependencies avoided unless necessary?
 - Were abstractions avoided unless the current code already needs them?
