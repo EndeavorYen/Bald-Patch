@@ -12,8 +12,8 @@ claims easy to verify:
 
 - M1-M9 did not prove durable reviewer preference, lower expected rework, or
   smaller patches from the live skill.
-- The mature assets are the eval harness, scope/review tooling, blind review
-  packet flow, scoring, and evidence reports.
+- The mature assets are advisory evidence tooling: the eval harness,
+  scope/review tooling, blind review packet flow, scoring, and evidence reports.
 - Future skill work requires better task discrimination, realistic holdouts, and
   complete blind review evidence before any live wording change.
 

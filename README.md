@@ -103,6 +103,15 @@ wording iteration toward anti-overbuild eval and review evidence.
   reviewer advantage through more micro-fixture prompt tuning until task
   discrimination improves.
 
+## Non-Claims
+
+Bald Patch does not currently claim:
+
+- reliable reviewer preference improvement;
+- lower expected human rework;
+- reliably smaller patches;
+- readiness for stronger or always-on automation.
+
 See:
 
 - [M1 reviewed eval report](evals/reports/2026-06-18-m1-codex-reviewed.md)

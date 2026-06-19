@@ -82,12 +82,12 @@ reviewer preference or expected rework gains without underbuild risk.
 
 | Asset | Status | Use |
 | --- | --- | --- |
-| `scripts/scope-lint.mjs` | Mature enough to reuse | Detect dependency churn, broad surfaces, and suspicious abstractions. |
-| `scripts/baldpatch-review.mjs` | Mature enough to reuse | Produce advisory overbuild review findings. |
-| Blind review packet builder | Mature enough to reuse | Compare anonymized patches without exposing arm names. |
-| Blind review decoder | Mature enough to reuse | Apply reviewer votes, rework, and risk fields back to run records. |
-| `scripts/score-run.mjs` | Mature enough to reuse | Render deterministic Markdown reports and gate checks. |
-| Run record JSONL format | Mature enough to reuse | Preserve comparable coding and review evidence. |
+| `scripts/scope-lint.mjs` | Mature enough to reuse as advisory evidence tooling | Detect dependency churn, broad surfaces, and suspicious abstractions. |
+| `scripts/baldpatch-review.mjs` | Mature enough to reuse as advisory evidence tooling | Produce advisory overbuild review findings. |
+| Blind review packet builder | Mature enough to reuse as advisory evidence tooling | Compare anonymized patches without exposing arm names. |
+| Blind review decoder | Mature enough to reuse as advisory evidence tooling | Apply reviewer votes, rework, and risk fields back to run records. |
+| `scripts/score-run.mjs` | Mature enough to reuse as advisory evidence tooling | Render deterministic Markdown reports and gate checks. |
+| Run record JSONL format | Mature enough to reuse as advisory evidence tooling | Preserve comparable coding and review evidence. |
 | `$baldpatch-patch` skill | Frozen, provisional | Conservative small-diff guidance only. |
 | M1-M9 reports | Historical evidence | Explain the pivot and prevent repeated overfitting loops. |
 
