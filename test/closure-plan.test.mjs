@@ -16,6 +16,7 @@ describe("closure plan", () => {
     assert.match(plan, /eval and review evidence toolkit/i);
     assert.match(plan, /Closure Objective/i);
     assert.match(plan, /Definition Of Done/i);
+    assert.match(plan, /advisory evidence tooling/i);
     assert.match(plan, /v0\.1-evidence-freeze/i);
 
     for (const track of ["E1: Eval Discrimination", "E2: Realistic Task Suite", "E3: Review Evidence Productization"]) {
@@ -39,6 +40,10 @@ describe("closure plan", () => {
     const finalReport = readFileSync(FINAL_REPORT_PATH, "utf8");
 
     assert.match(readme, /docs\/closure-plan\.md/);
+    assert.match(readme, /Non-Claims/);
+    assert.match(readme, /reliable reviewer preference improvement/);
+    assert.match(readme, /lower expected human rework/);
+    assert.match(readme, /readiness for stronger or always-on automation/);
     assert.match(posture, /closure-plan\.md/);
     assert.match(finalReport, /closure-plan\.md/);
   });
